@@ -409,7 +409,6 @@
     border: 1px solid rgba(250,248,241,0.18);
     background: rgba(250,248,241,0.075);
     color: var(--paper);
-    text-decoration: none;
     border-radius: 999px;
     padding: 9px 13px;
     font-family: var(--font-body);
@@ -788,7 +787,7 @@
   .piece:hover { border-color: rgba(255,122,69,0.34); background: rgba(255,255,255,0.78); }
   .piece-head {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; margin-bottom: 12px;
+    margin-bottom: 12px;
   }
   .piece-name { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--ink); }
   .piece-num {
@@ -805,41 +804,11 @@
   }
   .piece-remove:hover { background: var(--danger-soft); color: var(--danger); }
   .piece-remove svg { width: 14px; height: 14px; }
-  .piece-controls {
-    display: flex; align-items: center; gap: 8px; margin-left: auto;
-  }
-  .piece-type {
-    display: grid; gap: 4px; min-width: 160px;
-  }
-  .piece-type span {
-    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted);
-  }
-  .piece-type input {
-    width: 100%;
-    min-height: 32px;
-    border-radius: 999px;
-    border: 1px solid rgba(17,24,39,0.10);
-    background: rgba(255,255,255,0.80);
-    color: var(--ink);
-    padding: 7px 12px;
-    font-size: 12.5px;
-    font-weight: 650;
-    outline: none;
-  }
-  .piece-type input:focus {
-    border-color: rgba(255,122,69,0.48);
-    box-shadow: 0 0 0 4px rgba(255,122,69,0.10);
-    background: #fff;
-  }
   .piece-grid { display: grid; gap: 10px; }
   .piece-grid.dim { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
   .piece-grid.cf { grid-template-columns: 1fr 1fr 1fr; }
   .piece-grid.pallet { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; }
   @media (max-width: 700px) {
-    .piece-head { align-items: flex-start; flex-direction: column; }
-    .piece-controls { width: 100%; margin-left: 0; }
-    .piece-type { flex: 1; min-width: 0; }
     .piece-grid.dim { grid-template-columns: 1fr 1fr; }
     .piece-grid.cf { grid-template-columns: 1fr 1fr; }
     .piece-grid.pallet { grid-template-columns: 1fr 1fr; }
@@ -1227,33 +1196,6 @@
   }
   .tax-select:focus { border-color: var(--accent); background: rgba(255,122,69,0.12); }
   .tax-select option { color: var(--ink); background: #fff; }
-  .fuel-inline-action {
-    margin-left: 8px;
-    border: 1px solid rgba(79,209,197,0.32);
-    border-radius: 999px;
-    padding: 5px 8px;
-    background: rgba(79,209,197,0.10);
-    color: var(--cool);
-    font-family: var(--font-mono);
-    font-size: 8.8px;
-    font-weight: 850;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    vertical-align: middle;
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-  }
-  .fuel-inline-action:hover {
-    transform: translateY(-1px);
-    border-color: rgba(79,209,197,0.52);
-    background: rgba(79,209,197,0.18);
-  }
-  .fuel-inline-action.ready {
-    color: #fff;
-    border-color: rgba(255,122,69,0.55);
-    background: linear-gradient(135deg, rgba(255,122,69,0.35), rgba(79,209,197,0.18));
-    box-shadow: 0 0 0 4px rgba(255,122,69,0.08);
-  }
 
   /* AI uploader card */
   .ai-uploader {
@@ -1405,6 +1347,251 @@
   }
   .footer-note a { color: rgba(255,165,114,0.85); text-decoration: none; }
   .footer-note a:hover { color: var(--accent-light); }
+
+  /* ============================================================
+     FAQ / USER MANUAL — full-width section under calculator.
+     Modern glassmorphism + animated accent borders + numbered
+     step accordion.
+     ============================================================ */
+  .oke-faq {
+    position: relative;
+    width: 100%; max-width: 1240px;
+    margin: 56px auto 24px;
+    padding: 0 16px;
+    z-index: 1;
+  }
+  .faq-glow {
+    position: absolute; inset: -40px -10% -20%;
+    background:
+      radial-gradient(ellipse 60% 70% at 25% 20%, rgba(255,122,69,0.20), transparent 65%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(79,209,197,0.18), transparent 65%);
+    filter: blur(40px);
+    pointer-events: none; z-index: 0;
+  }
+  .faq-shell {
+    position: relative; z-index: 1;
+    padding: 38px 32px 32px;
+    border-radius: 28px;
+    background:
+      linear-gradient(180deg, rgba(255,254,250,0.05) 0%, rgba(255,254,250,0.02) 100%);
+    border: 1px solid rgba(255,254,250,0.08);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+      0 30px 80px -20px rgba(7,9,26,0.50),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .faq-shell::before {
+    content: ""; position: absolute; inset: -1px;
+    border-radius: inherit; padding: 1px;
+    background: conic-gradient(from 120deg,
+      rgba(255,122,69,0.0) 0deg,
+      rgba(255,122,69,0.55) 90deg,
+      rgba(79,209,197,0.45) 200deg,
+      rgba(255,122,69,0.0) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: faqRing 14s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes faqRing { to { transform: rotate(360deg); } }
+  .faq-head {
+    text-align: center; margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+  .faq-kicker {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, rgba(255,122,69,0.20), rgba(79,209,197,0.16));
+    border: 1px solid rgba(255,122,69,0.30);
+    color: rgba(255,210,180,0.95);
+    font-family: var(--font-mono); font-size: 10px;
+    font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .faq-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 500;
+    color: var(--paper);
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #fff 0%, #ffd28a 50%, #b4e1ff 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .faq-sub {
+    color: rgba(255,254,250,0.65);
+    font-size: 14.5px; max-width: 540px; margin: 0 auto;
+  }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    position: relative; z-index: 1;
+  }
+  .faq-card {
+    position: relative;
+    border-radius: 16px;
+    background: rgba(12,16,36,0.42);
+    border: 1px solid rgba(255,254,250,0.08);
+    overflow: hidden;
+    transition: border-color 280ms ease, transform 280ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 280ms ease;
+  }
+  .faq-card:hover {
+    border-color: rgba(255,122,69,0.34);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -8px rgba(255,122,69,0.18);
+  }
+  .faq-card[open] {
+    border-color: rgba(255,122,69,0.50);
+    background: linear-gradient(180deg, rgba(255,122,69,0.06) 0%, rgba(12,16,36,0.42) 100%);
+    box-shadow: 0 18px 44px -10px rgba(255,122,69,0.22);
+  }
+  .faq-card summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 48px 1fr 32px;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 18px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .faq-card summary::-webkit-details-marker { display: none; }
+  .faq-num {
+    font-family: var(--font-mono);
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 0.10em;
+    color: var(--accent);
+    background: rgba(255,122,69,0.10);
+    border: 1px solid rgba(255,122,69,0.28);
+    border-radius: 10px;
+    width: 40px; height: 40px;
+    display: inline-flex; align-items: center; justify-content: center;
+    text-shadow: 0 0 12px rgba(255,122,69,0.6);
+  }
+  .faq-card[open] .faq-num {
+    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 6px 16px rgba(255,122,69,0.45);
+  }
+  .faq-q {
+    color: var(--paper);
+    font-size: 15.5px; font-weight: 700;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  .faq-chev {
+    width: 24px; height: 24px;
+    position: relative;
+    border-radius: 50%;
+    background: rgba(255,254,250,0.06);
+    transition: background 240ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .faq-chev::before, .faq-chev::after {
+    content: ""; position: absolute; top: 50%; left: 50%;
+    width: 9px; height: 1.6px; border-radius: 1px;
+    background: var(--paper);
+    transform-origin: center;
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .faq-chev::before { transform: translate(-50%, -50%) rotate(0deg); }
+  .faq-chev::after  { transform: translate(-50%, -50%) rotate(90deg); }
+  .faq-card[open] .faq-chev { background: rgba(255,122,69,0.20); transform: rotate(180deg); }
+  .faq-card[open] .faq-chev::after { transform: translate(-50%, -50%) rotate(0deg); }
+  .faq-a {
+    padding: 0 18px 18px 80px;
+    color: rgba(255,254,250,0.72);
+    font-size: 14px;
+    line-height: 1.55;
+    animation: faqOpen 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes faqOpen {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .faq-a p { margin: 0 0 10px; }
+  .faq-a p:last-child { margin-bottom: 0; }
+  .faq-a .faq-mono {
+    font-family: var(--font-mono);
+    color: var(--accent-light);
+    background: rgba(255,122,69,0.10);
+    padding: 1px 6px; border-radius: 4px;
+    font-size: 12.5px;
+  }
+  .faq-steps {
+    list-style: none; padding: 0; margin: 6px 0 10px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .faq-steps li {
+    position: relative;
+    padding-left: 22px;
+    color: rgba(255,254,250,0.78);
+  }
+  .faq-steps li::before {
+    content: ""; position: absolute; left: 4px; top: 9px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    box-shadow: 0 0 0 3px rgba(255,122,69,0.14);
+  }
+  .faq-steps li b { color: var(--paper); font-weight: 700; }
+  .faq-steps li em { color: var(--cool); font-style: normal; }
+  .faq-foot {
+    margin-top: 28px; padding-top: 18px;
+    border-top: 1px dashed rgba(255,254,250,0.10);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    color: rgba(255,254,250,0.55);
+    font-size: 13px;
+  }
+  .faq-foot-l { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .faq-foot-l a {
+    color: var(--accent-light);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px dashed rgba(255,165,114,0.4);
+    padding-bottom: 1px;
+  }
+  .faq-foot-l a:hover { color: #fff; border-bottom-color: var(--accent-light); }
+  .faq-foot-r { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .faq-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255,122,69,0.10);
+    border: 1px solid rgba(255,122,69,0.30);
+    color: rgba(255,210,180,0.95);
+    font-family: var(--font-mono); font-size: 10px;
+    font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .faq-pill.alt { background: rgba(79,209,197,0.10); border-color: rgba(79,209,197,0.30); color: rgba(180,235,225,0.95); }
+  .faq-pill-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(255,122,69,0.8);
+    animation: faqDot 1.6s ease-in-out infinite;
+  }
+  .faq-pill-dot.alt { background: var(--cool); box-shadow: 0 0 8px rgba(79,209,197,0.8); }
+  @keyframes faqDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(0.6); opacity: 0.4; }
+  }
+  @media (max-width: 760px) {
+    .oke-faq { margin: 36px auto 16px; padding: 0 10px; }
+    .faq-shell { padding: 26px 16px 22px; border-radius: 20px; }
+    .faq-grid { grid-template-columns: 1fr; gap: 10px; }
+    .faq-card summary { padding: 14px 14px; grid-template-columns: 40px 1fr 28px; gap: 10px; }
+    .faq-num { width: 36px; height: 36px; font-size: 12px; }
+    .faq-q { font-size: 14.5px; }
+    .faq-a { padding: 0 14px 16px 64px; font-size: 13.5px; }
+    .faq-title { font-size: clamp(24px, 7vw, 32px); }
+  }
 
   @media (max-width: 960px) {
     .page { padding: 120px 14px 56px; }
@@ -1578,24 +1765,6 @@
     background: linear-gradient(90deg, var(--accent) 0%, rgba(255,255,255,0.35) 50%, var(--cool) 100%);
     transform: translateY(-50%); border-radius: 999px; overflow: hidden;
   }
-  .r-route::before {
-    content: "";
-    position: absolute;
-    left: 8%;
-    right: 8%;
-    top: 50%;
-    height: 42px;
-    transform: translateY(-50%);
-    background:
-      repeating-linear-gradient(90deg, rgba(250,248,241,0.10) 0 2px, transparent 2px 24px);
-    opacity: 0.18;
-    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
-    animation: roadTicks 4s linear infinite;
-  }
-  @keyframes roadTicks {
-    from { background-position: 0 0; }
-    to { background-position: 96px 0; }
-  }
   .r-route-line::after {
     content: ""; position: absolute; inset: 0;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
@@ -1621,7 +1790,6 @@
     animation: truckGo 6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
     filter: drop-shadow(0 4px 8px rgba(255,122,69,0.55));
   }
-  .r-route-truck::after { content: ""; }
   @keyframes truckGo {
     0%, 6% { left: 4%; opacity: 0; }
     14% { opacity: 1; }
@@ -1645,63 +1813,6 @@
   .r-stages.is-three { grid-template-columns: repeat(3, 1fr); }
   .r-stages span { text-align: center; padding: 6px 2px; border-radius: 6px; background: rgba(250,248,241,0.04); }
   .r-stages span.on { color: var(--accent-light); background: rgba(255,122,69,0.12); border: 1px solid rgba(255,122,69,0.25); }
-  .journey-ops {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .journey-step {
-    position: relative;
-    min-height: 82px;
-    border: 1px solid rgba(250,248,241,0.12);
-    background:
-      radial-gradient(circle at 85% 0%, rgba(255,122,69,0.13), transparent 42%),
-      rgba(250,248,241,0.045);
-    color: rgba(250,248,241,0.72);
-    border-radius: var(--radius-sm);
-    padding: 10px;
-    text-align: left;
-    cursor: pointer;
-    overflow: hidden;
-    transition: transform 240ms ease, border-color 240ms ease, background 240ms ease;
-  }
-  .journey-step:hover,
-  .journey-step.active {
-    transform: translateY(-1px);
-    border-color: rgba(255,122,69,0.42);
-    background:
-      radial-gradient(circle at 82% 10%, rgba(255,122,69,0.22), transparent 42%),
-      rgba(255,122,69,0.08);
-    color: var(--paper);
-  }
-  .journey-step span {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-light);
-    margin-bottom: 5px;
-  }
-  .journey-step b { display: block; font-size: 12px; line-height: 1.2; color: var(--paper); margin-bottom: 4px; }
-  .journey-step em { display: block; font-style: normal; font-size: 10px; line-height: 1.35; color: rgba(250,248,241,0.52); }
-  .journey-detail {
-    margin-top: 10px;
-    border: 1px solid rgba(79,209,197,0.20);
-    background:
-      linear-gradient(135deg, rgba(79,209,197,0.10), rgba(255,122,69,0.07)),
-      rgba(250,248,241,0.045);
-    color: rgba(250,248,241,0.74);
-    border-radius: var(--radius-sm);
-    padding: 11px 12px;
-    font-size: 11.5px;
-    line-height: 1.45;
-  }
-  @media (max-width: 700px) {
-    .journey-ops { grid-template-columns: 1fr; }
-  }
 
   .r-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .r-chip {
@@ -1762,17 +1873,6 @@
   }
   .cmp-badge.save { background: rgba(79,209,197,0.18); color: var(--cool); border: 1px solid rgba(79,209,197,0.35); }
   .cmp-badge.premium { background: rgba(255,122,69,0.18); color: var(--accent-light); border: 1px solid rgba(255,122,69,0.35); }
-  .compare-advisor {
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(79,209,197,0.18);
-    background:
-      radial-gradient(circle at 100% 0%, rgba(79,209,197,0.16), transparent 44%),
-      rgba(250,248,241,0.045);
-  }
-  .compare-advisor b { display: block; color: var(--paper); font-size: 12.5px; margin-bottom: 4px; }
-  .compare-advisor em { display: block; font-style: normal; color: rgba(250,248,241,0.55); font-size: 11px; line-height: 1.4; }
 
   .r-intel {
     display: grid; gap: 12px;
@@ -1822,83 +1922,22 @@
   }
   .intel-card {
     position: relative;
-    min-height: 74px;
-    padding: 11px 12px;
+    min-height: 88px;
+    padding: 13px 14px;
     border: 1px solid rgba(250,248,241,0.11);
-    border-radius: var(--radius-sm);
+    border-radius: 14px;
     background: rgba(250,248,241,0.045);
     overflow: hidden;
     isolation: isolate;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease, border-color 260ms ease;
   }
-  /* "Live" intel cards (fuel/weather) — animated gradient frame + pulsing dot */
-  .intel-card.is-live {
-    border-color: rgba(255,122,69,0.45);
-    background:
-      radial-gradient(120% 80% at 0% 0%, rgba(255,122,69,0.16), transparent 60%),
-      radial-gradient(120% 80% at 100% 100%, rgba(79,209,197,0.14), transparent 60%),
-      rgba(250,248,241,0.045);
-    box-shadow: 0 12px 30px rgba(255,122,69,0.16), inset 0 0 0 1px rgba(255,122,69,0.10);
-  }
-  .intel-card.live-weather.is-live {
-    min-height: 114px;
-    border-color: rgba(79,209,197,0.50);
-    background:
-      radial-gradient(circle at 15% 15%, rgba(255,255,255,0.18), transparent 24%),
-      radial-gradient(ellipse at 90% 0%, rgba(79,209,197,0.28), transparent 45%),
-      linear-gradient(140deg, rgba(14,23,54,0.94), rgba(17,56,78,0.72));
-    box-shadow: 0 18px 44px rgba(79,209,197,0.18), inset 0 0 0 1px rgba(255,255,255,0.04);
-  }
-  .intel-card.live-weather.is-live::after {
-    opacity: 1;
-    background:
-      radial-gradient(70px 70px at 78% 24%, rgba(255,255,255,0.18), transparent 62%),
-      conic-gradient(from 210deg at 12% 110%, rgba(79,209,197,0.42), transparent 30%, rgba(255,122,69,0.28), transparent 64%);
-    animation: weatherOrbit 7s ease-in-out infinite;
-  }
-  .intel-card.live-fuel.is-live {
-    min-height: 124px;
-    border-color: rgba(255,122,69,0.58);
-    background:
-      radial-gradient(circle at 84% 12%, rgba(255,122,69,0.30), transparent 26%),
-      linear-gradient(145deg, rgba(32,14,24,0.96), rgba(14,24,54,0.78));
-    box-shadow: 0 18px 44px rgba(255,122,69,0.24), inset 0 0 0 1px rgba(255,255,255,0.04);
-  }
-  .intel-card.live-fuel.is-live::after {
-    opacity: 1;
-    background:
-      repeating-linear-gradient(90deg, transparent 0 12px, rgba(255,122,69,0.12) 12px 13px),
-      linear-gradient(120deg, transparent 20%, rgba(255,122,69,0.18) 45%, transparent 68%);
-    animation: fuelGauge 2.6s linear infinite;
-  }
-  @keyframes weatherOrbit {
-    0%, 100% { transform: translate3d(0,0,0) rotate(0deg); filter: hue-rotate(0deg); }
-    50% { transform: translate3d(-8px,5px,0) rotate(8deg); filter: hue-rotate(12deg); }
-  }
-  @keyframes fuelGauge {
-    from { background-position: 0 0, -120px 0; }
-    to { background-position: 80px 0, 180px 0; }
-  }
-  .intel-card.is-live::before {
-    content: ""; position: absolute; inset: -1px; border-radius: inherit;
-    padding: 1px; z-index: -1;
-    background: conic-gradient(from 0deg, rgba(255,122,69,0.0), rgba(255,122,69,0.7), rgba(79,209,197,0.6), rgba(255,122,69,0.0));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: intelSpin 4.2s linear infinite;
-  }
-  @keyframes intelSpin { to { transform: rotate(360deg); } }
-  .intel-card.is-live .live-pulse {
-    position: absolute; top: 10px; right: 11px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #ff7a45; box-shadow: 0 0 0 0 rgba(255,122,69,0.7);
-    animation: livePulse 1.4s ease-in-out infinite;
-  }
-  @keyframes livePulse {
-    0%   { box-shadow: 0 0 0 0 rgba(255,122,69,0.7); }
-    60%  { box-shadow: 0 0 0 10px rgba(255,122,69,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,122,69,0); }
-  }
+  .intel-card:hover { transform: translateY(-2px); border-color: rgba(255,122,69,0.30); box-shadow: 0 12px 28px rgba(7,9,26,0.30), 0 0 0 1px rgba(255,122,69,0.18); }
+  /* ============================================================
+     Distinct themed "live" cards — fuel is a diesel/tank theme,
+     weather is a sky/precipitation theme. They no longer share
+     the same conic-gradient border.
+     ============================================================ */
+  .intel-card.is-live { /* shared baseline: badge + pulse only */ }
   .intel-card .live-badge {
     display: inline-block; margin-left: 6px; padding: 1px 6px;
     border-radius: 999px;
@@ -1908,35 +1947,214 @@
     letter-spacing: 0.14em; text-transform: uppercase;
     vertical-align: middle;
   }
-  /* Animated sparkline strip for the fuel card */
+
+  /* ---- FUEL card: petroleum tank + animated diesel meniscus + drop drip ---- */
+  .intel-card.fuel-live {
+    border-color: rgba(255,122,69,0.55);
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(255,165,40,0.12), transparent 55%),
+      linear-gradient(180deg, rgba(20,12,4,0.20) 0%, rgba(70,28,8,0.35) 100%);
+    box-shadow:
+      0 14px 36px rgba(255,122,69,0.22),
+      inset 0 0 0 1px rgba(255,122,69,0.16),
+      inset 0 -20px 30px -10px rgba(255,90,30,0.25);
+    overflow: hidden;
+  }
+  /* tank fill — orange liquid rising at the bottom with a wobbling meniscus */
+  .intel-card.fuel-live::before {
+    content: ""; position: absolute; left: -4%; right: -4%; bottom: 0;
+    height: 38%;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,200,100,0.40), transparent 60%),
+      linear-gradient(180deg, #ff8a3c 0%, #c64411 90%);
+    border-radius: 50% 50% 0 0 / 18px 18px 0 0;
+    transform-origin: center bottom;
+    animation: fuelWobble 3.2s ease-in-out infinite;
+    z-index: 0;
+    box-shadow: inset 0 8px 12px rgba(255,255,255,0.18), inset 0 -8px 14px rgba(0,0,0,0.25);
+  }
+  /* diesel drop falling on a loop */
+  .intel-card.fuel-live::after {
+    content: ""; position: absolute;
+    top: 8px; right: 26px;
+    width: 6px; height: 8px;
+    background: radial-gradient(circle at 50% 30%, #ffd28a 0%, #ff7a45 55%, #c64411 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: center top;
+    animation: fuelDrop 1.6s cubic-bezier(0.55, 0, 0.65, 1) infinite;
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(255,122,69,0.55));
+  }
+  @keyframes fuelWobble {
+    0%, 100% { transform: translateY(0) scaleY(1) skewX(-0.4deg); }
+    50%      { transform: translateY(-2px) scaleY(1.04) skewX(0.6deg); }
+  }
+  @keyframes fuelDrop {
+    0%   { transform: translateY(-6px) scale(0.7); opacity: 0; }
+    18%  { opacity: 1; }
+    72%  { transform: translateY(46px) scale(1.05, 0.85); opacity: 0.9; }
+    78%  { transform: translateY(48px) scale(1.6, 0.25); opacity: 0.6; }
+    100% { transform: translateY(48px) scale(1.6, 0.05); opacity: 0; }
+  }
+  /* fuel meter / gauge numerals strip */
   .fuel-spark {
-    position: relative; height: 22px; margin-top: 8px;
+    position: relative; height: 26px; margin-top: 8px;
     background:
-      linear-gradient(180deg, transparent, rgba(255,122,69,0.08)),
-      repeating-linear-gradient(90deg, rgba(255,122,69,0.10) 0 1px, transparent 1px 10px);
-    border-radius: 6px; overflow: hidden;
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 10px),
+      linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+    border: 1px solid rgba(255,122,69,0.35);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 1;
   }
+  /* gauge needle sweeping */
   .fuel-spark::before {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,122,69,0.55), transparent);
-    width: 36%; animation: fuelSweep 2.4s linear infinite;
+    content: ""; position: absolute; left: 4px; bottom: 4px;
+    width: 2px; height: calc(100% - 8px);
+    background: linear-gradient(180deg, #ffd28a, #ff7a45);
+    border-radius: 2px;
+    transform-origin: bottom center;
+    animation: fuelNeedle 3.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    box-shadow: 0 0 6px rgba(255,165,40,0.85);
   }
-  @keyframes fuelSweep {
-    0%   { transform: translateX(-40%); }
-    100% { transform: translateX(280%); }
+  /* gauge value label */
+  .fuel-spark::after {
+    content: "DIESEL · LIVE";
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-mono); font-size: 8.5px; font-weight: 800;
+    letter-spacing: 0.18em;
+    color: rgba(255,210,138,0.85);
+    text-shadow: 0 0 8px rgba(255,165,40,0.6);
+    animation: fuelLabelPulse 1.8s ease-in-out infinite;
   }
-  /* Wind streaks for the weather card */
-  .wx-streaks {
-    position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
+  @keyframes fuelNeedle {
+    0%, 100% { transform: rotate(-58deg); }
+    50%      { transform: rotate(54deg); }
+  }
+  @keyframes fuelLabelPulse {
+    0%, 100% { opacity: 0.72; }
+    50%      { opacity: 1; }
+  }
+  .intel-card.fuel-live .live-pulse {
+    position: absolute; top: 10px; right: 11px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #ffd28a;
+    box-shadow: 0 0 0 0 rgba(255,165,40,0.75), 0 0 8px rgba(255,165,40,0.6);
+    animation: fuelPump 1.2s steps(2, end) infinite;
+    z-index: 2;
+  }
+  @keyframes fuelPump {
+    0%   { box-shadow: 0 0 0 0 rgba(255,165,40,0.75), 0 0 8px rgba(255,165,40,0.6); }
+    60%  { box-shadow: 0 0 0 12px rgba(255,165,40,0), 0 0 8px rgba(255,165,40,0.6); }
+    100% { box-shadow: 0 0 0 0 rgba(255,165,40,0), 0 0 8px rgba(255,165,40,0.6); }
+  }
+
+  /* ---- WEATHER card: sky gradient + drifting clouds + precipitation ---- */
+  .intel-card.wx-live {
+    border-color: rgba(79,209,197,0.45);
     background:
-      repeating-linear-gradient(60deg, rgba(79,209,197,0.12) 0 2px, transparent 2px 14px);
-    mix-blend-mode: screen;
-    animation: wxDrift 14s linear infinite;
+      radial-gradient(120% 80% at 30% 0%, rgba(180,225,255,0.18), transparent 55%),
+      linear-gradient(180deg, #1a3050 0%, #0c1a35 100%);
+    box-shadow:
+      0 14px 36px rgba(79,209,197,0.18),
+      inset 0 0 0 1px rgba(79,209,197,0.16),
+      inset 0 12px 24px -10px rgba(180,225,255,0.18);
+    overflow: hidden;
   }
-  @keyframes wxDrift {
+  /* drifting cloud layer */
+  .intel-card.wx-live::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(36px 14px at 20% 28%, rgba(255,255,255,0.32), transparent 65%),
+      radial-gradient(28px 11px at 38% 22%, rgba(255,255,255,0.22), transparent 65%),
+      radial-gradient(44px 16px at 72% 36%, rgba(255,255,255,0.26), transparent 65%),
+      radial-gradient(32px 13px at 90% 30%, rgba(255,255,255,0.18), transparent 65%);
+    animation: wxCloudDrift 22s linear infinite;
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes wxCloudDrift {
+    from { transform: translateX(-12%); }
+    to   { transform: translateX(12%); }
+  }
+  /* sun rays when clear */
+  .intel-card.wx-live[data-wx="clear"]::after {
+    content: ""; position: absolute; top: -20px; right: -20px;
+    width: 64px; height: 64px;
+    background: radial-gradient(circle, rgba(255,224,120,0.65) 0%, rgba(255,184,40,0.35) 36%, transparent 70%);
+    border-radius: 50%; pointer-events: none; z-index: 0;
+    animation: wxSunPulse 4s ease-in-out infinite;
+    filter: blur(0.5px);
+  }
+  @keyframes wxSunPulse {
+    0%, 100% { transform: scale(0.92); opacity: 0.72; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+  /* rain streaks (data-wx="rain") */
+  .intel-card.wx-live[data-wx="rain"] .wx-streaks {
+    background:
+      repeating-linear-gradient(80deg, rgba(180,225,255,0.55) 0 1px, transparent 1px 7px);
+    animation: wxRain 0.6s linear infinite;
+  }
+  @keyframes wxRain {
+    from { background-position: 0 -20px; }
+    to   { background-position: -8px 20px; }
+  }
+  /* snow dots (data-wx="snow") */
+  .intel-card.wx-live[data-wx="snow"] .wx-streaks {
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 8%, rgba(255,255,255,0.85), transparent 60%),
+      radial-gradient(1.4px 1.4px at 34% 22%, rgba(255,255,255,0.78), transparent 60%),
+      radial-gradient(1.8px 1.8px at 56% 12%, rgba(255,255,255,0.85), transparent 60%),
+      radial-gradient(1.4px 1.4px at 76% 28%, rgba(255,255,255,0.72), transparent 60%),
+      radial-gradient(1.8px 1.8px at 92% 6%, rgba(255,255,255,0.85), transparent 60%),
+      radial-gradient(1.6px 1.6px at 18% 64%, rgba(255,255,255,0.85), transparent 60%),
+      radial-gradient(1.4px 1.4px at 44% 78%, rgba(255,255,255,0.72), transparent 60%),
+      radial-gradient(1.8px 1.8px at 66% 56%, rgba(255,255,255,0.85), transparent 60%);
+    animation: wxSnow 6s linear infinite;
+  }
+  @keyframes wxSnow {
+    from { background-position: 0 -40px, 0 -40px, 0 -40px, 0 -40px, 0 -40px, 0 -40px, 0 -40px, 0 -40px; }
+    to   { background-position: 6px 40px, -4px 40px, 8px 40px, -2px 40px, 4px 40px, -6px 40px, 2px 40px, -8px 40px; }
+  }
+  /* wind streaks (data-wx="wind") */
+  .intel-card.wx-live[data-wx="wind"] .wx-streaks {
+    background:
+      repeating-linear-gradient(86deg, rgba(180,225,255,0.32) 0 2px, transparent 2px 20px);
+    animation: wxWind 0.9s linear infinite;
+  }
+  @keyframes wxWind {
     from { background-position: 0 0; }
-    to   { background-position: 240px 0; }
+    to   { background-position: 60px 0; }
   }
+  /* lightning flash for severe */
+  .intel-card.wx-live[data-wx="severe"] {
+    animation: wxLightning 5s ease-in-out infinite;
+  }
+  @keyframes wxLightning {
+    0%, 92%, 100% { box-shadow: 0 14px 36px rgba(79,209,197,0.18), inset 0 0 0 1px rgba(79,209,197,0.16); }
+    94%           { box-shadow: 0 0 60px rgba(255,255,255,0.9), inset 0 0 0 1px rgba(255,255,255,0.7); }
+    95%           { box-shadow: 0 14px 36px rgba(79,209,197,0.18), inset 0 0 0 1px rgba(79,209,197,0.16); }
+    96%           { box-shadow: 0 0 60px rgba(255,255,255,0.7), inset 0 0 0 1px rgba(255,255,255,0.5); }
+    97%           { box-shadow: 0 14px 36px rgba(79,209,197,0.18), inset 0 0 0 1px rgba(79,209,197,0.16); }
+  }
+  .wx-streaks {
+    position: absolute; inset: 0; pointer-events: none;
+    z-index: 0; mix-blend-mode: screen;
+  }
+  .intel-card.wx-live .live-pulse {
+    position: absolute; top: 10px; right: 11px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #b4e1ff;
+    box-shadow: 0 0 0 0 rgba(79,209,197,0.7), 0 0 8px rgba(180,225,255,0.65);
+    animation: wxBlink 2.2s ease-in-out infinite;
+    z-index: 2;
+  }
+  @keyframes wxBlink {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(79,209,197,0.7), 0 0 8px rgba(180,225,255,0.65); }
+    50%      { box-shadow: 0 0 0 8px rgba(79,209,197,0), 0 0 12px rgba(180,225,255,0.85); }
+  }
+  /* push card content above bg layers */
+  .intel-card.fuel-live > *, .intel-card.wx-live > * { position: relative; z-index: 1; }
   .intel-card span {
     display: block;
     font-family: var(--font-mono); font-size: 9px; font-weight: 700;
@@ -2035,61 +2253,73 @@
 
   .r-tabs {
     display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
-    gap: 4px; padding: 5px;
-    background:
-      radial-gradient(140% 120% at 12% 0%, rgba(255,122,69,0.14), transparent 55%),
-      rgba(250,248,241,0.065);
-    border: 1px solid rgba(255,122,69,0.28);
-    border-radius: 999px; margin: 14px 0;
+    gap: 4px; padding: 3px;
+    background: rgba(250,248,241,0.06);
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: 11px; margin-bottom: 14px;
     position: relative; overflow: hidden;
     align-items: stretch;
-    box-shadow: 0 16px 34px rgba(255,122,69,0.13), inset 0 0 0 1px rgba(255,255,255,0.035);
   }
-  .r-tabs.tabs-ready {
-    animation: tabNudge 1800ms ease-in-out 2;
-    border-color: rgba(255,122,69,0.56);
-    box-shadow: 0 18px 38px rgba(255,122,69,0.22), 0 0 0 4px rgba(255,122,69,0.08), inset 0 0 0 1px rgba(255,255,255,0.05);
-  }
-  @keyframes tabNudge {
-    0%, 100% { transform: translateY(0); }
-    45% { transform: translateY(-2px); }
-  }
-  /* Sliding indicator behind the active tab — driven by JS via --tab-x/--tab-w/--tab-ready */
+  /* Sliding pill — JS sets --tab-x / --tab-w via positionTabIndicator(). */
   .r-tabs::before {
-    content: ""; position: absolute; top: 5px; bottom: 5px;
+    content: ""; position: absolute; top: 4px; bottom: 4px;
     left: 0; transform: translateX(var(--tab-x, 0px));
     width: var(--tab-w, 0px);
-    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
-    border-radius: 999px;
-    box-shadow: 0 6px 18px rgba(255,122,69,0.42), inset 0 0 0 1px rgba(255,255,255,0.06);
+    background:
+      linear-gradient(135deg, #ffb380 0%, #ff7a45 35%, #ff5722 70%, #c64411 100%);
+    border-radius: 10px;
+    box-shadow:
+      0 10px 28px rgba(255,122,69,0.65),
+      0 4px 10px rgba(255,87,34,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.32),
+      inset 0 -1px 0 rgba(0,0,0,0.18),
+      inset 0 0 0 1px rgba(255,255,255,0.10);
     transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1), width 420ms cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 0;
     pointer-events: none;
-    opacity: var(--tab-ready, 0);
+    opacity: var(--tab-ready, 1);
   }
   .r-tabs[data-ready="1"]::before { opacity: 1; }
   .r-tabs::after {
     content: ""; position: absolute; top: 0; bottom: 0;
-    left: calc(var(--tab-x, 0px) - 24px); width: calc(var(--tab-w, 0px) + 48px);
-    background: radial-gradient(120% 80% at 50% 50%, rgba(255,122,69,0.22), transparent 70%);
+    left: calc(var(--tab-x, 0px) - 30px); width: calc(var(--tab-w, 0px) + 60px);
+    background: radial-gradient(120% 90% at 50% 50%, rgba(255,122,69,0.34), transparent 70%);
     transition: left 520ms cubic-bezier(0.22, 1, 0.36, 1), width 420ms cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none; z-index: 0; opacity: 0;
+    pointer-events: none; z-index: 0; opacity: 1;
+    filter: blur(6px);
   }
-  .r-tabs[data-ready="1"]::after { opacity: 0.85; }
+  .r-tabs[data-ready="1"]::after { opacity: 1; }
   .r-tab {
     position: relative; z-index: 1;
-    padding: 9px 8px; border: 0; background: transparent;
+    padding: 10px 8px; border: 0; background: transparent;
     color: rgba(250,248,241,0.62);
     font-family: var(--font-body); font-size: 11.5px; font-weight: 700;
-    border-radius: 999px; cursor: pointer;
+    border-radius: 8px; cursor: pointer;
     letter-spacing: 0.04em; text-transform: uppercase;
     line-height: 1;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    min-height: 32px;
-    transition: color 260ms ease, transform 260ms ease;
+    min-height: 34px;
+    transition: color 260ms ease, transform 260ms ease, text-shadow 260ms ease;
   }
   .r-tab:hover { color: var(--paper); transform: translateY(-1px); }
-  .r-tab.active { color: #fff; }
+  .r-tab.active {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.30), 0 0 14px rgba(255,255,255,0.18);
+  }
+  /* Fallback solid pill on the active tab (always visible) — the sliding ::before
+     layers on top of this once JS positions it, so this guarantees the user
+     always sees a bright orange highlight. */
+  .r-tabs .r-tab.active::before {
+    content: ""; position: absolute; inset: 4px;
+    background: linear-gradient(135deg, #ffb380 0%, #ff7a45 35%, #ff5722 70%, #c64411 100%);
+    border-radius: 8px;
+    box-shadow:
+      0 10px 28px rgba(255,122,69,0.65),
+      0 4px 10px rgba(255,87,34,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.32),
+      inset 0 -1px 0 rgba(0,0,0,0.18);
+    z-index: -1;
+  }
   /* Pulsing nudge to draw the eye to a tab that has actionable intel */
   @keyframes fscGlow {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255,122,69,0); }
@@ -2189,11 +2419,6 @@
     background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.30) 50%, transparent 70%);
     transform: translateX(-100%);
     transition: transform 700ms ease;
-    animation: bookingSweep 4.6s ease-in-out infinite;
-  }
-  @keyframes bookingSweep {
-    0%, 48% { transform: translateX(-100%); }
-    78%, 100% { transform: translateX(100%); }
   }
   .r-book:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(255,122,69,0.36), 0 1px 0 rgba(255,255,255,0.24) inset; }
   .r-book:hover::before { transform: translateX(100%); }
@@ -2673,22 +2898,10 @@
       </div>
     </div>
     <div class="topbar-tools">
-      <a class="history-btn" href="dashboard.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        <span>Dashboard</span>
-      </a>
       <button class="history-btn" id="historyBtn" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/><path d="M12 7v6l4 2"/></svg>
         <span>My quotes</span>
       </button>
-      <a class="history-btn" href="admin.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-5"/></svg>
-        <span>Admin</span>
-      </a>
-      <a class="history-btn" href="manual.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
-        <span>Manual</span>
-      </a>
       <div class="topbar-badge">Powered by One Kind Express</div>
     </div>
   </header>
@@ -2772,7 +2985,6 @@
         Items · <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included · $25 each beyond</span>
       </div>
       <div class="pieces" id="piecesWrap"></div>
-      <datalist id="itemTypeOptions"></datalist>
       <button class="add-piece-btn" id="addPieceBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -2781,7 +2993,7 @@
       </button>
 
       <!-- AI photo identifier: drop a photo, screenshot of an order list, or a PDF page.
-           The parser returns identified items with dims + weight, which we drop into pieces[]. -->
+           Claude vision returns identified items with dims + weight, which we drop into pieces[]. -->
       <div class="ai-uploader" id="aiUploader">
         <div class="ai-uploader-inner">
           <div class="ai-uploader-icon">
@@ -2793,7 +3005,7 @@
           </div>
           <div class="ai-uploader-text">
             <b>Identify items from a photo</b>
-            <em>Drop a photo, order screenshot, or PDF page — AI reads it and fills in item type, dims &amp; weight.</em>
+            <em>Drop a photo, order screenshot, or PDF page — Claude reads it and fills in dims &amp; weight.</em>
           </div>
           <label class="ai-uploader-btn" for="aiUploadInput">
             <span class="ai-spin" hidden></span>
@@ -2856,13 +3068,6 @@
             </div>
           </div>
 
-          <div class="r-tabs" role="tablist">
-            <button class="r-tab active" data-pane="breakdown">Breakdown</button>
-            <button class="r-tab" data-pane="intel">Intel</button>
-            <button class="r-tab" data-pane="journey">Journey</button>
-            <button class="r-tab" data-pane="compare">Compare</button>
-          </div>
-
           <div class="r-pickup">
             <label for="pickupDate">Preferred pickup</label>
             <input type="date" id="pickupDate" />
@@ -2876,6 +3081,13 @@
             </div>
             <div class="r-density-bar"><div class="r-density-fill" id="densityFill" style="width: 0%;"></div></div>
             <div class="r-density-scale"><span>Light · dim weight</span><span>Dense</span></div>
+          </div>
+
+          <div class="r-tabs" role="tablist">
+            <button class="r-tab active" data-pane="breakdown">Breakdown</button>
+            <button class="r-tab" data-pane="intel">Intel</button>
+            <button class="r-tab" data-pane="journey">Journey</button>
+            <button class="r-tab" data-pane="compare">Compare</button>
           </div>
 
           <div class="r-pane active" id="pane-breakdown">
@@ -2907,7 +3119,6 @@
                   <input type="text" inputmode="decimal" id="fscInput" value="0" />
                   <span class="pct-suffix">%</span>
                 </span>
-                <button class="fuel-inline-action" id="applyFuelInlineBtn" type="button">Apply live</button>
               </span>
               <span class="v" id="fscAmountOut">$0.00</span>
             </div>
@@ -2952,12 +3163,12 @@
                   <b id="intelAction">Booking-ready</b>
                   <em id="intelActionSub">Summary and contact actions are prepared.</em>
                 </div>
-                <div class="intel-card live-weather" id="weatherCard">
+                <div class="intel-card" id="weatherCard">
                   <span>Route weather <span class="live-badge" id="weatherLiveBadge" style="display:none">Live</span></span>
                   <b id="weatherIntel">Checking forecast</b>
                   <em id="weatherIntelSub">Origin and destination weather will appear here.</em>
                 </div>
-                <div class="intel-card live-fuel" id="fuelCard">
+                <div class="intel-card" id="fuelCard">
                   <span>Fuel index <span class="live-badge" id="fuelLiveBadge" style="display:none">Live</span></span>
                   <b id="fuelIntel">Checking diesel</b>
                   <em id="fuelIntelSub">Uses the latest public diesel index available.</em>
@@ -3009,18 +3220,6 @@
                 <span>Sort hub</span>
                 <span>Delivered</span>
               </div>
-              <div class="journey-ops" id="journeyOps">
-                <button class="journey-step active" type="button" data-journey="pickup">
-                  <span>01 pickup</span><b>Access check</b><em>Dock, curb, elevator, and timing notes.</em>
-                </button>
-                <button class="journey-step" type="button" data-journey="linehaul">
-                  <span>02 transit</span><b>Carrier handoff</b><em>Line-haul leg, sort point, and ETA window.</em>
-                </button>
-                <button class="journey-step" type="button" data-journey="delivery">
-                  <span>03 delivery</span><b>Final mile crew</b><em>Service level, room placement, POD, and closeout.</em>
-                </button>
-              </div>
-              <div class="journey-detail" id="journeyDetail">Click a stage to see what ops should confirm before booking.</div>
               <div class="r-visibility-grid">
                 <div class="vis-card">
                   <span>ETA confidence</span>
@@ -3048,10 +3247,6 @@
                 <span class="hint">tap to switch</span>
               </div>
               <div id="cmpRows"></div>
-              <div class="compare-advisor" id="cmpAdvisor">
-                <b>Recommendation loading</b>
-                <em>Enter shipment details and we will show the best value path.</em>
-              </div>
             </div>
           </div>
 
@@ -3086,6 +3281,177 @@
       </div>
     </aside>
   </div>
+
+  <!-- ============================================================
+       FAQ / INSTRUCTIONAL MANUAL — full-width section under the
+       calculator. Glassmorphism + animated borders + numbered
+       step-by-step accordion. Aligned with the rest of the page.
+       ============================================================ -->
+  <section class="oke-faq" id="okeFaq" aria-labelledby="okeFaqTitle">
+    <div class="faq-glow"></div>
+    <div class="faq-shell">
+      <div class="faq-head">
+        <span class="faq-kicker">User Manual · v2026</span>
+        <h2 class="faq-title" id="okeFaqTitle">Everything you can do here.</h2>
+        <p class="faq-sub">Built for OKE Canada freight customers — quote, book, identify, save, share. Tap any card to expand.</p>
+      </div>
+
+      <div class="faq-grid">
+        <!-- 1. How it works -->
+        <details class="faq-card" open>
+          <summary>
+            <span class="faq-num">01</span>
+            <span class="faq-q">How the calculator works</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>Enter your origin and destination cities, the service level, and the items. The total updates live, including dimensional weight, linear-foot freight rules, fuel surcharge, accessorials, and tax.</p>
+            <ul class="faq-steps">
+              <li><b>Lane</b> — pick origin + destination, or switch to <em>Local</em> or <em>Middle-mile only</em>.</li>
+              <li><b>Service</b> — Curbside, Threshold, Room of Choice or White Glove.</li>
+              <li><b>Items</b> — dimensions + weight per piece (or cubic-feet mode for known volumes).</li>
+              <li><b>Accessorials</b> — stairs, inside delivery, packaging removal, residential, etc.</li>
+              <li><b>Total</b> — billable is the higher of actual / dimensional / linear-foot weight.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 2. AI Photo identifier -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">02</span>
+            <span class="faq-q">Use the AI photo identifier</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>Snap or upload a photo of any piece of furniture. Claude vision identifies it and estimates packaged shipping dimensions (inches) and weight (lbs). Items drop straight into your quote.</p>
+            <ul class="faq-steps">
+              <li>Up to 6 photos per upload, JPG or PNG. We downscale before sending.</li>
+              <li>Each detected item shows a <b>confidence</b> rating. Heavy / unusual items default to conservative estimates.</li>
+              <li>Always double-check dims for crates, palletized loads, or anything with mounted hardware.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 3. Fuel surcharge intel -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">03</span>
+            <span class="faq-q">Live fuel surcharge intel</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>The Intel tab pulls today's Canadian retail diesel index by province and converts it into a carrier-grade FSC%. The orange diesel-tank card highlights the live rate as soon as it loads.</p>
+            <ul class="faq-steps">
+              <li>National + provincial diesel, refreshed every 6 hours.</li>
+              <li>FSC% scales from a $0.85/L floor at <b>1.8% per 6c</b> — today most provinces sit around 30%.</li>
+              <li>Click the suggested rate to apply it to your quote, or override manually.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 4. Weather intel -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">04</span>
+            <span class="faq-q">Weather intel & risk flags</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>We pull a 7-day forecast for both pickup and delivery cities (Open-Meteo). The weather card animates the actual conditions — snow particles, rain streaks, wind drift, lightning flash for severe weather.</p>
+            <ul class="faq-steps">
+              <li><b>Snow ≥ 2 cm</b>, <b>precip ≥ 60%</b>, <b>gusts ≥ 50 km/h</b>, or <b>thunderstorm</b> trigger a watch.</li>
+              <li>Pick your pickup date in the result panel to score the forecast for the right day.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 5. Booking -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">05</span>
+            <span class="faq-q">Book a shipment</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>Tap <b>Book this quote</b> in the result panel. You'll be taken to a confirmation page with a reference number. OKE receives the quote details and your contact info; we follow up to confirm pickup time.</p>
+            <ul class="faq-steps">
+              <li>You get a confirmation email with a quote ID and a link to view your booking.</li>
+              <li>The quote is saved against your email so you can re-open it from any device.</li>
+              <li>Need to change something? Reply to the confirmation email or call us — booking is not final until OKE confirms pickup.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 6. History / magic link -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">06</span>
+            <span class="faq-q">My Quote History (sign in by email)</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>Hit the history icon in the corner of the calculator. Enter your email — we send a one-tap magic link that signs you in. Every saved quote (and every booking you submit) lives there forever.</p>
+            <ul class="faq-steps">
+              <li>No passwords. The link expires in 60 minutes for security.</li>
+              <li>If you don't see the email, check spam and the address you typed.</li>
+              <li>Even without signing in, quotes you book are tied to this browser (device ID) so you can come back later.</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- 7. Pricing -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">07</span>
+            <span class="faq-q">How pricing is built</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>Pricing has up to four ingredients:</p>
+            <ul class="faq-steps">
+              <li><b>Middle mile</b> — line haul between docks, priced by lane + billable weight from OKE's table.</li>
+              <li><b>Final mile</b> — pickup/delivery service level (curbside / threshold / RoC / white glove).</li>
+              <li><b>Accessorials</b> — stairs, inside, packaging, residential, etc.</li>
+              <li><b>Fuel + tax</b> — FSC% applies to the subtotal; tax is provincial.</li>
+            </ul>
+            <p>Billable = max(actual lbs, dim weight at <span class="faq-mono">10 lb/ft³</span>, linear-foot at <span class="faq-mono">1,000 lb/lf</span> if &gt; 10 lf).</p>
+          </div>
+        </details>
+
+        <!-- 8. Coverage -->
+        <details class="faq-card">
+          <summary>
+            <span class="faq-num">08</span>
+            <span class="faq-q">Lane coverage & transit times</span>
+            <span class="faq-chev" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-a">
+            <p>OKE covers every major lane in Canada. The Journey tab shows your stages — pickup, line haul, sort hub, delivered — with an estimated transit window based on distance and service level.</p>
+            <ul class="faq-steps">
+              <li>Local (same city): 1–2 business days</li>
+              <li>Same province: 2–3 business days</li>
+              <li>Regional (≤ 2500 km): 3–5 business days</li>
+              <li>Cross-Canada: 5–8 business days. White Glove adds one day.</li>
+            </ul>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="faq-foot">
+        <div class="faq-foot-l">
+          <span>Still need help?</span>
+          <a href="mailto:info@onekindexpress.com">info@onekindexpress.com</a>
+          <a href="tel:+18558899900">1-855-889-9900</a>
+        </div>
+        <div class="faq-foot-r">
+          <span class="faq-pill"><span class="faq-pill-dot"></span>Live rate engine · Supabase</span>
+          <span class="faq-pill alt"><span class="faq-pill-dot alt"></span>Claude vision AI</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="mobile-cta" id="mobileCta" aria-hidden="true">
     <div class="mc-info">
@@ -3171,7 +3537,19 @@
           <label for="historyEmail">Email</label>
           <input id="historyEmail" type="email" autocomplete="email" placeholder="you@company.com" />
         </div>
-        <button class="history-primary" id="historyMagicBtn" type="button">Send magic link</button>
+        <div>
+          <label for="historyPassword">Password</label>
+          <input id="historyPassword" type="password" autocomplete="current-password" placeholder="••••••••" />
+        </div>
+        <div id="historyPassword2Wrap" style="display:none">
+          <label for="historyPassword2">Confirm password</label>
+          <input id="historyPassword2" type="password" autocomplete="new-password" placeholder="••••••••" />
+        </div>
+        <button class="history-primary" id="historyAuthBtn" type="button">Sign in</button>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:6px;flex-wrap:wrap;gap:6px">
+          <a href="#" id="historyToggleAuth" style="color:var(--accent-light);text-decoration:none;font-weight:600;border-bottom:1px dashed rgba(255,165,114,0.4);padding-bottom:1px">Create account</a>
+          <a href="#" id="historyForgotPw" style="color:rgba(250,248,241,0.55);text-decoration:none;font-weight:500">Forgot password?</a>
+        </div>
         <div class="history-status" id="historyStatus" aria-live="polite"></div>
       </div>
       <div class="history-user hidden" id="historyUserBox">
@@ -3355,23 +3733,6 @@ async function notifySlack(event, payload) {
   } catch (e) { /* swallow */ }
 }
 
-async function notifyCustomer(event, payload) {
-  const cfg = sbCfg();
-  if (!cfg) return { ok: false, skipped: true };
-  const email = payload && (payload.email || payload.p_contact_email || payload.contact_email);
-  const name = payload && (payload.customer || payload.name || payload.p_contact_name || payload.contact_name);
-  try {
-    const res = await fetch(`${cfg.url}/functions/v1/notify-customer`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-      body: JSON.stringify({ event, email, name, payload })
-    });
-    return { ok: res.ok, status: res.status, text: res.ok ? '' : await res.text().catch(() => '') };
-  } catch (e) {
-    return { ok: false, error: e && e.message || String(e) };
-  }
-}
-
 function sbCfg() {
   const cfg = window.MONTE_SUPABASE || {};
   if (!cfg.url || !cfg.anonKey) return null;
@@ -3380,7 +3741,7 @@ function sbCfg() {
 
 async function sbRpc(name, params = {}) {
   const cfg = sbCfg();
-  if (!cfg) throw new Error('Quote service not configured');
+  if (!cfg) throw new Error('Supabase not configured');
   const headers = {
     apikey: cfg.anonKey,
     Authorization: `Bearer ${cfg.anonKey}`,
@@ -3550,10 +3911,22 @@ function scheduleWeatherIntel(q) {
       }
       if (title) title.textContent = `${worst.risk.label}: ${worst.city}`;
       if (sub) sub.textContent = worst.risk.note;
-      // Light up the weather card
+      // Light up the weather card with themed animation matching the actual conditions
       const card = document.getElementById('weatherCard');
       if (card) {
-        card.classList.add('is-live');
+        card.classList.add('is-live', 'wx-live');
+        // Pick weather mode from worst-case forecast
+        let mode = 'cloudy';
+        const d = worst && worst.data && worst.data.day;
+        if (d) {
+          if (d.code >= 95) mode = 'severe';
+          else if (d.snow >= 2) mode = 'snow';
+          else if (d.precip >= 60 || (d.code >= 51 && d.code <= 67)) mode = 'rain';
+          else if (d.gust >= 50) mode = 'wind';
+          else if (d.code <= 1) mode = 'clear';
+          else mode = 'cloudy';
+        }
+        card.setAttribute('data-wx', mode);
         if (!card.querySelector('.live-pulse')) {
           const dot = document.createElement('span'); dot.className = 'live-pulse'; card.appendChild(dot);
         }
@@ -3617,10 +3990,10 @@ function scheduleFuelIntel(q, distKm) {
       const srcLbl = idx.source === 'nrcan' ? 'NRCan live' : 'NRCan baseline';
       if (title) title.textContent = `$${(idx.cents / 100).toFixed(2)}/L diesel — ${suggested.toFixed(1)}% FSC`;
       if (sub) sub.textContent = `${prov} retail diesel, ${idx.refPer} (${srcLbl}). Tap “Apply fuel” to use ${suggested.toFixed(1)}%.`;
-      // Light up the fuel card
+      // Light up the fuel card with petroleum tank theme
       const card = document.getElementById('fuelCard');
       if (card) {
-        card.classList.add('is-live');
+        card.classList.add('is-live', 'fuel-live');
         if (!card.querySelector('.live-pulse')) {
           const dot = document.createElement('span'); dot.className = 'live-pulse'; card.appendChild(dot);
         }
@@ -3632,12 +4005,6 @@ function scheduleFuelIntel(q, distKm) {
         pill.textContent = state.fscPct > 0 ? `Fuel ${state.fscPct}%` : `${suggested.toFixed(1)}% suggested`;
         pill.classList.toggle('ok', state.fscPct > 0);
         pill.classList.toggle('warn', !state.fscPct && suggested > 0);
-      }
-      const inlineFuel = $("applyFuelInlineBtn");
-      if (inlineFuel) {
-        inlineFuel.textContent = state.fscPct > 0 ? `Live ${state.fscPct}%` : `Apply ${suggested.toFixed(1)}%`;
-        inlineFuel.classList.toggle('ready', !state.fscPct && suggested > 0);
-        inlineFuel.title = `Use live diesel-index fuel surcharge: ${suggested.toFixed(1)}%`;
       }
       // Highlight intel tab so the user notices a live fuel rate is available.
       const tabBtn = document.querySelector('.r-tab[data-pane="intel"]');
@@ -3694,33 +4061,6 @@ function updateQuoteAdvisor(q, density, distKm) {
   sub.textContent = 'Save the quote to history, then share the read-only link for tracked follow-up.';
 }
 
-function updateJourneyDetail(key, q) {
-  const detail = $("journeyDetail");
-  if (!detail || !q) return;
-  const svc = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || 'selected service';
-  const lane = q.isLocal ? `${state.origin} local delivery` : `${state.origin} to ${state.destination}`;
-  const base = {
-    pickup: `<strong>Pickup readiness:</strong> confirm dock/curb access, pickup contact, packaging condition, and whether ${Math.round(q.actualWt || 0).toLocaleString('en-CA')} lbs can be staged safely.`,
-    linehaul: q.isLocal
-      ? `<strong>Local move:</strong> line-haul is bypassed. Ops should focus on crew arrival window, building access, and same-day exception notes.`
-      : `<strong>Line-haul plan:</strong> ${lane} is priced with ${Math.round(q.billable || 0).toLocaleString('en-CA')} lbs billable. Track carrier handoff, terminal scan, and any weather/fuel alerts before dispatch.`,
-    delivery: `<strong>Delivery closeout:</strong> ${svc} drives the crew workflow. Capture POD, photos where useful, room placement notes, and any accessorials before marking booked.`
-  };
-  detail.innerHTML = base[key] || base.pickup;
-}
-
-function setupJourneyPanel() {
-  const host = $("journeyOps");
-  if (!host) return;
-  host.querySelectorAll('[data-journey]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      host.querySelectorAll('[data-journey]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      updateJourneyDetail(btn.dataset.journey, computeQuote());
-    });
-  });
-}
-
 // ============================================================
 // CLIENT STATE
 // ============================================================
@@ -3761,27 +4101,6 @@ const TAX_OPTIONS = [
   { id: 'hst15', label: 'HST 15% (NB, NL, PE)', rate: 15 },
 ];
 
-const ITEM_TYPE_OPTIONS = [
-  'Sofa', 'Sectional sofa', 'Loveseat', 'Armchair', 'Dining chair', 'Office chair',
-  'Dining table', 'Coffee table', 'Side table', 'Desk', 'TV', 'TV stand',
-  'Queen bed', 'King bed', 'Bed frame', 'Mattress', 'Headboard',
-  'Dresser', 'Nightstand', 'Cabinet', 'Bookcase', 'Rug', 'Mirror',
-  'Appliance', 'Artwork', 'Box', 'Crate', 'Pallet', 'Mixed furniture'
-];
-
-function normalizeItemType(name) {
-  const txt = String(name || '').toLowerCase();
-  const found = ITEM_TYPE_OPTIONS.find(opt => txt.includes(opt.toLowerCase().split(' ')[0]));
-  if (found) return found;
-  if (/sofa|couch/.test(txt)) return 'Sofa';
-  if (/chair/.test(txt)) return 'Dining chair';
-  if (/bed|mattress/.test(txt)) return 'Queen bed';
-  if (/tv|television/.test(txt)) return 'TV';
-  if (/table/.test(txt)) return 'Dining table';
-  if (/dresser|chest/.test(txt)) return 'Dresser';
-  return name || '';
-}
-
 // Middle-mile remains Day & Ross x 35%; final-mile agent sell prices use 40%.
 const MIDDLE_MILE_TABLE_MARKUP = 1.35;
 const FINAL_MILE_AGENT_MARKUP = 1.40;
@@ -3800,7 +4119,7 @@ const state = {
   mode: 'dim',
   lenUnit: 'in',
   wtUnit: 'lb',
-  pieces: [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
+  pieces: [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
   fscPct: 0,
   taxId: 'none',
     dimFactor: 10,
@@ -4109,11 +4428,6 @@ function computeQuote() {
 function renderPieces() {
   const wrap = $("piecesWrap");
   wrap.innerHTML = "";
-  const dl = $("itemTypeOptions");
-  if (dl && !dl.dataset.ready) {
-    dl.innerHTML = ITEM_TYPE_OPTIONS.map(v => `<option value="${htmlEsc(v)}"></option>`).join('');
-    dl.dataset.ready = '1';
-  }
   const lenLabel = state.lenUnit.toUpperCase();
   const wtLabel = state.wtUnit.toUpperCase();
 
@@ -4161,13 +4475,7 @@ function renderPieces() {
           <span class="piece-num">${i + 1}</span>
           <span>Item ${i + 1}</span>
         </div>
-        <div class="piece-controls">
-          <label class="piece-type">
-            <span>Item type</span>
-            <input type="text" list="itemTypeOptions" data-p="${i}" data-k="itemType" value="${htmlEsc(p.itemType || p.label || '')}" placeholder="Sofa, bed, TV..." autocomplete="off" />
-          </label>
-          ${removeBtn}
-        </div>
+        ${removeBtn}
       </div>
       ${inputsHtml}
       <div class="piece-meta" data-meta="${i}"></div>
@@ -4179,12 +4487,7 @@ function renderPieces() {
     inp.addEventListener('input', e => {
       const i = Number(e.target.dataset.p);
       const k = e.target.dataset.k;
-      if (k === 'itemType') {
-        state.pieces[i].itemType = e.target.value;
-        state.pieces[i].label = e.target.value;
-      } else {
-        state.pieces[i][k] = e.target.value === "" ? null : Number(e.target.value);
-      }
+      state.pieces[i][k] = e.target.value === "" ? null : Number(e.target.value);
       updatePieceTags();
       renderAccessorials();
       updateOutput();
@@ -4502,8 +4805,7 @@ function applyQuoteSnapshot(snapshot) {
   state.mode = snapshot.mode || 'dim';
   state.lenUnit = snapshot.lenUnit || 'in';
   state.wtUnit = snapshot.wtUnit || 'lb';
-  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
-  state.pieces.forEach(p => { if (p && p.label && !p.itemType) p.itemType = p.label; });
+  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
   state.fscPct = Number(snapshot.fscPct) || 0;
   state.taxId = snapshot.taxId || 'none';
   state.accessorials = snapshot.accessorials || {};
@@ -4651,7 +4953,7 @@ async function sendHistoryMagicLink(email, claimToken) {
     return;
   }
   const cfg = sbCfg();
-  if (!cfg) throw new Error('Quote history sign-in is not configured.');
+  if (!cfg) throw new Error('Supabase Auth is not configured.');
   const res = await fetch(`${cfg.url}/auth/v1/otp`, {
     method: 'POST',
     headers: { apikey: cfg.anonKey, 'Content-Type': 'application/json' },
@@ -4738,7 +5040,7 @@ function startNewQuote() {
   state.mode = 'dim';
   state.lenUnit = 'in';
   state.wtUnit = 'lb';
-  state.pieces = [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  state.pieces = [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
   state.accessorials = {};
   state.service = null;
   state.taxId = 'none';
@@ -4769,26 +5071,112 @@ function setupHistory() {
     renderHistoryAuthState();
     renderHistoryList([]);
   });
-  if ($("historyMagicBtn")) $("historyMagicBtn").addEventListener('click', async () => {
-    const email = ($("historyEmail") && $("historyEmail").value || '').trim();
-    if (!email) {
-      setHistoryStatus('Enter an email first.', 'err');
-      return;
+  // Email + password auth flow (replaces magic link)
+  let historyAuthMode = 'login';
+  const setHistoryAuthMode = (mode) => {
+    historyAuthMode = mode;
+    const btn = $("historyAuthBtn"); const tog = $("historyToggleAuth"); const pw2 = $("historyPassword2Wrap");
+    if (mode === 'signup') {
+      if (btn) btn.textContent = 'Create account';
+      if (tog) tog.textContent = 'I have an account';
+      if (pw2) pw2.style.display = '';
+    } else {
+      if (btn) btn.textContent = 'Sign in';
+      if (tog) tog.textContent = 'Create account';
+      if (pw2) pw2.style.display = 'none';
     }
-    $("historyMagicBtn").disabled = true;
-    setHistoryStatus('Saving this quote and sending your magic link...', '');
+    setHistoryStatus('', '');
+  };
+
+  if ($("historyToggleAuth")) $("historyToggleAuth").addEventListener('click', (e) => {
+    e.preventDefault();
+    setHistoryAuthMode(historyAuthMode === 'login' ? 'signup' : 'login');
+  });
+
+  if ($("historyForgotPw")) $("historyForgotPw").addEventListener('click', async (e) => {
+    e.preventDefault();
+    const client = sbClient();
+    const email = ($("historyEmail") && $("historyEmail").value || '').trim();
+    if (!client) { setHistoryStatus('Auth not available.', 'err'); return; }
+    if (!email) { setHistoryStatus('Enter your email first.', 'err'); return; }
+    setHistoryStatus('Sending password reset link…', '');
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname + '?reset=1'
+    });
+    if (error) setHistoryStatus(error.message || String(error), 'err');
+    else setHistoryStatus('Reset link sent — check your inbox.', 'ok');
+  });
+
+  if ($("historyAuthBtn")) $("historyAuthBtn").addEventListener('click', async () => {
+    const client = sbClient();
+    if (!client) { setHistoryStatus('Auth not available.', 'err'); return; }
+    const email = ($("historyEmail") && $("historyEmail").value || '').trim();
+    const pw    = ($("historyPassword") && $("historyPassword").value) || '';
+    const pw2   = ($("historyPassword2") && $("historyPassword2").value) || '';
+    if (!email || !email.includes('@')) { setHistoryStatus('Enter a valid email.', 'err'); return; }
+    if (pw.length < 6) { setHistoryStatus('Password must be 6+ characters.', 'err'); return; }
+    $("historyAuthBtn").disabled = true;
     try {
-      let saved = window._lastSavedQuote;
-      const q = computeQuote();
-      if (q.hasLane && q.hasMeasurements && q.hasService) saved = await saveCurrentQuote(true, 'shared');
-      await sendHistoryMagicLink(email, saved && saved.public_token);
-      setHistoryStatus('Magic link sent. Open it from this browser to unlock your quote history.', 'ok');
+      if (historyAuthMode === 'signup') {
+        if (pw !== pw2) { setHistoryStatus('Passwords don\'t match.', 'err'); return; }
+        setHistoryStatus('Creating your account…', '');
+        const { data, error } = await client.auth.signUp({ email, password: pw, options: { emailRedirectTo: window.location.href } });
+        if (error) { setHistoryStatus(error.message || String(error), 'err'); return; }
+        if (data && data.session) {
+          window._monteSession = data.session;
+          try { localStorage.setItem('monteSession', JSON.stringify(data.session)); } catch (e) {}
+          setHistoryStatus('Account created. You\'re signed in.', 'ok');
+        } else {
+          // Email confirmation may be required — try direct sign-in
+          const r2 = await client.auth.signInWithPassword({ email, password: pw });
+          if (r2.error) {
+            setHistoryStatus('Account created — check your email to confirm, then sign in.', 'ok');
+            setHistoryAuthMode('login');
+          } else if (r2.data && r2.data.session) {
+            window._monteSession = r2.data.session;
+            try { localStorage.setItem('monteSession', JSON.stringify(r2.data.session)); } catch (e) {}
+            setHistoryStatus('Welcome!', 'ok');
+          }
+        }
+      } else {
+        setHistoryStatus('Signing in…', '');
+        const { data, error } = await client.auth.signInWithPassword({ email, password: pw });
+        if (error) { setHistoryStatus(error.message || String(error), 'err'); return; }
+        if (data && data.session) {
+          window._monteSession = data.session;
+          try { localStorage.setItem('monteSession', JSON.stringify(data.session)); } catch (e) {}
+          setHistoryStatus('Signed in.', 'ok');
+        }
+      }
+      // Save current quote and refresh history
+      try {
+        const q = computeQuote();
+        if (q.hasLane && q.hasMeasurements && q.hasService) await saveCurrentQuote(true, 'shared');
+      } catch (_) {}
+      try { await sbRpc('claim_quotes_for_device', { p_device_id: getDeviceId() }); } catch (_) {}
+      renderHistoryAuthState();
+      if (monteAuth.user()) refreshHistory();
     } catch (e) {
-      setHistoryStatus('Could not send magic link: ' + (e.message || e), 'err');
+      setHistoryStatus(e.message || String(e), 'err');
     } finally {
-      $("historyMagicBtn").disabled = false;
+      if ($("historyAuthBtn")) $("historyAuthBtn").disabled = false;
     }
   });
+
+  // Handle password reset return
+  if (new URLSearchParams(window.location.search).get('reset') === '1') {
+    setTimeout(async () => {
+      const newPw = prompt('Enter a new password (6+ characters):');
+      if (!newPw || newPw.length < 6) return;
+      const client = sbClient();
+      if (!client) return;
+      const { error } = await client.auth.updateUser({ password: newPw });
+      if (error) alert('Could not update password: ' + error.message);
+      else alert('Password updated. You can sign in now.');
+      const url = new URL(window.location.href); url.searchParams.delete('reset');
+      window.history.replaceState({}, '', url.pathname + url.hash);
+    }, 400);
+  }
 }
 
 function updateIntelligencePanel(q, distKm, etaText, density) {
@@ -4877,12 +5265,15 @@ function updateOutput(options = {}) {
   const q = computeQuote();
   const showResult = q.hasLane && q.hasMeasurements && q.hasService;
 
+  const wasHidden = $("resultContent").style.display === "none" || $("resultContent").style.display === "";
   $("resultEmpty").style.display = showResult ? "none" : "block";
   $("resultContent").style.display = showResult ? "block" : "none";
-  const tabs = document.querySelector('.r-tabs');
-  if (tabs) {
-    tabs.classList.toggle('tabs-ready', !!q.hasMeasurements);
-    if (showResult) requestAnimationFrame(settleTabIndicator);
+  // First time the result panel becomes visible the tab bar finally has a
+  // measurable width, so settle the orange pill behind the active tab.
+  if (showResult && wasHidden && typeof window.__settleTabIndicator === 'function') {
+    requestAnimationFrame(() => window.__settleTabIndicator());
+    setTimeout(() => window.__settleTabIndicator && window.__settleTabIndicator(), 80);
+    setTimeout(() => window.__settleTabIndicator && window.__settleTabIndicator(), 260);
   }
 
   // Update empty-state checklist based on mode
@@ -4995,6 +5386,14 @@ function updateOutput(options = {}) {
   $("taxAmountOut").textContent = fmt(q.taxAmount);
   $("totalAfterTaxOut").textContent = fmt(q.totalAfterTax);
 
+  // ---- Defensive consistency assertions (logs to console if anything drifts) ----
+  // total === subtotal + fscAmount  AND  totalAfterTax === total + taxAmount
+  const sumCheck1 = Math.abs(q.total - (q.subtotal + q.fscAmount));
+  const sumCheck2 = Math.abs(q.totalAfterTax - (q.total + q.taxAmount));
+  if (sumCheck1 > 0.01 || sumCheck2 > 0.01) {
+    console.warn('[calc-drift]', { subtotal: q.subtotal, fsc: q.fscAmount, total: q.total, tax: q.taxAmount, totalAfterTax: q.totalAfterTax, sumCheck1, sumCheck2 });
+  }
+
   // ---- Enhanced chips & journey & compare ----
   // Province-pair distance estimate (km). Same city = 25, same prov = 250, neighbour = 800, far = 2200, very far = 3800
   const provGroups = {
@@ -5082,8 +5481,6 @@ function updateOutput(options = {}) {
       m.style.display = (q.isLocal || isMiddleOnly) ? 'none' : 'block';
     });
   }
-  const activeJourney = document.querySelector('.journey-step.active');
-  updateJourneyDetail(activeJourney ? activeJourney.dataset.journey : 'pickup', q);
 
   // Quote reference id (stable per session)
   if (!window._quoteRef) {
@@ -5142,9 +5539,6 @@ function updateOutput(options = {}) {
       }
       return `  ${i+1}. Qty ${Number(p.qty)||1} · ${Number(p.L)||0}×${Number(p.W)||0}×${Number(p.H)||0}" · ${Number(p.weight)||0} lbs total`;
     });
-    const itemTypeLines = (state.pieces || [])
-      .map((p, i) => (p.itemType || p.label || '').trim() ? `  ${i+1}. Type: ${(p.itemType || p.label || '').trim()}` : null)
-      .filter(Boolean);
     const summaryLines = [
       'Reference: ' + window._quoteRef,
       'Lane: ' + lane,
@@ -5180,7 +5574,6 @@ function updateOutput(options = {}) {
       '  Billable weight: ' + Math.round(q.billable || 0) + ' lbs' + (q.linearWins ? ' (linear ft wins)' : q.dimWins ? ' (dim wins)' : ''),
       '',
       'ITEMS',
-      ...(itemTypeLines.length ? itemTypeLines : []),
       ...(pieceLines.length ? pieceLines : ['  (none)']),
       '',
       'ACCESSORIALS',
@@ -5230,18 +5623,6 @@ function updateOutput(options = {}) {
     const max = Math.max(...prices.map(p => p.total), 1);
     const cheapest = prices.slice().sort((a,b)=>a.total-b.total)[0];
     const premium  = prices.slice().sort((a,b)=>b.total-a.total)[0];
-    const threshold = prices.find(p => p.id === 'threshold');
-    const activePrice = prices.find(p => p.id === savedSvc) || threshold || cheapest;
-    const advisor = $("cmpAdvisor");
-    if (advisor) {
-      const deltaToThreshold = threshold && activePrice ? threshold.total - activePrice.total : 0;
-      const bestText = q.totalPcs >= 4 || q.dimWins || q.linearWins
-        ? 'Threshold is the safer default for bulky or multi-piece freight.'
-        : cheapest.id === savedSvc
-          ? 'You are on the lowest-cost service level.'
-          : `${cheapest.name} is the lowest cost; keep ${activePrice.name} when handling experience matters.`;
-      advisor.innerHTML = `<b>${htmlEsc(activePrice.name)} vs lane options</b><em>${htmlEsc(bestText)} ${threshold && savedSvc !== 'threshold' ? `Threshold difference: ${fmt(deltaToThreshold)}.` : ''}</em>`;
-    }
     cmpHost.innerHTML = prices.map(p => {
       const pct = Math.max(6, (p.total / max) * 100);
       const active = p.id === savedSvc ? ' active' : '';
@@ -5313,7 +5694,7 @@ function setupUnits() {
 function setupPieces() {
   $("addPieceBtn").addEventListener('click', () => {
     if (state.pieces.length >= 20) return;
-    state.pieces.push({ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
+    state.pieces.push({ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
     render();
   });
 }
@@ -5662,7 +6043,7 @@ function setupActions() {
     try {
       const saved = await saveCurrentQuote(true, monteAuth.user() ? 'draft' : 'shared');
       if (!saved) return;
-      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to history' : 'Saved in this browser';
+      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to cloud' : 'Saved local';
       openHistoryDrawer();
       if (monteAuth.user()) {
         setHistoryStatus('Saved. Your share link was copied, and this quote is in your history.', 'ok');
@@ -5728,7 +6109,7 @@ function setupActions() {
     try {
       const saved = await saveCurrentQuote(false, 'booking_requested');
       if (!saved || saved.storage !== 'supabase') {
-        throw new Error(saved && saved.sync_error ? saved.sync_error : 'Could not save this quote to the cloud.');
+        throw new Error(saved && saved.sync_error ? saved.sync_error : 'Could not save this quote to Supabase.');
       }
       const body = {
         p_token: saved.public_token,
@@ -5741,7 +6122,7 @@ function setupActions() {
       };
       await sbRpc('submit_quote_request', body);
       window._lastSavedQuote = { ...saved, status: 'booking_requested' };
-      const notificationPayload = {
+      await notifySlack('quote.confirmed', {
         quote_ref: saved.quote_ref,
         origin: saved.origin,
         destination: saved.destination,
@@ -5749,19 +6130,49 @@ function setupActions() {
         customer: body.p_contact_name,
         email: body.p_contact_email,
         phone: body.p_contact_phone,
-        notes: body.p_notes,
-        share_url: quoteShareUrl(saved.public_token),
-        booking_summary: window._bookingSummary || '',
-        booking_email_body: window._bookingEmailBody || ''
-      };
-      await notifySlack('quote.confirmed', notificationPayload);
-      const emailNotice = await notifyCustomer('booking.requested', notificationPayload);
+        share_url: quoteShareUrl(saved.public_token)
+      });
+      // Send confirmation email via Brevo HTTP edge function (bypasses Supabase SMTP).
+      // BCC is set server-side via OKE_BCC_EMAIL env so info@onekindexpress.com always gets a copy.
+      try {
+        const cfg = sbCfg();
+        if (cfg && email) {
+          await fetch(`${cfg.url}/functions/v1/notify-customer`, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              apikey: cfg.anonKey,
+              Authorization: `Bearer ${cfg.anonKey}`
+            },
+            body: JSON.stringify({
+              email,
+              customer_name: body.p_contact_name,
+              quote_ref: saved.quote_ref,
+              origin: saved.origin,
+              destination: saved.destination,
+              service: saved.service_name,
+              pickup_date: saved.pickup_date,
+              total_after_tax: saved.total_after_tax,
+              share_url: quoteShareUrl(saved.public_token),
+              dashboard_url: 'https://okecanada.github.io/montedesign/dashboard.html'
+            })
+          });
+        }
+      } catch (e) { console.warn('notify-customer failed', e); }
       bookingSubmit.classList.add('saved');
       bookingSubmit.textContent = 'Booking request sent';
-      setStatus(emailNotice && emailNotice.ok
-        ? 'Done. OKE has the quote, your contact details, and an email notification was sent.'
-        : 'Done. One Kind Express has your booking request and contact details.',
-        'ok');
+      setStatus('Done. Confirmation email sent. Redirecting…', 'ok');
+      // Redirect to the dedicated confirmation page after a moment
+      setTimeout(() => {
+        const url = 'booking-confirmed.html?ref=' + encodeURIComponent(saved.quote_ref) +
+          '&total=' + encodeURIComponent(saved.total_after_tax) +
+          '&lane=' + encodeURIComponent((saved.origin || '') + (saved.destination ? ' → ' + saved.destination : ' · local')) +
+          '&email=' + encodeURIComponent(email) +
+          '&t=' + encodeURIComponent(saved.public_token || '');
+        try { window.top.location.href = url; } catch (e) {
+          try { window.parent.location.href = url; } catch (e2) { window.location.href = url; }
+        }
+      }, 1400);
     } catch (e) {
       bookingSubmit.disabled = false;
       bookingSubmit.textContent = original;
@@ -5840,11 +6251,17 @@ function setupActions() {
   function settleTabIndicator() {
     const active = document.querySelector('.r-tab.active');
     if (!active || !tabBar) return;
+    // If the result panel is hidden, the tab bar has zero width — skip until visible.
+    const rc = document.getElementById('resultContent');
+    if (rc && rc.offsetParent === null) { tabBar.removeAttribute('data-ready'); return; }
     positionTabIndicator(active);
-    if (tabBar.style.getPropertyValue('--tab-w') !== '' && parseFloat(tabBar.style.getPropertyValue('--tab-w')) > 4) {
-      tabBar.setAttribute('data-ready', '1');
-    }
+    const w = parseFloat(tabBar.style.getPropertyValue('--tab-w') || '0');
+    if (w > 4) tabBar.setAttribute('data-ready', '1');
   }
+  // Expose for updateOutput() so the indicator re-positions the moment the
+  // result panel transitions from hidden -> visible (fixes "no orange box
+  // on Breakdown when measurements first entered").
+  window.__settleTabIndicator = settleTabIndicator;
   if ('fonts' in document) {
     document.fonts.ready.then(() => requestAnimationFrame(settleTabIndicator));
   }
@@ -5852,6 +6269,14 @@ function setupActions() {
   setTimeout(settleTabIndicator, 220);
   setTimeout(settleTabIndicator, 600);
   window.addEventListener('resize', () => settleTabIndicator());
+  // ResizeObserver: the tab bar width is 0 while resultContent is hidden;
+  // the instant its layout materializes (display: none -> block), we re-fire.
+  try {
+    if (typeof ResizeObserver === 'function' && tabBar) {
+      const ro = new ResizeObserver(() => settleTabIndicator());
+      ro.observe(tabBar);
+    }
+  } catch (_) { /* no-op */ }
 
   const pkInp = $("pickupDate");
   if (pkInp) pkInp.addEventListener('change', () => updateOutput());
@@ -5863,7 +6288,7 @@ function setupActions() {
 }
 
 // ============================================================
-// AI photo identifier via parse-furniture edge fn
+// AI photo identifier (Claude vision via parse-furniture edge fn)
 // ============================================================
 async function fileToDataUrl(file) {
   // Downscale to keep base64 payload reasonable. Max edge ~1400px.
@@ -5967,7 +6392,6 @@ function setupAiUpload() {
     if (state.lenUnit !== 'in') state.lenUnit = 'in';
     if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
     state.pieces.push({
-      itemType: normalizeItemType(it.name),
       qty: it.qty || 1,
       weight: it.weightLb || 0,
       L: it.lengthIn || 0,
@@ -5976,7 +6400,7 @@ function setupAiUpload() {
       cf: null,
       pallets: null,
       itemsPerPallet: null,
-      label: it.name || normalizeItemType(it.name)
+      label: it.name || ''
     });
     try { renderPieces(); } catch(_) {}
     try { updateOutput(); } catch(_) {}
@@ -5986,11 +6410,11 @@ function setupAiUpload() {
     const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/')).slice(0, 6);
     if (!files.length) { setStatus('Pick at least one image.', 'err'); return; }
     setBusy(true);
-    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with AI vision...`);
+    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with Claude…`);
     try {
       const images = await Promise.all(files.map(fileToDataUrl));
       const cfg = sbCfg();
-      if (!cfg) throw new Error('Cloud quote service is not configured');
+      if (!cfg) throw new Error('Supabase config missing');
       const res = await fetch(`${cfg.url}/functions/v1/parse-furniture`, {
         method: 'POST',
         headers: {
@@ -6000,8 +6424,8 @@ function setupAiUpload() {
         },
         body: JSON.stringify({ images })
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.detail || data.error || ('AI request failed: ' + res.status));
+      if (!res.ok) throw new Error('AI request failed: ' + res.status);
+      const data = await res.json();
       if (data.error) throw new Error(data.error);
       renderResults(data.items || [], data.summary || '');
       setStatus(`Found ${(data.items || []).length} item${(data.items || []).length === 1 ? '' : 's'}. Review confidence and add.`, 'ok');
@@ -6039,16 +6463,13 @@ function setupFsc() {
     updateOutput();
   });
   const applyFuel = $("applyFuelBtn");
-  const applyLiveFuel = () => {
+  if (applyFuel) applyFuel.addEventListener('click', () => {
     const n = Number(window._suggestedFscPct || 0);
     if (!Number.isFinite(n) || n <= 0) return;
     state.fscPct = n;
     inp.value = String(n);
     updateOutput();
-  };
-  if (applyFuel) applyFuel.addEventListener('click', applyLiveFuel);
-  const applyFuelInline = $("applyFuelInlineBtn");
-  if (applyFuelInline) applyFuelInline.addEventListener('click', applyLiveFuel);
+  });
 }
 function setupTax() {
   $("taxSelect").addEventListener('change', e => {
@@ -6062,11 +6483,11 @@ function setupTax() {
 // ============================================================
 async function init() {
   try {
-    if (!sbCfg()) throw new Error('Cloud quote service is not configured.');
+    if (!sbCfg()) throw new Error('Supabase not configured. Add window.MONTE_SUPABASE = { url, anonKey } before the main calculator script.');
     const shouldOpenHistory = !!new URL(window.location.href).searchParams.get('history');
     await initAuthSession();
     ORIGINS = await loadOrigins();
-    if (!ORIGINS.length) throw new Error('No rate lanes loaded yet.');
+    if (!ORIGINS.length) throw new Error('No lanes loaded. Did you run supabase-rates-insert.sql?');
 
     // Restore prior auth session (magic-link)
     if (!window._monteSession) monteAuth.bootFromStorage();
@@ -6124,10 +6545,9 @@ async function init() {
     setupSceneMesh();
     setupNumberTween();
     setupMagneticHover();
-  setupIntelGlow();
-  setupAiUpload();
-  setupJourneyPanel();
-  setupStepper();
+    setupIntelGlow();
+    setupAiUpload();
+    setupStepper();
     const sharedLoaded = await loadSharedQuoteIfPresent();
     if (!sharedLoaded) render();
     if (shouldOpenHistory || monteAuth.user()) {

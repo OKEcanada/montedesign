@@ -1317,14 +1317,28 @@
   .ai-uploader-status.err { color: var(--danger); font-weight: 600; }
   .ai-uploader-status.ok { color: #0f9f78; font-weight: 600; }
   .ai-results { margin-top: 10px; display: grid; gap: 8px; }
+  .ai-assistant-message {
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(15,159,146,0.10), rgba(255,106,0,0.10));
+    border: 1px solid rgba(15,159,146,0.20);
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.45;
+  }
   .ai-result-row {
-    display: grid; grid-template-columns: 1fr auto auto auto auto auto;
+    display: grid; grid-template-columns: auto minmax(0,1fr) auto auto auto auto;
     gap: 8px; align-items: center;
     padding: 8px 10px;
     border: 1px solid rgba(0,0,0,0.08); border-radius: 8px;
     background: #fff; font-size: 11.5px; color: var(--ink);
   }
   .ai-result-row b { font-weight: 700; }
+  .ai-result-row small {
+    grid-column: 1 / -1;
+    color: var(--ink-faint);
+    line-height: 1.35;
+  }
   .ai-result-row .ai-conf {
     font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
     padding: 2px 6px; border-radius: 999px; text-transform: uppercase;
@@ -2836,14 +2850,14 @@
             </svg>
           </div>
           <div class="ai-uploader-text">
-            <b>Identify items from a photo</b>
-            <em>Drop a photo, order screenshot, or PDF page — AI reads it and fills in item type, dims &amp; weight.</em>
+            <b>Identify items from a photo or PDF</b>
+            <em>Drop product photos, labels, order screenshots, or PDFs — AI reads them and explains the editable item rows it adds.</em>
           </div>
           <label class="ai-uploader-btn" for="aiUploadInput">
             <span class="ai-spin" hidden></span>
             <span class="ai-uploader-btn-label">Upload</span>
           </label>
-          <input id="aiUploadInput" type="file" accept="image/*" multiple hidden />
+          <input id="aiUploadInput" type="file" accept="image/*,application/pdf" multiple hidden />
         </div>
         <div class="ai-uploader-status" id="aiUploaderStatus" aria-live="polite"></div>
         <div class="ai-results" id="aiResults" hidden></div>
@@ -6124,8 +6138,23 @@ async function fileToDataUrl(file) {
   });
 }
 
+async function fileToAiUpload(file) {
+  if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '')) {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    return { name: file.name || 'order.pdf', type: 'application/pdf', kind: 'pdf', dataUrl, full: null, thumb: null };
+  }
+  const full = await fileToDataUrl(file);
+  const thumb = await makeThumb(full, 240);
+  return { name: file.name || 'photo.jpg', type: file.type || 'image/jpeg', kind: 'image', dataUrl: full, full, thumb };
+}
+
 // Keep the AI session in memory + on state so a saved quote remembers what was identified.
-window.__aiSession = window.__aiSession || { images: [], items: [], summary: '', model: '', lastRun: null };
+window.__aiSession = window.__aiSession || { images: [], items: [], summary: '', assistantMessage: '', model: '', lastRun: null };
 
 // Small image thumbnail (used in piece rows + AI gallery)
 async function makeThumb(dataUrl, size = 220) {
@@ -6182,13 +6211,19 @@ function setupAiUpload() {
     const sess = window.__aiSession;
     results.hidden = false;
     results.innerHTML = '';
-    // ---- Header: AI run summary ----
-    if (sess.summary || sess.model) {
+    // ---- Header: assistant-style AI run summary ----
+    if (sess.assistantMessage || sess.summary || sess.model) {
+      if (sess.assistantMessage) {
+        const msg = document.createElement('div');
+        msg.className = 'ai-assistant-message';
+        msg.innerHTML = `<b>AI assistant:</b> ${escapeHtml(sess.assistantMessage)}`;
+        results.appendChild(msg);
+      }
       const head = document.createElement('div');
       head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-muted);margin-bottom:10px;flex-wrap:wrap';
       head.innerHTML = `
         <span style="font-style:italic">${escapeHtml(sess.summary || 'AI vision result')}</span>
-        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI vision')} · ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI document reader')} · ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
       `;
       results.appendChild(head);
     }
@@ -6199,9 +6234,14 @@ function setupAiUpload() {
       sess.images.forEach((img, gi) => {
         const t = document.createElement('button');
         t.type = 'button';
-        t.title = `Source image ${gi + 1}`;
-        t.style.cssText = `width:54px;height:54px;border-radius:8px;border:1px solid var(--line);padding:0;overflow:hidden;cursor:zoom-in;background-image:url('${img.thumb || img.full}');background-size:cover;background-position:center`;
-        t.addEventListener('click', () => openAiLightbox(img.full));
+        t.title = img.kind === 'pdf' ? `Source PDF ${gi + 1}` : `Source image ${gi + 1}`;
+        if (img.kind === 'pdf') {
+          t.textContent = 'PDF';
+          t.style.cssText = 'width:54px;height:54px;border-radius:8px;border:1px solid rgba(255,106,0,.28);padding:0;overflow:hidden;background:linear-gradient(135deg,rgba(255,106,0,.18),rgba(15,159,146,.10));color:var(--accent-deep);font-family:var(--font-mono);font-size:11px;font-weight:800;cursor:default';
+        } else {
+          t.style.cssText = `width:54px;height:54px;border-radius:8px;border:1px solid var(--line);padding:0;overflow:hidden;cursor:zoom-in;background-image:url('${img.thumb || img.full}');background-size:cover;background-position:center`;
+          t.addEventListener('click', () => openAiLightbox(img.full));
+        }
         gal.appendChild(t);
       });
       results.appendChild(gal);
@@ -6217,15 +6257,19 @@ function setupAiUpload() {
     sess.items.forEach((it, i) => {
       const row = document.createElement('div');
       row.className = 'ai-result-row';
-      const thumbSrc = it.thumb || (sess.images[it.imageIdx] && (sess.images[it.imageIdx].thumb || sess.images[it.imageIdx].full)) || '';
+      const srcIdx = typeof it.sourceIndex === 'number' ? it.sourceIndex : it.imageIdx;
+      const srcFile = sess.images[srcIdx] || sess.images[it.imageIdx] || null;
+      const thumbSrc = it.thumb || (srcFile && (srcFile.thumb || srcFile.full)) || '';
+      const detail = [it.explanation, it.evidence ? `Evidence: ${it.evidence}` : '', it.notes].filter(Boolean).join(' ');
       row.innerHTML = `
         ${thumbSrc ? `<button type="button" class="ai-row-thumb" data-img="${thumbSrc}" style="width:38px;height:38px;border-radius:8px;border:1px solid var(--line);overflow:hidden;cursor:zoom-in;background:url('${thumbSrc}') center/cover no-repeat;padding:0"></button>` : ''}
-        <b>${escapeHtml(it.name)}</b>
+        <b>${escapeHtml(it.name)}<br><span style="font-weight:600;color:var(--ink-faint)">${escapeHtml(it.itemType || '')}</span></b>
         <span class="ai-conf ${it.confidence}">${it.confidence}</span>
-        <span>${it.qty}×</span>
-        <span>${it.lengthIn}×${it.widthIn}×${it.heightIn} in</span>
+        <span>${it.qty}x</span>
+        <span>${it.lengthIn}x${it.widthIn}x${it.heightIn} in</span>
         <span>${it.weightLb} lb</span>
         <button class="ai-add" data-i="${i}" type="button">Add</button>
+        ${detail ? `<small>${escapeHtml(detail)}</small>` : ''}
       `;
       results.appendChild(row);
     });
@@ -6246,7 +6290,7 @@ function setupAiUpload() {
       setStatus(`Added ${window.__aiSession.items.length} item${window.__aiSession.items.length === 1 ? '' : 's'} to your quote.`, 'ok');
     });
     document.getElementById('aiClear').addEventListener('click', () => {
-      window.__aiSession = { images: [], items: [], summary: '', model: '', lastRun: null };
+      window.__aiSession = { images: [], items: [], summary: '', assistantMessage: '', model: '', lastRun: null };
       results.hidden = true; results.innerHTML = ''; setStatus('');
     });
   }
@@ -6260,9 +6304,10 @@ function setupAiUpload() {
     if (state.lenUnit !== 'in') state.lenUnit = 'in';
     if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
     const sess = window.__aiSession;
-    const imgRef = (typeof it.imageIdx === 'number' && sess.images[it.imageIdx]) ? sess.images[it.imageIdx] : null;
+    const srcIdx = typeof it.sourceIndex === 'number' ? it.sourceIndex : it.imageIdx;
+    const imgRef = (typeof srcIdx === 'number' && sess.images[srcIdx]) ? sess.images[srcIdx] : null;
     state.pieces.push({
-      itemType: normalizeItemType(it.name),
+      itemType: normalizeItemType(it.itemType || it.name),
       qty: it.qty || 1,
       weight: it.weightLb || 0,
       L: it.lengthIn || 0,
@@ -6273,53 +6318,51 @@ function setupAiUpload() {
       itemsPerPallet: null,
       label: it.name || normalizeItemType(it.name),
       ai_confidence: it.confidence || 'medium',
-      ai_notes: it.notes || '',
-      photo_thumb: (imgRef && imgRef.thumb) || it.thumb || null,
-      photo_full: (imgRef && imgRef.full) || null,
+      ai_notes: [it.explanation, it.evidence, it.notes].filter(Boolean).join(' | '),
+      photo_thumb: (imgRef && imgRef.kind !== 'pdf' && imgRef.thumb) || it.thumb || null,
+      photo_full: (imgRef && imgRef.kind !== 'pdf' && imgRef.full) || null,
     });
     try { renderPieces(); } catch(_) {}
     try { updateOutput(); } catch(_) {}
   }
 
   async function handleFiles(fileList) {
-    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/')).slice(0, 8);
-    if (!files.length) { setStatus('Pick at least one image.', 'err'); return; }
+    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/') || f.type === 'application/pdf' || /\.pdf$/i.test(f.name || '')).slice(0, 8);
+    if (!files.length) { setStatus('Pick at least one image or PDF.', 'err'); return; }
     setBusy(true);
-    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with GPT-4o vision...`);
+    setStatus(`Reading ${files.length} upload${files.length === 1 ? '' : 's'} with AI...`);
     try {
-      // Build BOTH full-quality (for API) and small thumb (for UI/storage) per image
-      const prep = await Promise.all(files.map(async (f) => {
-        const full = await fileToDataUrl(f);
-        const thumb = await makeThumb(full, 240);
-        return { full, thumb };
-      }));
+      // Build API-ready payloads and small thumbs for image previews.
+      const prep = await Promise.all(files.map(fileToAiUpload));
       const cfg = sbCfg();
       if (!cfg) throw new Error('Cloud quote service is not configured');
       const res = await fetch(`${cfg.url}/functions/v1/parse-furniture`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-        body: JSON.stringify({ images: prep.map(p => p.full) })
+        body: JSON.stringify({ files: prep.map(p => ({ name: p.name, type: p.type, dataUrl: p.dataUrl })) })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || data.error || ('AI request failed: ' + res.status));
       if (data.error) throw new Error(data.error);
-      // Tag items with their best-guess image index (default: first image)
+      // Tag items with their source upload index (default: first upload).
       const items = (data.items || []).map((it, i) => ({
         ...it,
+        sourceIndex: typeof it.sourceIndex === 'number' ? it.sourceIndex : (typeof it.imageIdx === 'number' ? it.imageIdx : Math.min(i, prep.length - 1)),
         imageIdx: typeof it.imageIdx === 'number' ? it.imageIdx : Math.min(i, prep.length - 1),
-        thumb: prep[Math.min(i, prep.length - 1)]?.thumb || null,
+        thumb: prep[Math.min(typeof it.sourceIndex === 'number' ? it.sourceIndex : i, prep.length - 1)]?.thumb || null,
       }));
       window.__aiSession = {
         images: prep,
         items,
         summary: data.summary || '',
+        assistantMessage: data.assistantMessage || '',
         model: data.model || '',
         lastRun: new Date().toISOString(),
       };
       renderResults();
       const note = data.quota_exceeded ? ' (AI paused: OpenAI quota — see status)'
         : data.fallback ? ' (AI fallback — review manually)' : '';
-      setStatus(`Found ${items.length} item${items.length === 1 ? '' : 's'}${note}.`, data.fallback ? '' : 'ok');
+      setStatus(`Found ${items.length} quote row${items.length === 1 ? '' : 's'}${note}.`, data.fallback ? '' : 'ok');
     } catch (e) {
       setStatus('Could not analyze: ' + (e.message || e), 'err');
     } finally {

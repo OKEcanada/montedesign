@@ -68,9 +68,21 @@
   .quick{margin-top:26px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
   .quick div{border:1px solid var(--line);background:rgba(255,253,248,.75);border-radius:16px;padding:16px}
   .quick b{display:block;font-size:16px;margin-bottom:5px}.quick span{color:var(--muted)}
+  .deep-guide{margin-top:26px;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:16px;align-items:start}
+  .manual-panel{border:1px solid var(--line);background:rgba(255,253,248,.82);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+  .manual-panel h2{font-size:28px;line-height:1;margin:8px 0 10px;letter-spacing:-.04em}
+  .flow{display:grid;gap:10px;margin-top:16px}
+  .flow-step{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;padding:13px;border:1px solid rgba(17,24,39,.08);border-radius:16px;background:#fffdf8}
+  .flow-num{display:grid;place-items:center;width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--night),#1d2658);color:#ff9b66;font-weight:950}
+  .flow-step b{display:block;margin-bottom:3px}.flow-step span{color:var(--muted)}
+  .faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+  .faq-card{padding:14px;border:1px solid rgba(17,24,39,.08);border-radius:16px;background:
+    radial-gradient(180px 120px at 100% 0%,rgba(255,106,0,.10),transparent 60%),
+    #fffdf8}
+  .faq-card b{display:block;margin-bottom:5px;color:var(--ink)}.faq-card span{color:var(--muted)}
   footer{margin-top:34px;text-align:right}
   footer a{color:rgba(16,20,38,.34);font-size:12px;text-decoration:none}
-  @media(max-width:980px){.hero,.guide-layout{grid-template-columns:1fr}.detail{position:relative;top:0}.tool-grid{grid-template-columns:1fr}.quick{grid-template-columns:1fr}}
+  @media(max-width:980px){.hero,.guide-layout,.deep-guide{grid-template-columns:1fr}.detail{position:relative;top:0}.tool-grid{grid-template-columns:1fr}.quick,.faq-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -120,6 +132,33 @@
     <div><b>Best first step</b><span>Build the lane and item measurements, then check Breakdown before sharing.</span></div>
     <div><b>Best sales step</b><span>Save the quote and send the tracked link so the customer can come back later.</span></div>
     <div><b>Best ops step</b><span>Use Journey and booking notes to confirm access, service level, and pickup timing.</span></div>
+  </section>
+
+  <section class="deep-guide">
+    <div class="manual-panel">
+      <div class="kicker">recommended workflow</div>
+      <h2>From rough request to booking-ready quote.</h2>
+      <p class="lead" style="font-size:15px">Use this flow when a prospect sends photos, a purchase order, or a loose list of furniture. It keeps the quote fast, but still reviewable.</p>
+      <div class="flow">
+        <div class="flow-step"><span class="flow-num">1</span><div><b>Capture the shipment.</b><span>Upload product photos, label photos, order screenshots, or a PDF order. AI drafts item rows and explains what it used.</span></div></div>
+        <div class="flow-step"><span class="flow-num">2</span><div><b>Review every row.</b><span>Confirm quantity, item type, packaged dimensions, and total weight. If a label or order line has exact data, keep that over a visual estimate.</span></div></div>
+        <div class="flow-step"><span class="flow-num">3</span><div><b>Pick the service level.</b><span>Use Compare to decide whether curbside is enough or if Threshold, Room of Choice, or White Glove better matches the freight.</span></div></div>
+        <div class="flow-step"><span class="flow-num">4</span><div><b>Apply live context.</b><span>Check Fuel and Weather in Intel. Apply the live fuel suggestion when it matches the tariff you want to quote.</span></div></div>
+        <div class="flow-step"><span class="flow-num">5</span><div><b>Save, share, or book.</b><span>Save for history, share a read-only link for review, or request booking when the customer is ready for dispatch follow-up.</span></div></div>
+      </div>
+    </div>
+    <div class="manual-panel">
+      <div class="kicker">faq</div>
+      <h2>Common questions before sending a quote.</h2>
+      <div class="faq-grid">
+        <div class="faq-card"><b>Does AI change the price by itself?</b><span>No. AI fills editable item rows. Pricing still comes from the lane, service level, weight, cube, pieces, fuel, accessorials, and tax.</span></div>
+        <div class="faq-card"><b>Can I upload a PDF order?</b><span>Yes. Use a PDF invoice, quote sheet, packing list, or product order. If dimensions or quantities are printed there, AI should prefer them.</span></div>
+        <div class="faq-card"><b>What if multiple identical chairs appear?</b><span>Identical items should be grouped into one row with multiple pieces. Different items stay separated so handling is clear.</span></div>
+        <div class="faq-card"><b>Why does the AI explain itself?</b><span>The explanation tells you whether it used visible label data, an order line, or a visual freight estimate, so you know what to trust.</span></div>
+        <div class="faq-card"><b>What should I verify before booking?</b><span>Origin, destination, service level, total pieces, dimensions, weight, pickup date, access notes, and contact details.</span></div>
+        <div class="faq-card"><b>What does the share link do?</b><span>It opens the quote read-only so the customer can return, review, and confirm booking without rebuilding the calculator.</span></div>
+      </div>
+    </div>
   </section>
 
   <footer><a href="admin.html">Team login</a></footer>

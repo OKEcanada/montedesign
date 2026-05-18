@@ -2562,6 +2562,7 @@ async function sbRpc(name, params = {}) {
 
 let ORIGINS = [];
 const DEST_CACHE = Object.create(null);   // { origin: [destinations] }
+const DEST_LOADING = Object.create(null); // { origin: Promise<[destinations]> }
 const LANE_CACHE = Object.create(null);   // { 'origin||dest||billable': result }
 // RATES proxy preserves the few `RATES[origin]` lookups in legacy code paths.
 const RATES = new Proxy({}, {
@@ -2580,11 +2581,16 @@ async function loadOrigins() {
 
 async function fetchDestinations(origin) {
   if (DEST_CACHE[origin]) return DEST_CACHE[origin];
-  const list = await sbRpc('list_destinations', { p_origin: origin });
-  DEST_CACHE[origin] = Array.isArray(list)
-    ? list.map(r => typeof r === 'string' ? r : r.list_destinations || r).filter(Boolean)
-    : [];
-  return DEST_CACHE[origin];
+  if (DEST_LOADING[origin]) return DEST_LOADING[origin];
+  DEST_LOADING[origin] = sbRpc('list_destinations', { p_origin: origin })
+    .then(list => {
+      DEST_CACHE[origin] = Array.isArray(list)
+        ? list.map(r => typeof r === 'string' ? r : r.list_destinations || r).filter(Boolean)
+        : [];
+      return DEST_CACHE[origin];
+    })
+    .finally(() => { delete DEST_LOADING[origin]; });
+  return DEST_LOADING[origin];
 }
 
 async function fetchLaneQuote(origin, destination, billable) {
@@ -2812,6 +2818,23 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
   let currentItems = [];
 
   function render(query) {
+    if (inputId === 'destInput' && state.origin && !DEST_CACHE[state.origin]) {
+      currentItems = [];
+      activeIdx = -1;
+      list.innerHTML = `<div class="ac-empty">Loading destinations...</div>`;
+      list.classList.add('open');
+      fetchDestinations(state.origin)
+        .then(() => {
+          if (document.activeElement === input) render(input.value);
+        })
+        .catch(() => {
+          if (document.activeElement === input) {
+            list.innerHTML = `<div class="ac-empty">Could not load destinations</div>`;
+            list.classList.add('open');
+          }
+        });
+      return;
+    }
     const all = getItems();
     const q = query.trim().toUpperCase();
     currentItems = q ? all.filter(it => it.label.toUpperCase().includes(q)) : all;
@@ -3911,8 +3934,29 @@ function applyLaneMode() {
   } else {
     // Re-enable dest if origin selected (line + middle both need destination)
     if (state.origin) {
-      $("destInput").disabled = false;
-      $("destInput").placeholder = "Start typing destination…";
+      if (DEST_CACHE[state.origin]) {
+        $("destInput").disabled = false;
+        $("destInput").placeholder = "Start typing destination…";
+      } else {
+        $("destInput").disabled = true;
+        $("destInput").placeholder = "Loading destinations...";
+        fetchDestinations(state.origin)
+          .then(() => {
+            if (state.laneMode !== 'local' && state.origin) {
+              $("destInput").disabled = false;
+              $("destInput").placeholder = "Start typing destination…";
+              if (document.activeElement === $("destInput")) {
+                $("destInput").dispatchEvent(new Event('input', { bubbles: true }));
+              }
+            }
+          })
+          .catch(() => {
+            if (state.laneMode !== 'local') {
+              $("destInput").disabled = false;
+              $("destInput").placeholder = "Could not load destinations";
+            }
+          });
+      }
     } else {
       $("destInput").disabled = true;
       $("destInput").placeholder = "Select origin first";

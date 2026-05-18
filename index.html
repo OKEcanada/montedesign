@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --ink: #0c1024;
@@ -49,6 +50,7 @@
     --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  .hidden { display: none !important; }
   html, body {
     background: var(--bg-deep);
     color: var(--ink);
@@ -403,6 +405,32 @@
   }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   .topbar-tools { display: flex; align-items: center; gap: 8px; }
+  .history-btn {
+    border: 1px solid rgba(250,248,241,0.18);
+    background: rgba(250,248,241,0.075);
+    color: var(--paper);
+    border-radius: 999px;
+    padding: 9px 13px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all var(--transition);
+  }
+  .history-btn svg {
+    width: 15px; height: 15px;
+    stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .history-btn:hover {
+    color: #fff;
+    border-color: rgba(79,209,197,0.42);
+    background: rgba(79,209,197,0.13);
+    transform: translateY(-1px);
+  }
   .icon-btn {
     width: 38px; height: 38px;
     border: 1px solid var(--line);
@@ -1572,6 +1600,24 @@
     font-size: 10.5px;
     line-height: 1.35;
   }
+  .intel-card .mini-action {
+    margin-top: 8px;
+    border: 1px solid rgba(79,209,197,0.28);
+    border-radius: 999px;
+    padding: 5px 9px;
+    background: rgba(79,209,197,0.10);
+    color: var(--cool);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .intel-card .mini-action:hover {
+    background: rgba(79,209,197,0.18);
+    border-color: rgba(79,209,197,0.42);
+  }
   .intel-strip {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
   }
@@ -1842,6 +1888,174 @@
   .modal-act.copied b { color: #10b981; }
   .modal-act.copied.primary b { color: #fff; }
 
+  .history-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+  }
+  .history-shell.open { pointer-events: auto; }
+  .history-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5,7,23,0.52);
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+  .history-shell.open .history-backdrop { opacity: 1; }
+  .history-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(430px, 100vw);
+    height: 100%;
+    padding: 20px;
+    background:
+      radial-gradient(circle at 24% 0%, rgba(79,209,197,0.10), transparent 34%),
+      linear-gradient(180deg, rgba(250,248,241,0.98), rgba(244,241,233,0.98));
+    color: var(--ink);
+    border-left: 1px solid rgba(12,16,36,0.10);
+    box-shadow: -30px 0 70px rgba(5,7,23,0.32);
+    transform: translateX(102%);
+    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .history-shell.open .history-drawer { transform: translateX(0); }
+  .history-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .history-kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: var(--accent-deep);
+    text-transform: uppercase;
+  }
+  .history-title { font-size: 24px; font-weight: 850; letter-spacing: -0.02em; line-height: 1.05; margin-top: 3px; }
+  .history-sub { color: var(--ink-muted); font-size: 13px; margin-top: 6px; }
+  .history-close {
+    width: 36px; height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.72);
+    color: var(--ink);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+  .history-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+  .history-primary {
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--ink), var(--ink-soft));
+    color: #fff;
+    padding: 12px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 16px 30px rgba(12,16,36,0.18);
+  }
+  .history-primary.alt {
+    background: linear-gradient(135deg, var(--accent), #ff5a7a);
+    box-shadow: 0 16px 30px rgba(255,122,69,0.24);
+  }
+  .history-ghost {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.70);
+    color: var(--ink);
+    padding: 11px 13px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 750;
+    cursor: pointer;
+  }
+  .history-auth, .history-user {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.70);
+  }
+  .history-auth label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .history-auth input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+  }
+  .history-status { min-height: 18px; color: var(--ink-muted); font-size: 12.5px; line-height: 1.35; }
+  .history-status.ok { color: #0f9f78; font-weight: 750; }
+  .history-status.err { color: var(--danger); font-weight: 750; }
+  .history-list {
+    display: grid;
+    gap: 9px;
+    overflow: auto;
+    padding-right: 2px;
+  }
+  .history-item {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.78);
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    display: grid;
+    gap: 5px;
+    transition: all var(--transition);
+  }
+  .history-item:hover {
+    border-color: rgba(255,122,69,0.42);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(12,16,36,0.08);
+  }
+  .history-item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .history-ref {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--ink-soft);
+  }
+  .history-total { font-weight: 850; color: var(--accent-deep); }
+  .history-lane { font-weight: 750; color: var(--ink); line-height: 1.25; }
+  .history-meta { color: var(--ink-muted); font-size: 12px; }
+  .history-empty {
+    border: 1px dashed rgba(12,16,36,0.18);
+    border-radius: 12px;
+    padding: 18px;
+    color: var(--ink-muted);
+    text-align: center;
+    background: rgba(255,255,255,0.44);
+  }
+
   @media (max-width: 520px) {
     .modal { padding: 0; align-items: flex-end; }
     .modal-card { max-width: none; border-radius: 22px 22px 0 0; padding: 22px 18px 26px; max-height: 92vh; overflow-y: auto; }
@@ -1850,6 +2064,7 @@
     .modal-act { padding: 14px 16px; }
     .modal-act b { font-size: 14.5px; }
     .modal-title { font-size: 18px; }
+    .history-drawer { width: 100vw; }
   }
 
   @media (max-width: 600px) {
@@ -2037,7 +2252,13 @@
         <span class="brand"><span>OKE Canada</span><em> Final Mile</em></span>
       </div>
     </div>
-    <div class="topbar-badge">Powered by One Kind Express</div>
+    <div class="topbar-tools">
+      <button class="history-btn" id="historyBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/><path d="M12 7v6l4 2"/></svg>
+        <span>My quotes</span>
+      </button>
+      <div class="topbar-badge">Powered by One Kind Express</div>
+    </div>
   </header>
 
   <div id="loadingView" class="loader">Loading rate data…</div>
@@ -2272,6 +2493,22 @@
                   <b id="intelAction">Booking-ready</b>
                   <em id="intelActionSub">Summary and contact actions are prepared.</em>
                 </div>
+                <div class="intel-card">
+                  <span>Route weather</span>
+                  <b id="weatherIntel">Checking forecast</b>
+                  <em id="weatherIntelSub">Origin and destination weather will appear here.</em>
+                </div>
+                <div class="intel-card">
+                  <span>Fuel index</span>
+                  <b id="fuelIntel">Checking diesel</b>
+                  <em id="fuelIntelSub">Uses the latest public diesel index available.</em>
+                  <button class="mini-action" id="applyFuelBtn" type="button">Apply fuel</button>
+                </div>
+                <div class="intel-card">
+                  <span>Quote advisor</span>
+                  <b id="aiAdvisor">Building suggestion</b>
+                  <em id="aiAdvisorSub">Smart recommendation updates with each quote.</em>
+                </div>
               </div>
               <div class="intel-strip">
                 <span class="intel-pill ok" id="intelPillLane">Lane ok</span>
@@ -2439,6 +2676,39 @@
     </div>
   </div>
 
+  <div class="history-shell" id="historyShell" aria-hidden="true">
+    <div class="history-backdrop" data-history-close></div>
+    <aside class="history-drawer" aria-label="My quote history">
+      <div class="history-head">
+        <div>
+          <div class="history-kicker">Passwordless history</div>
+          <div class="history-title">My Quote History</div>
+          <div class="history-sub" id="historySub">Save quotes to the cloud and reopen them on any device.</div>
+        </div>
+        <button class="history-close" type="button" data-history-close aria-label="Close quote history">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+      </div>
+      <button class="history-primary alt" id="historyNewBtn" type="button">+ Create New Quote</button>
+      <div class="history-auth" id="historyAuthBox">
+        <div>
+          <label for="historyEmail">Email</label>
+          <input id="historyEmail" type="email" autocomplete="email" placeholder="you@company.com" />
+        </div>
+        <button class="history-primary" id="historyMagicBtn" type="button">Send magic link</button>
+        <div class="history-status" id="historyStatus" aria-live="polite"></div>
+      </div>
+      <div class="history-user hidden" id="historyUserBox">
+        <div>
+          <div class="history-kicker">Signed in</div>
+          <div id="historyUserEmail" class="history-lane"></div>
+        </div>
+        <button class="history-ghost" id="historySignOutBtn" type="button">Sign out</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </aside>
+  </div>
+
   <div class="footer-note" id="footerNote" style="display:none;">National Final Mile Calculator - One Kind Express</div>
 </div>
 
@@ -2510,6 +2780,54 @@ const monteAuth = {
     return window._monteSession && window._monteSession.user || null;
   }
 };
+
+let SUPABASE_CLIENT = null;
+function sbClient() {
+  const cfg = sbCfg();
+  if (!cfg || !window.supabase || !window.supabase.createClient) return null;
+  if (!SUPABASE_CLIENT) {
+    SUPABASE_CLIENT = window.supabase.createClient(cfg.url, cfg.anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: 'okeQuoteHistoryAuth'
+      }
+    });
+  }
+  return SUPABASE_CLIENT;
+}
+
+function setMonteSession(session) {
+  if (!session || !session.access_token) {
+    monteAuth.signOut();
+    return null;
+  }
+  window._monteSession = session;
+  try { localStorage.setItem('monteSession', JSON.stringify(session)); } catch (e) {}
+  return session;
+}
+
+async function initAuthSession() {
+  const client = sbClient();
+  if (!client) {
+    monteAuth.bootFromStorage();
+    return null;
+  }
+  const { data } = await client.auth.getSession();
+  if (data && data.session) setMonteSession(data.session);
+  client.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      setMonteSession(session);
+      claimPendingQuotes().then(refreshHistory).catch(() => {});
+    } else {
+      monteAuth.signOut();
+      renderHistoryAuthState();
+    }
+  });
+  if (window._monteSession) await claimPendingQuotes().catch(() => {});
+  return window._monteSession || null;
+}
 
 // Per-browser device id used to "claim" anonymous quotes after login.
 function getDeviceId() {
@@ -2616,6 +2934,197 @@ async function fetchLaneQuote(origin, destination, billable) {
 // Most recent server-resolved lane quote, indexed by origin+dest+billable.
 // computeQuote() reads from this; nothing else needed for the sync path.
 let CURRENT_LANE_QUOTE = null;
+let LAST_WEATHER_KEY = '';
+let LAST_FUEL_KEY = '';
+const WEATHER_CACHE = Object.create(null);
+const GEO_CACHE = Object.create(null);
+const FUEL_CACHE = Object.create(null);
+const DIESEL_VECTOR_BY_PROV = {
+  AB: 735139, BC: 735140, MB: 735135, NB: 65584804, NL: 65584802,
+  NS: 65584803, ON: 735148, PE: 735144, QC: 735146, SK: 735136,
+  YT: 735142, NT: 735143
+};
+
+function provinceOf(label) {
+  const m = String(label || '').match(/,\s*([A-Z]{2})\s*$/);
+  return m ? m[1] : null;
+}
+
+function cityOnly(label) {
+  return String(label || '').split(',')[0].trim();
+}
+
+async function geocodeCity(label) {
+  const city = cityOnly(label);
+  if (!city) return null;
+  const key = city.toUpperCase();
+  if (GEO_CACHE[key]) return GEO_CACHE[key];
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json&countryCode=CA`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('geocode failed');
+  const data = await res.json();
+  const hit = data && data.results && data.results[0];
+  GEO_CACHE[key] = hit ? { name: hit.name, province: hit.admin1, latitude: hit.latitude, longitude: hit.longitude } : null;
+  return GEO_CACHE[key];
+}
+
+function pickForecastDay(daily, pickupDate) {
+  if (!daily || !daily.time || !daily.time.length) return null;
+  const target = pickupDate || daily.time[0];
+  let idx = daily.time.indexOf(target);
+  if (idx < 0) idx = 0;
+  return {
+    date: daily.time[idx],
+    code: Number(daily.weather_code && daily.weather_code[idx]),
+    tMax: Number(daily.temperature_2m_max && daily.temperature_2m_max[idx]),
+    tMin: Number(daily.temperature_2m_min && daily.temperature_2m_min[idx]),
+    precip: Number(daily.precipitation_probability_max && daily.precipitation_probability_max[idx]),
+    snow: Number(daily.snowfall_sum && daily.snowfall_sum[idx]),
+    gust: Number(daily.wind_gusts_10m_max && daily.wind_gusts_10m_max[idx])
+  };
+}
+
+function weatherRisk(day) {
+  if (!day) return { level: 0, label: 'No forecast', note: 'Weather is unavailable for this city.' };
+  const issues = [];
+  if (day.tMin <= -18) issues.push('deep cold');
+  if (day.snow >= 2) issues.push('snow');
+  if (day.precip >= 70) issues.push('high precipitation');
+  if (day.gust >= 55) issues.push('high wind');
+  if (day.code >= 95) issues.push('thunderstorm');
+  if (issues.length >= 2) return { level: 2, label: 'Weather watch', note: issues.join(', ') };
+  if (issues.length === 1) return { level: 1, label: 'Weather note', note: issues[0] };
+  return { level: 0, label: 'Weather clear', note: `${Math.round(day.tMin)} to ${Math.round(day.tMax)}C, ${Math.round(day.precip || 0)}% precip` };
+}
+
+async function fetchCityWeather(label, pickupDate) {
+  const geo = await geocodeCity(label);
+  if (!geo) return null;
+  const key = `${geo.latitude},${geo.longitude}|${pickupDate || ''}`;
+  if (WEATHER_CACHE[key]) return WEATHER_CACHE[key];
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,snowfall_sum,wind_gusts_10m_max&timezone=auto&forecast_days=7`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('forecast failed');
+  const data = await res.json();
+  WEATHER_CACHE[key] = { geo, day: pickForecastDay(data.daily, pickupDate) };
+  return WEATHER_CACHE[key];
+}
+
+function scheduleWeatherIntel(q) {
+  if (!q || !q.hasLane) return;
+  const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
+  const key = [state.origin || '', q.isLocal ? '' : state.destination || '', pickupDate].join('|');
+  if (key === LAST_WEATHER_KEY) return;
+  LAST_WEATHER_KEY = key;
+  const title = $("weatherIntel"), sub = $("weatherIntelSub");
+  if (title) title.textContent = 'Checking forecast';
+  if (sub) sub.textContent = 'Looking at pickup and delivery cities.';
+  const cities = q.isLocal ? [state.origin] : [state.origin, state.destination];
+  Promise.all(cities.filter(Boolean).map(c => fetchCityWeather(c, pickupDate).catch(() => null)))
+    .then(results => {
+      const scored = results.map((r, i) => ({ city: cityOnly(cities[i]), data: r, risk: weatherRisk(r && r.day) }));
+      const worst = scored.sort((a, b) => b.risk.level - a.risk.level)[0];
+      window._weatherRisk = worst || null;
+      if (!worst) {
+        if (title) title.textContent = 'Weather unavailable';
+        if (sub) sub.textContent = 'Forecast source did not return this city.';
+        return;
+      }
+      if (title) title.textContent = `${worst.risk.label}: ${worst.city}`;
+      if (sub) sub.textContent = worst.risk.note;
+      updateQuoteAdvisor(q);
+    });
+}
+
+async function fetchDieselIndex(prov) {
+  const vectorId = DIESEL_VECTOR_BY_PROV[prov] || DIESEL_VECTOR_BY_PROV.ON;
+  if (FUEL_CACHE[vectorId]) return FUEL_CACHE[vectorId];
+  const res = await fetch('https://www150.statcan.gc.ca/t1/wds/rest/getDataFromVectorsAndLatestNPeriods', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ vectorId, latestN: 1 }])
+  });
+  if (!res.ok) throw new Error('diesel index failed');
+  const data = await res.json();
+  const point = data && data[0] && data[0].object && data[0].object.vectorDataPoint && data[0].object.vectorDataPoint[0];
+  if (!point) throw new Error('diesel index missing');
+  FUEL_CACHE[vectorId] = { cents: Number(point.value), refPer: point.refPer, vectorId };
+  return FUEL_CACHE[vectorId];
+}
+
+function suggestedFscFromDiesel(cents, distKm) {
+  const baseline = 170;
+  const pressure = Math.max(0, (Number(cents || baseline) - baseline) / 10);
+  const distanceBump = distKm > 2500 ? 2 : distKm > 900 ? 1 : 0;
+  return Math.max(0, Math.min(28, Number((pressure * 1.5 + distanceBump).toFixed(1))));
+}
+
+function scheduleFuelIntel(q, distKm) {
+  if (!q || !q.hasLane) return;
+  const prov = provinceOf(state.origin) || provinceOf(state.destination) || 'ON';
+  const key = `${prov}|${Math.round(distKm || 0)}`;
+  if (key === LAST_FUEL_KEY) return;
+  LAST_FUEL_KEY = key;
+  const title = $("fuelIntel"), sub = $("fuelIntelSub");
+  if (title) title.textContent = 'Checking diesel';
+  if (sub) sub.textContent = 'Reading latest Statistics Canada diesel data.';
+  fetchDieselIndex(prov)
+    .then(idx => {
+      const suggested = suggestedFscFromDiesel(idx.cents, distKm);
+      window._suggestedFscPct = suggested;
+      if (title) title.textContent = `${(idx.cents / 100).toFixed(2)} CAD/L diesel`;
+      if (sub) sub.textContent = `${prov} index, ${idx.refPer}. Suggested FSC: ${suggested.toFixed(1)}%.`;
+      const pill = $("intelPillFuel");
+      if (pill) {
+        pill.textContent = state.fscPct > 0 ? 'Fuel added' : `${suggested.toFixed(1)}% suggested`;
+        pill.classList.toggle('ok', state.fscPct > 0);
+        pill.classList.toggle('warn', !state.fscPct && suggested > 0);
+      }
+      updateQuoteAdvisor(q);
+    })
+    .catch(() => {
+      if (title) title.textContent = 'Fuel source unavailable';
+      if (sub) sub.textContent = 'Manual FSC remains available.';
+    });
+}
+
+function updateQuoteAdvisor(q, density, distKm) {
+  const title = $("aiAdvisor"), sub = $("aiAdvisorSub");
+  if (!title || !sub || !q) return;
+  const weather = window._weatherRisk;
+  if (weather && weather.risk && weather.risk.level >= 2 && state.service !== 'whiteGlove') {
+    title.textContent = 'Recommend indoor handoff';
+    sub.textContent = `Weather risk near ${weather.city}. Suggest Threshold or White Glove to reduce exposure.`;
+    return;
+  }
+  if (!state.fscPct && window._suggestedFscPct > 0) {
+    title.textContent = 'Apply fuel before sharing';
+    sub.textContent = `Diesel index suggests ${window._suggestedFscPct.toFixed(1)}% FSC for this lane.`;
+    return;
+  }
+  if (q.linearWins) {
+    title.textContent = 'Check linear-foot exposure';
+    sub.textContent = 'This shipment is governed by linear feet. Confirm stackability before booking.';
+    return;
+  }
+  if (q.dimWins || (density && density < 6)) {
+    title.textContent = 'Dimensional freight';
+    sub.textContent = 'Bulky freight is driving billable weight. Confirm dimensions and packaging.';
+    return;
+  }
+  if (q.totalPcs >= 4 && state.service === 'curbside') {
+    title.textContent = 'Upsell Threshold';
+    sub.textContent = 'Multiple pieces on curbside may create delivery friction. Threshold is the safer quote.';
+    return;
+  }
+  if (state.service === 'whiteGlove') {
+    title.textContent = 'Premium service aligned';
+    sub.textContent = 'White Glove is a strong fit for high-touch furniture and showroom deliveries.';
+    return;
+  }
+  title.textContent = 'Best next step: save';
+  sub.textContent = 'Save the quote to history, then share the read-only link for tracked follow-up.';
+}
 
 // ============================================================
 // CLIENT STATE
@@ -3213,12 +3722,13 @@ function buildQuoteRecord(q) {
     const rnd = Math.random().toString(36).slice(2, 5).toUpperCase();
     window._quoteRef = 'OKE-' + base + '-' + rnd;
   }
+  if (!window._publicToken) window._publicToken = makePublicToken();
   const svc = SERVICE_LEVELS.find(s => s.id === state.service);
   const tax = q.tax || TAX_OPTIONS[0];
   const snapshot = quoteStateSnapshot();
   return {
     quote_ref: window._quoteRef,
-    public_token: makePublicToken(),
+    public_token: window._publicToken,
     status: 'draft',
     lane_mode: state.laneMode,
     origin: state.origin,
@@ -3290,7 +3800,7 @@ async function saveQuoteRecord(record) {
   if (!cfg) return saveQuoteLocal(record);
   const session = window._monteSession;
   try {
-    const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at`, {
+    const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at,valid_until`, {
       method: 'POST',
       headers: {
         apikey: cfg.anonKey,
@@ -3300,13 +3810,20 @@ async function saveQuoteRecord(record) {
       },
       body: JSON.stringify(record)
     });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const errText = await res.text();
+      if (record.public_token && /duplicate|23505|unique/i.test(errText)) {
+        const rows = await sbRpc('get_quote_by_token', { share_token: record.public_token });
+        const existing = Array.isArray(rows) ? rows[0] : rows;
+        if (existing) return { ...record, ...existing, storage: 'supabase', already_saved: true };
+      }
+      throw new Error(errText);
+    }
     const rows = await res.json();
     return { ...record, ...(rows && rows[0] ? rows[0] : {}), storage: 'supabase' };
   } catch (e) {
-    const local = saveQuoteLocal(record);
-    local.sync_error = e.message || String(e);
-    return local;
+    if (!cfg) return saveQuoteLocal(record);
+    throw e;
   }
 }
 
@@ -3384,6 +3901,7 @@ async function loadSharedQuoteIfPresent() {
         const record = Array.isArray(rows) ? rows[0] : rows;
         if (record && record.payload && applyQuoteSnapshot(record.payload.state)) {
           window._quoteRef = record.quote_ref || window._quoteRef;
+          window._publicToken = record.public_token || token;
           window._lastSavedQuote = record;
           window._lastQuoteShareUrl = quoteShareUrl(token);
           return true;
@@ -3394,11 +3912,226 @@ async function loadSharedQuoteIfPresent() {
   const local = localQuotes().find(q => q.public_token === token);
   if (local && local.payload && applyQuoteSnapshot(local.payload.state)) {
     window._quoteRef = local.quote_ref || window._quoteRef;
+    window._publicToken = local.public_token || token;
     window._lastSavedQuote = local;
     window._lastQuoteShareUrl = quoteShareUrl(token);
     return true;
   }
   return false;
+}
+
+function htmlEsc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function moneyShort(n) {
+  return '$' + Number(n || 0).toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function dateShort(v) {
+  return v ? new Date(v).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+}
+
+function historyRedirectUrl(extra = {}) {
+  const url = new URL(window.location.href);
+  url.hash = '';
+  url.searchParams.delete('access_token');
+  url.searchParams.set('history', '1');
+  Object.entries(extra).forEach(([k, v]) => {
+    if (v == null || v === '') url.searchParams.delete(k);
+    else url.searchParams.set(k, v);
+  });
+  return url.toString();
+}
+
+function renderHistoryAuthState() {
+  const user = monteAuth.user();
+  const authBox = $("historyAuthBox");
+  const userBox = $("historyUserBox");
+  if (!authBox || !userBox) return;
+  authBox.classList.toggle('hidden', !!user);
+  userBox.classList.toggle('hidden', !user);
+  if (user && $("historyUserEmail")) $("historyUserEmail").textContent = user.email || user.id || 'Signed in';
+  if ($("historySub")) {
+    $("historySub").textContent = user
+      ? 'Select a saved quote to reload it, or start a new calculation.'
+      : 'Enter your email to save this quote and unlock quote history on any device.';
+  }
+}
+
+function setHistoryStatus(text, tone) {
+  const el = $("historyStatus");
+  if (!el) return;
+  el.textContent = text || '';
+  el.classList.toggle('ok', tone === 'ok');
+  el.classList.toggle('err', tone === 'err');
+}
+
+function openHistoryDrawer() {
+  const shell = $("historyShell");
+  if (!shell) return;
+  shell.classList.add('open');
+  shell.setAttribute('aria-hidden', 'false');
+  renderHistoryAuthState();
+  if (monteAuth.user()) refreshHistory();
+  else renderHistoryList([]);
+}
+
+function closeHistoryDrawer() {
+  const shell = $("historyShell");
+  if (!shell) return;
+  shell.classList.remove('open');
+  shell.setAttribute('aria-hidden', 'true');
+}
+
+async function claimPendingQuotes() {
+  if (!window._monteSession || !window._monteSession.access_token) return;
+  const url = new URL(window.location.href);
+  const claimToken = url.searchParams.get('claim');
+  if (claimToken) await sbRpc('claim_quote_by_token', { p_token: claimToken }).catch(() => {});
+  await sbRpc('claim_quotes_for_device', { p_device_id: getDeviceId() }).catch(() => {});
+  if (claimToken || url.searchParams.get('history')) {
+    url.searchParams.delete('claim');
+    url.searchParams.delete('history');
+    window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+  }
+}
+
+async function sendHistoryMagicLink(email, claimToken) {
+  const client = sbClient();
+  if (!client) throw new Error('Supabase Auth is not available yet.');
+  const redirectTo = historyRedirectUrl({ claim: claimToken || (window._lastSavedQuote && window._lastSavedQuote.public_token) || window._publicToken || null });
+  const { error } = await client.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: redirectTo }
+  });
+  if (error) throw error;
+}
+
+async function refreshHistory() {
+  renderHistoryAuthState();
+  const client = sbClient();
+  const user = monteAuth.user();
+  const list = $("historyList");
+  if (!list) return;
+  if (!client || !user) {
+    renderHistoryList([]);
+    return;
+  }
+  list.innerHTML = '<div class="history-empty">Loading saved quotes...</div>';
+  const { data, error } = await client
+    .from('quotes')
+    .select('id,quote_ref,public_token,status,origin,destination,service_name,total_after_tax,created_at,valid_until,view_count,payload')
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if (error) {
+    list.innerHTML = `<div class="history-empty">${htmlEsc(error.message)}</div>`;
+    return;
+  }
+  renderHistoryList(data || []);
+}
+
+function renderHistoryList(rows) {
+  const list = $("historyList");
+  if (!list) return;
+  if (!monteAuth.user()) {
+    list.innerHTML = '<div class="history-empty">Save a quote, then use the magic link to unlock your history.</div>';
+    return;
+  }
+  if (!rows.length) {
+    list.innerHTML = '<div class="history-empty">No saved quotes yet. Create a quote and press Save.</div>';
+    return;
+  }
+  list.innerHTML = rows.map((q, i) => {
+    const lane = q.destination ? `${q.origin || '-'} -> ${q.destination}` : `${q.origin || '-'} local`;
+    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join(' · ');
+    return `<button class="history-item" type="button" data-history-idx="${i}">
+      <span class="history-item-top"><span class="history-ref">${htmlEsc(q.quote_ref || '')}</span><span class="history-total">${htmlEsc(moneyShort(q.total_after_tax))}</span></span>
+      <span class="history-lane">${htmlEsc(lane)}</span>
+      <span class="history-meta">${htmlEsc(meta)}</span>
+    </button>`;
+  }).join('');
+  window._historyRows = rows;
+  list.querySelectorAll('[data-history-idx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = window._historyRows && window._historyRows[Number(btn.dataset.historyIdx)];
+      if (row) loadHistoryQuote(row);
+    });
+  });
+}
+
+function loadHistoryQuote(row) {
+  if (!row || !row.payload || !row.payload.state) return;
+  window._quoteRef = row.quote_ref || null;
+  window._publicToken = row.public_token || null;
+  window._lastSavedQuote = row;
+  window._lastQuoteShareUrl = row.public_token ? quoteShareUrl(row.public_token) : null;
+  applyQuoteSnapshot(row.payload.state);
+  closeHistoryDrawer();
+}
+
+function startNewQuote() {
+  window._quoteRef = null;
+  window._publicToken = null;
+  window._lastSavedQuote = null;
+  window._lastQuoteShareUrl = null;
+  state.origin = null;
+  state.destination = null;
+  state.laneMode = 'line';
+  state.mode = 'dim';
+  state.lenUnit = 'in';
+  state.wtUnit = 'lb';
+  state.pieces = [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  state.accessorials = {};
+  state.service = null;
+  state.taxId = 'none';
+  state.fscPct = 0;
+  if ($("originInput")) $("originInput").value = "";
+  if ($("destInput")) {
+    $("destInput").value = "";
+    $("destInput").disabled = true;
+    $("destInput").placeholder = "Select origin first";
+  }
+  $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.lh === 'line'));
+  $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'dim'));
+  $("lenUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'in'));
+  $("wtUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'lb'));
+  applyLaneMode();
+  render();
+  closeHistoryDrawer();
+}
+
+function setupHistory() {
+  if ($("historyBtn")) $("historyBtn").addEventListener('click', openHistoryDrawer);
+  document.querySelectorAll('[data-history-close]').forEach(el => el.addEventListener('click', closeHistoryDrawer));
+  if ($("historyNewBtn")) $("historyNewBtn").addEventListener('click', startNewQuote);
+  if ($("historySignOutBtn")) $("historySignOutBtn").addEventListener('click', async () => {
+    const client = sbClient();
+    if (client) await client.auth.signOut();
+    monteAuth.signOut();
+    renderHistoryAuthState();
+    renderHistoryList([]);
+  });
+  if ($("historyMagicBtn")) $("historyMagicBtn").addEventListener('click', async () => {
+    const email = ($("historyEmail") && $("historyEmail").value || '').trim();
+    if (!email) {
+      setHistoryStatus('Enter an email first.', 'err');
+      return;
+    }
+    $("historyMagicBtn").disabled = true;
+    setHistoryStatus('Saving this quote and sending your magic link...', '');
+    try {
+      let saved = window._lastSavedQuote;
+      const q = computeQuote();
+      if (q.hasLane && q.hasMeasurements && q.hasService) saved = await saveCurrentQuote(true, 'shared');
+      await sendHistoryMagicLink(email, saved && saved.public_token);
+      setHistoryStatus('Magic link sent. Open it from this browser to unlock your quote history.', 'ok');
+    } catch (e) {
+      setHistoryStatus('Could not send magic link: ' + (e.message || e), 'err');
+    } finally {
+      $("historyMagicBtn").disabled = false;
+    }
+  });
 }
 
 function updateIntelligencePanel(q, distKm, etaText, density) {
@@ -3474,6 +4207,9 @@ function updateIntelligencePanel(q, distKm, etaText, density) {
   setText('visHandoffSub', middleOnly ? 'Origin dock to destination dock.' : q.isLocal ? 'One-city final-mile flow.' : 'Line-haul handoff into final mile.');
   setText('visCustomer', middleOnly ? 'Internal lane' : 'Summary ready');
   setText('visCustomerSub', middleOnly ? 'No final-mile customer flow added.' : 'Booking message includes lane and totals.');
+  scheduleWeatherIntel(q);
+  scheduleFuelIntel(q, distKm);
+  updateQuoteAdvisor(q, density, distKm);
 }
 
 // ============================================================
@@ -4216,11 +4952,22 @@ function setupActions() {
     saveBtn.classList.add('copied');
     if (label) label.textContent = 'Saving';
     try {
-      const saved = await saveCurrentQuote(true);
+      const saved = await saveCurrentQuote(true, monteAuth.user() ? 'draft' : 'shared');
       if (!saved) return;
-      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved' : 'Saved local';
+      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to cloud' : 'Saved local';
+      openHistoryDrawer();
+      if (monteAuth.user()) {
+        setHistoryStatus('Saved. Your share link was copied, and this quote is in your history.', 'ok');
+        await refreshHistory();
+      } else {
+        setHistoryStatus('Quote saved and return link copied. Enter your email to unlock quote history.', 'ok');
+        const email = $("historyEmail");
+        if (email) setTimeout(() => email.focus(), 120);
+      }
     } catch (e) {
       if (label) label.textContent = 'Save failed';
+      openHistoryDrawer();
+      setHistoryStatus('Could not save quote: ' + (e.message || e), 'err');
     }
     setTimeout(() => {
       saveBtn.classList.remove('copied');
@@ -4352,23 +5099,7 @@ function setupActions() {
 
   $("printBtn").addEventListener('click', () => window.print());
   $("resetBtn").addEventListener('click', () => {
-    state.origin = null;
-    state.destination = null;
-    state.laneMode = 'line';
-    state.pieces = [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
-    state.accessorials = {};
-    state.service = null;
-    state.taxId = 'none';
-    $("originInput").value = "";
-    $("destInput").value = "";
-    $("destInput").disabled = true;
-    $("destInput").placeholder = "Select origin first";
-    // Reset lane mode toggle visually
-    $("lhToggle").querySelectorAll('.seg-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.lh === 'line');
-    });
-    applyLaneMode();
-    render();
+    startNewQuote();
   });
 }
 
@@ -4391,6 +5122,14 @@ function setupFsc() {
     if (e.target.value === "" || e.target.value === ".") { e.target.value = "0"; state.fscPct = 0; }
     updateOutput();
   });
+  const applyFuel = $("applyFuelBtn");
+  if (applyFuel) applyFuel.addEventListener('click', () => {
+    const n = Number(window._suggestedFscPct || 0);
+    if (!Number.isFinite(n) || n <= 0) return;
+    state.fscPct = n;
+    inp.value = String(n);
+    updateOutput();
+  });
 }
 function setupTax() {
   $("taxSelect").addEventListener('change', e => {
@@ -4405,11 +5144,13 @@ function setupTax() {
 async function init() {
   try {
     if (!sbCfg()) throw new Error('Supabase not configured. Add window.MONTE_SUPABASE = { url, anonKey } before the main calculator script.');
+    const shouldOpenHistory = !!new URL(window.location.href).searchParams.get('history');
+    await initAuthSession();
     ORIGINS = await loadOrigins();
     if (!ORIGINS.length) throw new Error('No lanes loaded. Did you run supabase-rates-insert.sql?');
 
     // Restore prior auth session (magic-link)
-    monteAuth.bootFromStorage();
+    if (!window._monteSession) monteAuth.bootFromStorage();
 
     $("loadingView").style.display = "none";
     $("mainView").style.display = "grid";
@@ -4458,6 +5199,7 @@ async function init() {
     setupPieces();
     setupAccordion();
     setupActions();
+    setupHistory();
     setupFsc();
     setupTax();
     setupSceneMesh();
@@ -4466,6 +5208,11 @@ async function init() {
     setupStepper();
     const sharedLoaded = await loadSharedQuoteIfPresent();
     if (!sharedLoaded) render();
+    if (shouldOpenHistory || monteAuth.user()) {
+      renderHistoryAuthState();
+      if (monteAuth.user()) refreshHistory();
+      if (shouldOpenHistory) openHistoryDrawer();
+    }
   } catch (err) {
     $("loadingView").innerHTML = `<div style="color: var(--danger);">Error: ${err.message}</div>`;
   }

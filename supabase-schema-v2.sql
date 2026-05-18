@@ -439,6 +439,29 @@ $$;
 revoke all on function public.claim_quotes_for_device(text) from public;
 grant execute on function public.claim_quotes_for_device(text) to authenticated;
 
+create or replace function public.claim_quote_by_token(p_token uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  n integer;
+begin
+  if auth.uid() is null then
+    return 0;
+  end if;
+  update public.quotes
+     set user_id = auth.uid()
+   where public_token = p_token
+     and (user_id is null or user_id = auth.uid());
+  get diagnostics n = row_count;
+  return n;
+end;
+$$;
+revoke all on function public.claim_quote_by_token(uuid) from public;
+grant execute on function public.claim_quote_by_token(uuid) to authenticated;
+
 -- 6g. Admin: list quotes with filters (server-side filter respects RLS via is_admin())
 create or replace function public.admin_list_quotes(
   p_status text default null,

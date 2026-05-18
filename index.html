@@ -1197,16 +1197,23 @@
   .tax-select:focus { border-color: var(--accent); background: rgba(255,122,69,0.12); }
   .tax-select option { color: var(--ink); background: #fff; }
 
-  .r-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .r-actions {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px; margin-top: 14px;
+  }
   .r-btn {
-    flex: 1; padding: 11px 12px;
+    min-width: 0; padding: 10px 6px;
     border: 1px solid rgba(250,248,241,0.18);
     border-radius: var(--radius-sm);
     background: rgba(250,248,241,0.04); color: rgba(250,248,241,0.80);
-    font-family: var(--font-body); font-size: 12px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    line-height: 1;
+    white-space: nowrap;
     transition: all var(--transition);
   }
+  .r-btn > span { display: inline-block; line-height: 1; }
   .r-btn:hover {
     background: rgba(255,122,69,0.14);
     border-color: rgba(255,122,69,0.45); color: var(--paper);
@@ -1573,11 +1580,82 @@
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px;
   }
   .intel-card {
+    position: relative;
     min-height: 74px;
     padding: 11px 12px;
     border: 1px solid rgba(250,248,241,0.11);
     border-radius: var(--radius-sm);
     background: rgba(250,248,241,0.045);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  /* "Live" intel cards (fuel/weather) — animated gradient frame + pulsing dot */
+  .intel-card.is-live {
+    border-color: rgba(255,122,69,0.45);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255,122,69,0.16), transparent 60%),
+      radial-gradient(120% 80% at 100% 100%, rgba(79,209,197,0.14), transparent 60%),
+      rgba(250,248,241,0.045);
+    box-shadow: 0 12px 30px rgba(255,122,69,0.16), inset 0 0 0 1px rgba(255,122,69,0.10);
+  }
+  .intel-card.is-live::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit;
+    padding: 1px; z-index: -1;
+    background: conic-gradient(from 0deg, rgba(255,122,69,0.0), rgba(255,122,69,0.7), rgba(79,209,197,0.6), rgba(255,122,69,0.0));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: intelSpin 4.2s linear infinite;
+  }
+  @keyframes intelSpin { to { transform: rotate(360deg); } }
+  .intel-card.is-live .live-pulse {
+    position: absolute; top: 10px; right: 11px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ff7a45; box-shadow: 0 0 0 0 rgba(255,122,69,0.7);
+    animation: livePulse 1.4s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,122,69,0.7); }
+    60%  { box-shadow: 0 0 0 10px rgba(255,122,69,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,122,69,0); }
+  }
+  .intel-card .live-badge {
+    display: inline-block; margin-left: 6px; padding: 1px 6px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, rgba(255,122,69,0.25), rgba(79,209,197,0.20));
+    color: var(--paper);
+    font-family: var(--font-mono); font-size: 8.5px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    vertical-align: middle;
+  }
+  /* Animated sparkline strip for the fuel card */
+  .fuel-spark {
+    position: relative; height: 22px; margin-top: 8px;
+    background:
+      linear-gradient(180deg, transparent, rgba(255,122,69,0.08)),
+      repeating-linear-gradient(90deg, rgba(255,122,69,0.10) 0 1px, transparent 1px 10px);
+    border-radius: 6px; overflow: hidden;
+  }
+  .fuel-spark::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,122,69,0.55), transparent);
+    width: 36%; animation: fuelSweep 2.4s linear infinite;
+  }
+  @keyframes fuelSweep {
+    0%   { transform: translateX(-40%); }
+    100% { transform: translateX(280%); }
+  }
+  /* Wind streaks for the weather card */
+  .wx-streaks {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
+    background:
+      repeating-linear-gradient(60deg, rgba(79,209,197,0.12) 0 2px, transparent 2px 14px);
+    mix-blend-mode: screen;
+    animation: wxDrift 14s linear infinite;
+  }
+  @keyframes wxDrift {
+    from { background-position: 0 0; }
+    to   { background-position: 240px 0; }
   }
   .intel-card span {
     display: block;
@@ -1676,13 +1754,15 @@
   }
 
   .r-tabs {
-    display: flex; gap: 4px; padding: 3px;
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+    gap: 4px; padding: 3px;
     background: rgba(250,248,241,0.06);
     border: 1px solid rgba(250,248,241,0.10);
     border-radius: 11px; margin-bottom: 14px;
     position: relative; overflow: hidden;
+    align-items: stretch;
   }
-  /* Sliding indicator behind the active tab — driven by JS via --tab-x/--tab-w */
+  /* Sliding indicator behind the active tab — driven by JS via --tab-x/--tab-w/--tab-ready */
   .r-tabs::before {
     content: ""; position: absolute; top: 3px; bottom: 3px;
     left: 0; transform: translateX(var(--tab-x, 0px));
@@ -1693,21 +1773,27 @@
     transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1), width 420ms cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 0;
     pointer-events: none;
+    opacity: var(--tab-ready, 0);
   }
+  .r-tabs[data-ready="1"]::before { opacity: 1; }
   .r-tabs::after {
     content: ""; position: absolute; top: 0; bottom: 0;
     left: calc(var(--tab-x, 0px) - 24px); width: calc(var(--tab-w, 0px) + 48px);
     background: radial-gradient(120% 80% at 50% 50%, rgba(255,122,69,0.22), transparent 70%);
     transition: left 520ms cubic-bezier(0.22, 1, 0.36, 1), width 420ms cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none; z-index: 0; opacity: 0.85;
+    pointer-events: none; z-index: 0; opacity: 0;
   }
+  .r-tabs[data-ready="1"]::after { opacity: 0.85; }
   .r-tab {
     position: relative; z-index: 1;
-    flex: 1; padding: 8px 10px; border: 0; background: transparent;
+    padding: 9px 8px; border: 0; background: transparent;
     color: rgba(250,248,241,0.62);
     font-family: var(--font-body); font-size: 11.5px; font-weight: 700;
     border-radius: 8px; cursor: pointer;
     letter-spacing: 0.04em; text-transform: uppercase;
+    line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 32px;
     transition: color 260ms ease, transform 260ms ease;
   }
   .r-tab:hover { color: var(--paper); transform: translateY(-1px); }
@@ -1720,8 +1806,9 @@
   .r-tab.fsc-glow { animation: fscGlow 1100ms ease-in-out 3; border-radius: 8px; }
   .r-tab .tab-dot {
     display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-    background: var(--accent-light); margin-left: 6px; vertical-align: middle;
+    background: var(--accent-light);
     opacity: 0; transform: scale(0.6); transition: opacity 220ms ease, transform 220ms ease;
+    flex: 0 0 auto;
   }
   .r-tab.has-alert .tab-dot { opacity: 1; transform: scale(1); animation: fscGlow 1400ms ease-in-out infinite; }
   .r-pane { display: none; }
@@ -2529,15 +2616,16 @@
                   <b id="intelAction">Booking-ready</b>
                   <em id="intelActionSub">Summary and contact actions are prepared.</em>
                 </div>
-                <div class="intel-card">
-                  <span>Route weather</span>
+                <div class="intel-card" id="weatherCard">
+                  <span>Route weather <span class="live-badge" id="weatherLiveBadge" style="display:none">Live</span></span>
                   <b id="weatherIntel">Checking forecast</b>
                   <em id="weatherIntelSub">Origin and destination weather will appear here.</em>
                 </div>
-                <div class="intel-card">
-                  <span>Fuel index</span>
+                <div class="intel-card" id="fuelCard">
+                  <span>Fuel index <span class="live-badge" id="fuelLiveBadge" style="display:none">Live</span></span>
                   <b id="fuelIntel">Checking diesel</b>
                   <em id="fuelIntelSub">Uses the latest public diesel index available.</em>
+                  <div class="fuel-spark" id="fuelSpark" style="display:none"></div>
                   <button class="mini-action" id="applyFuelBtn" type="button">Apply fuel</button>
                 </div>
                 <div class="intel-card">
@@ -2635,11 +2723,11 @@
             </button>
             <button class="r-btn" id="printBtn">
               <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-              Print
+              <span>Print</span>
             </button>
             <button class="r-btn" id="resetBtn">
               <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-              Reset
+              <span>Reset</span>
             </button>
           </div>
         </div>
@@ -3093,6 +3181,18 @@ function scheduleWeatherIntel(q) {
       }
       if (title) title.textContent = `${worst.risk.label}: ${worst.city}`;
       if (sub) sub.textContent = worst.risk.note;
+      // Light up the weather card
+      const card = document.getElementById('weatherCard');
+      if (card) {
+        card.classList.add('is-live');
+        if (!card.querySelector('.live-pulse')) {
+          const dot = document.createElement('span'); dot.className = 'live-pulse'; card.appendChild(dot);
+        }
+        if (!card.querySelector('.wx-streaks')) {
+          const wx = document.createElement('div'); wx.className = 'wx-streaks'; card.appendChild(wx);
+        }
+      }
+      const wb = document.getElementById('weatherLiveBadge'); if (wb) wb.style.display = 'inline-block';
       updateQuoteAdvisor(q);
     });
 }
@@ -3148,6 +3248,16 @@ function scheduleFuelIntel(q, distKm) {
       const srcLbl = idx.source === 'nrcan' ? 'NRCan live' : 'NRCan baseline';
       if (title) title.textContent = `$${(idx.cents / 100).toFixed(2)}/L diesel — ${suggested.toFixed(1)}% FSC`;
       if (sub) sub.textContent = `${prov} retail diesel, ${idx.refPer} (${srcLbl}). Tap “Apply fuel” to use ${suggested.toFixed(1)}%.`;
+      // Light up the fuel card
+      const card = document.getElementById('fuelCard');
+      if (card) {
+        card.classList.add('is-live');
+        if (!card.querySelector('.live-pulse')) {
+          const dot = document.createElement('span'); dot.className = 'live-pulse'; card.appendChild(dot);
+        }
+      }
+      const badge = document.getElementById('fuelLiveBadge'); if (badge) badge.style.display = 'inline-block';
+      const spark = document.getElementById('fuelSpark'); if (spark) spark.style.display = 'block';
       const pill = $("intelPillFuel");
       if (pill) {
         pill.textContent = state.fscPct > 0 ? `Fuel ${state.fscPct}%` : `${suggested.toFixed(1)}% suggested`;
@@ -4380,7 +4490,7 @@ function updateOutput(options = {}) {
     void gt.offsetWidth;
     gt.classList.add('bump');
   }
-  $("grandTotal2").textContent = fmt(q.total);
+  window.__tweenMoney('#grandTotal2', q.total);
 
   const svc = SERVICE_LEVELS.find(s => s.id === state.service);
   $("svcPill").textContent = svc ? svc.name : '—';
@@ -4856,7 +4966,7 @@ function setupStepper() {
     const pct = (activeIdx / ordered.length) * 100;
     stepperFill.style.width = pct + '%';
     if (mobileCta && stickyTotal && q) {
-      stickyTotal.textContent = '$' + (q.totalAfterTax || 0).toFixed(2);
+      window.__tweenMoney(stickyTotal, q.totalAfterTax || 0);
       mobileCta.classList.toggle('show', !!(q.hasLane && q.hasMeasurements && q.hasService));
     }
     // Trigger confetti once when reaching final step
@@ -4946,64 +5056,50 @@ function setupSceneMesh() {
   scene.style.setProperty('--scene-y-hard', '0px');
 }
 
-function setupNumberTween() {
-  // Animate the grand total number on change.
-  // IMPORTANT: When render() rewrites textContent mid-animation, we must
-  // re-target to the LATEST value — never lock onto a stale `to`. Previously
-  // the tween disconnected its observer and finished animating to an old
-  // value, which produced a "subtotal $31,071.75 / total $3,729.75" mismatch
-  // when the lane-rate fetch resolved after the first render.
+// Replaced the old MutationObserver-driven tween with a deterministic
+// API: render() calls window.__tweenMoney(selector, value). No observer,
+// no microtask re-entry, no race conditions — the final canonical value
+// is always written exactly once at end of animation.
+window.__tweenStates = window.__tweenStates || Object.create(null);
+window.__tweenMoney = function (sel, target) {
+  const el = (typeof sel === 'string') ? document.querySelector(sel) : sel;
+  if (!el) return;
   const fmtMoney = (v) => {
     try {
-      return '$' + v.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    } catch (e) { return '$' + v.toFixed(2); }
+      return '$' + Number(v).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } catch (e) { return '$' + Number(v).toFixed(2); }
   };
-  const watchSelectors = ['#grandTotal2', '#stickyTotal'];
-  watchSelectors.forEach(sel => {
-    const el = document.querySelector(sel);
-    if (!el) return;
-    let prev = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
-    let rafId = null;
-    let animTo = prev;
-    let writing = false; // guards observer re-entry on our own writes
-    const obs = new MutationObserver(() => {
-      if (writing) return;
-      const next = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
-      if (Math.abs(next - animTo) < 0.005 && rafId === null) { prev = next; animTo = next; return; }
-      // (Re-)target: capture current displayed value as `from`, new value as `to`
-      const from = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
-      // Actually, textContent right now IS the freshly-written `next` value,
-      // so animate from the last-rendered intermediate (prev) to next.
-      const start = performance.now();
-      const dur = 420;
-      animTo = next;
-      const fromVal = prev;
-      const toVal = next;
-      if (rafId) cancelAnimationFrame(rafId);
-      function tick(t) {
-        const k = Math.min(1, (t - start) / dur);
-        const eased = 1 - Math.pow(1 - k, 3);
-        const v = fromVal + (toVal - fromVal) * eased;
-        writing = true;
-        el.textContent = fmtMoney(v);
-        writing = false;
-        prev = v;
-        if (k < 1) {
-          rafId = requestAnimationFrame(tick);
-        } else {
-          rafId = null;
-          // Snap to the canonical formatted value at end of animation
-          writing = true;
-          el.textContent = fmtMoney(toVal);
-          writing = false;
-          prev = toVal;
-        }
-      }
-      rafId = requestAnimationFrame(tick);
-    });
-    obs.observe(el, { childList: true, characterData: true, subtree: true });
-  });
-}
+  const key = el.id || sel;
+  const st = window.__tweenStates[key] || (window.__tweenStates[key] = { current: 0, raf: 0, target: 0 });
+  // If target hasn't changed, ensure displayed text matches canonical fmt and exit
+  if (Math.abs(target - st.target) < 0.005 && st.raf === 0) {
+    el.textContent = fmtMoney(target);
+    st.current = target;
+    return;
+  }
+  if (st.raf) cancelAnimationFrame(st.raf);
+  const from = st.current;
+  const to = target;
+  const start = performance.now();
+  const dur = 420;
+  st.target = to;
+  const tick = (t) => {
+    const k = Math.min(1, (t - start) / dur);
+    const eased = 1 - Math.pow(1 - k, 3);
+    const v = from + (to - from) * eased;
+    st.current = v;
+    el.textContent = fmtMoney(v);
+    if (k < 1) {
+      st.raf = requestAnimationFrame(tick);
+    } else {
+      st.raf = 0;
+      st.current = to;
+      el.textContent = fmtMoney(to);
+    }
+  };
+  st.raf = requestAnimationFrame(tick);
+};
+function setupNumberTween() { /* deprecated — use window.__tweenMoney(sel, value) */ }
 
 function setupMagneticHover() {
   // Subtle pointer-tracking on primary buttons
@@ -5233,10 +5329,15 @@ function setupActions() {
     const tr = activeTab.getBoundingClientRect();
     const x = tr.left - br.left;
     const w = tr.width;
+    if (w <= 0) return;
     tabBar.style.setProperty('--tab-x', x + 'px');
     tabBar.style.setProperty('--tab-w', w + 'px');
   }
   document.querySelectorAll('.r-tab').forEach(tab => {
+    // Inject the alert dot once (before the wire-up so layout settles)
+    if (!tab.querySelector('.tab-dot')) {
+      const d = document.createElement('span'); d.className = 'tab-dot'; tab.appendChild(d);
+    }
     tab.addEventListener('click', () => {
       document.querySelectorAll('.r-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.r-pane').forEach(p => p.classList.remove('active'));
@@ -5252,17 +5353,24 @@ function setupActions() {
       // Clear any alert dot once the user actually visits the tab
       tab.classList.remove('has-alert', 'fsc-glow');
     });
-    // Inject the alert dot once
-    if (!tab.querySelector('.tab-dot')) {
-      const d = document.createElement('span'); d.className = 'tab-dot'; tab.appendChild(d);
-    }
   });
-  // Position on init + on resize
-  const initActive = document.querySelector('.r-tab.active');
-  if (initActive) requestAnimationFrame(() => positionTabIndicator(initActive));
-  window.addEventListener('resize', () => positionTabIndicator(document.querySelector('.r-tab.active')));
-  // Re-position again once fonts settle (avoids first-paint width snap)
-  setTimeout(() => positionTabIndicator(document.querySelector('.r-tab.active')), 240);
+  // Position once layout is ready, then mark indicator visible so it doesn't
+  // pop in at x=0/w=0 (the "orange box in corner" the user reported).
+  function settleTabIndicator() {
+    const active = document.querySelector('.r-tab.active');
+    if (!active || !tabBar) return;
+    positionTabIndicator(active);
+    if (tabBar.style.getPropertyValue('--tab-w') !== '' && parseFloat(tabBar.style.getPropertyValue('--tab-w')) > 4) {
+      tabBar.setAttribute('data-ready', '1');
+    }
+  }
+  if ('fonts' in document) {
+    document.fonts.ready.then(() => requestAnimationFrame(settleTabIndicator));
+  }
+  requestAnimationFrame(settleTabIndicator);
+  setTimeout(settleTabIndicator, 220);
+  setTimeout(settleTabIndicator, 600);
+  window.addEventListener('resize', () => settleTabIndicator());
 
   const pkInp = $("pickupDate");
   if (pkInp) pkInp.addEventListener('change', () => updateOutput());

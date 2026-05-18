@@ -107,10 +107,10 @@
 
 <!-- Supabase credentials. Same shape as on index.html. -->
 <script>
-  // EDIT: paste your Project URL + anon key here OR set window.MONTE_SUPABASE from a config file.
+  // Public browser config. The anon key is safe to publish; never put the service-role key here.
   window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
-    url: "",
-    anonKey: ""
+    url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
   };
 </script>
 <script>
@@ -158,7 +158,11 @@ async function loadQuote() {
     LOADED_QUOTE = record;
     renderQuote(record);
     // Log the view (fire-and-forget, never blocks UX)
-    sbRpc('log_quote_view', { share_token: token, p_referrer: document.referrer || null }).catch(() => {});
+    sbRpc('log_quote_view', {
+      p_token: token,
+      p_user_agent: navigator.userAgent || null,
+      p_referrer: document.referrer || null
+    }).catch(() => {});
   } catch (e) {
     showError(e.message || String(e));
   }
@@ -230,31 +234,24 @@ async function submitBooking(action) {
   btn.disabled = true;
   status.textContent = "Sending…";
   const body = {
-    quote_id: LOADED_QUOTE.id,
-    quote_ref: LOADED_QUOTE.quote_ref,
-    action,
-    contact_name: $("contactName").value.trim(),
-    contact_email: $("contactEmail").value.trim(),
-    contact_phone: $("contactPhone").value.trim(),
-    notes: $("contactNotes").value.trim()
+    p_token: LOADED_QUOTE.public_token,
+    p_action: action,
+    p_contact_name: $("contactName").value.trim(),
+    p_contact_email: $("contactEmail").value.trim(),
+    p_contact_phone: $("contactPhone").value.trim(),
+    p_notes: $("contactNotes").value.trim(),
+    p_user_agent: navigator.userAgent || null
   };
   try {
-    const res = await fetch(`${cfg.url}/rest/v1/booking_requests`, {
-      method: 'POST',
-      headers: {
-        apikey: cfg.anonKey,
-        Authorization: `Bearer ${cfg.anonKey}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal'
-      },
-      body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error(await res.text());
+    const result = await sbRpc('submit_quote_request', body);
+    const saved = Array.isArray(result) ? result[0] : result;
+    LOADED_QUOTE.status = saved && saved.status ? saved.status : LOADED_QUOTE.status;
+    renderQuote(LOADED_QUOTE);
     // Ping Slack
     fetch(`${cfg.url}/functions/v1/notify-slack`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-      body: JSON.stringify({ event: action === 'accept' ? 'quote.confirmed' : 'quote.changes_requested', payload: body })
+      body: JSON.stringify({ event: action === 'accept' ? 'quote.confirmed' : 'quote.changes_requested', payload: { ...body, quote_ref: LOADED_QUOTE.quote_ref } })
     }).catch(() => {});
     status.style.color = 'var(--ok)';
     status.textContent = action === 'accept'

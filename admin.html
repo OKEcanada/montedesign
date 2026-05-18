@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>OKE Quotes Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --ink: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --brand: #ff6a00;
+    --ok: #15803d;
+    --warn: #a16207;
+    --bad: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { background: #111827; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  header h1 { margin: 0; font-size: 18px; }
+  header span { color: #cbd5e1; font-size: 13px; }
+  main { max-width: 1260px; margin: 0 auto; padding: 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04); }
+  .login { max-width: 440px; margin: 52px auto; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  input, select { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px 11px; font: inherit; background: white; color: var(--ink); }
+  button, .btn { border: 1px solid transparent; border-radius: 6px; padding: 9px 12px; font-weight: 700; font: inherit; cursor: pointer; background: var(--brand); color: #111827; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  button.secondary, .btn.secondary { background: white; border-color: var(--line); color: var(--ink); }
+  button.danger { background: #fee2e2; color: var(--bad); border-color: #fecaca; }
+  .toolbar { display: grid; grid-template-columns: 150px 150px minmax(220px, 1fr) auto; gap: 10px; align-items: end; }
+  .stats { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 10px; }
+  .stat { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .stat b { display: block; font-size: 22px; }
+  .stat span { color: var(--muted); font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  th { font-size: 12px; color: var(--muted); font-weight: 700; background: #f9fafb; position: sticky; top: 0; z-index: 1; }
+  .table-wrap { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .muted { color: var(--muted); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: #f9fafb; }
+  .pill.hot { color: var(--warn); border-color: #facc15; background: #fefce8; }
+  .pill.ok { color: var(--ok); border-color: #86efac; background: #f0fdf4; }
+  .pill.bad { color: var(--bad); border-color: #fca5a5; background: #fef2f2; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lanes { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 8px; }
+  .lane-card { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .hidden { display: none !important; }
+  @media (max-width: 860px) {
+    .toolbar, .stats, .lanes { grid-template-columns: 1fr; }
+    header { align-items: flex-start; flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>OKE Quotes Admin</h1>
+    <span id="sessionLabel">Not signed in</span>
+  </div>
+  <button class="secondary hidden" id="signOutBtn">Sign out</button>
+</header>
+<main>
+  <section class="panel login" id="loginPanel">
+    <h2 style="margin-top:0">Admin sign in</h2>
+    <p class="muted">Use the email listed in `admin_emails` in Supabase.</p>
+    <label for="emailInput">Email</label>
+    <input id="emailInput" type="email" autocomplete="email" placeholder="anna@onekindexpress.com">
+    <div style="margin-top:12px"><button id="magicBtn">Send magic link</button></div>
+    <p class="muted" id="loginMsg"></p>
+  </section>
+
+  <section id="dashPanel" class="hidden">
+    <div class="panel">
+      <div class="toolbar">
+        <div>
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter">
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="shared">Shared</option>
+            <option value="viewed">Viewed</option>
+            <option value="booking_requested">Booking requested</option>
+            <option value="booked">Booked</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+        <div>
+          <label for="sinceFilter">Range</label>
+          <select id="sinceFilter">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="">All time</option>
+          </select>
+        </div>
+        <div>
+          <label for="searchInput">Search</label>
+          <input id="searchInput" placeholder="Quote ref, customer, origin, destination">
+        </div>
+        <button id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+
+    <div class="panel stats" id="stats"></div>
+    <div class="panel">
+      <h2 style="margin-top:0">Lane Signals</h2>
+      <div class="lanes" id="laneStats"></div>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Quote</th>
+              <th>Lane</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Customer</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quoteRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const SUPABASE_CONFIG = {
+  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
+};
+const sb = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+const $ = id => document.getElementById(id);
+const money = n => "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const dateFmt = v => v ? new Date(v).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" }) : "-";
+function shareUrl(token) { return `https://okecanada.github.io/montedesign/q/${token}`; }
+function sinceIso() {
+  const days = $("sinceFilter").value;
+  if (!days) return null;
+  const d = new Date();
+  d.setDate(d.getDate() - Number(days));
+  return d.toISOString();
+}
+function setSession(session) {
+  $("loginPanel").classList.toggle("hidden", !!session);
+  $("dashPanel").classList.toggle("hidden", !session);
+  $("signOutBtn").classList.toggle("hidden", !session);
+  $("sessionLabel").textContent = session && session.user ? `Signed in as ${session.user.email}` : "Not signed in";
+}
+async function sendMagicLink() {
+  const email = $("emailInput").value.trim();
+  if (!email) return;
+  $("loginMsg").textContent = "Sending...";
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href.split("#")[0] }
+  });
+  $("loginMsg").textContent = error ? error.message : "Check your email for the login link.";
+}
+async function loadStats() {
+  const { data, error } = await sb.rpc("admin_stats", { p_since: sinceIso() });
+  if (error) throw error;
+  const s = Array.isArray(data) ? data[0] : data;
+  const items = [
+    ["Quotes", s && s.total_quotes],
+    ["Shared", s && s.total_shared],
+    ["Viewed", s && s.total_viewed],
+    ["Booked", s && s.total_booked],
+    ["Quoted value", money(s && s.total_value)],
+    ["Booked value", money(s && s.booked_value)]
+  ];
+  $("stats").innerHTML = items.map(([label, value]) => `<div class="stat"><b>${value || 0}</b><span>${label}</span></div>`).join("");
+}
+function renderLaneStats(rows) {
+  const lanes = new Map();
+  rows.forEach(q => {
+    const key = `${q.origin || "-"} -> ${q.destination || "Local"}`;
+    const lane = lanes.get(key) || { key, count: 0, booked: 0, lost: 0, viewed: 0, value: 0 };
+    lane.count += 1;
+    lane.booked += q.status === "booked" ? 1 : 0;
+    lane.lost += q.status === "lost" ? 1 : 0;
+    lane.viewed += Number(q.view_count || 0) > 0 ? 1 : 0;
+    lane.value += Number(q.total_after_tax || 0);
+    lanes.set(key, lane);
+  });
+  const top = Array.from(lanes.values()).sort((a, b) => b.count - a.count || b.value - a.value).slice(0, 9);
+  $("laneStats").innerHTML = top.length
+    ? top.map(l => `<div class="lane-card"><b>${esc(l.key)}</b><div class="muted">${l.count} quoted / ${l.viewed} viewed / ${l.booked} booked / ${l.lost} lost</div><div>${money(l.value)}</div></div>`).join("")
+    : `<div class="muted">No lanes in this range yet.</div>`;
+}
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function hotPill(q) {
+  const views = Number(q.view_count || 0);
+  if (views >= 3) return `<span class="pill hot">${views} views</span>`;
+  if (views > 0) return `<span class="pill ok">${views} view${views === 1 ? "" : "s"}</span>`;
+  return `<span class="pill">0 views</span>`;
+}
+async function updateStatus(id, status) {
+  const { error } = await sb.from("quotes").update({ status }).eq("id", id);
+  if (error) alert(error.message);
+  await refresh();
+}
+async function loadQuotes() {
+  const { data, error } = await sb.rpc("admin_list_quotes", {
+    p_status: $("statusFilter").value || null,
+    p_search: $("searchInput").value.trim() || null,
+    p_since: sinceIso(),
+    p_limit: 500
+  });
+  if (error) throw error;
+  const rows = data || [];
+  renderLaneStats(rows);
+  $("quoteRows").innerHTML = rows.length ? rows.map(q => `
+    <tr>
+      <td><div class="mono">${esc(q.quote_ref)}</div><a href="${shareUrl(q.public_token)}" target="_blank" rel="noopener">open</a></td>
+      <td>${esc(q.origin || "-")}<br><span class="muted">${esc(q.destination || "Local delivery")}</span></td>
+      <td>${money(q.total_after_tax)}</td>
+      <td><span class="pill ${q.status === "booked" ? "ok" : q.status === "lost" ? "bad" : ""}">${esc(q.status)}</span></td>
+      <td>${hotPill(q)}<br><span class="muted">${q.last_viewed_at ? dateFmt(q.last_viewed_at) : ""}</span></td>
+      <td>${esc(q.contact_name || "-")}<br><span class="muted">${esc(q.contact_email || "")}</span></td>
+      <td>${dateFmt(q.created_at)}</td>
+      <td><div class="actions">
+        <button class="secondary" data-status="booked" data-id="${q.id}">Booked</button>
+        <button class="danger" data-status="lost" data-id="${q.id}">Lost</button>
+      </div></td>
+    </tr>
+  `).join("") : `<tr><td colspan="8" class="muted">No quotes found. If you are signed in but see nothing, confirm your email is in public.admin_emails.</td></tr>`;
+  document.querySelectorAll("[data-status]").forEach(btn => {
+    btn.addEventListener("click", () => updateStatus(btn.dataset.id, btn.dataset.status));
+  });
+}
+async function refresh() {
+  $("refreshBtn").disabled = true;
+  try {
+    await loadStats();
+    await loadQuotes();
+  } catch (e) {
+    $("quoteRows").innerHTML = `<tr><td colspan="8" style="color:var(--bad)">${esc(e.message || e)}</td></tr>`;
+  } finally {
+    $("refreshBtn").disabled = false;
+  }
+}
+document.addEventListener("DOMContentLoaded", async () => {
+  $("magicBtn").addEventListener("click", sendMagicLink);
+  $("signOutBtn").addEventListener("click", async () => { await sb.auth.signOut(); setSession(null); });
+  ["statusFilter", "sinceFilter"].forEach(id => $(id).addEventListener("change", refresh));
+  $("searchInput").addEventListener("input", () => { clearTimeout(window._searchTimer); window._searchTimer = setTimeout(refresh, 250); });
+  $("refreshBtn").addEventListener("click", refresh);
+  const { data } = await sb.auth.getSession();
+  setSession(data.session);
+  if (data.session) refresh();
+  sb.auth.onAuthStateChange((_event, session) => { setSession(session); if (session) refresh(); });
+});
+</script>
+</body>
+</html>

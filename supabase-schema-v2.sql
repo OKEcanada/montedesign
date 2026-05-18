@@ -274,12 +274,90 @@ begin
   values (q_id, p_token, p_user_agent, p_referrer);
   update public.quotes
      set view_count = view_count + 1,
-         last_viewed_at = now()
+         last_viewed_at = now(),
+         status = case when status in ('draft', 'shared') then 'viewed' else status end
    where id = q_id;
 end;
 $$;
 revoke all on function public.log_quote_view(uuid, text, text) from public;
 grant execute on function public.log_quote_view(uuid, text, text) to anon, authenticated;
+
+-- 6d-2. Submit a booking/change request from a public quote link.
+-- This updates the CRM status even though the customer is anonymous.
+create or replace function public.submit_quote_request(
+  p_token uuid,
+  p_action text,
+  p_contact_name text default null,
+  p_contact_email text default null,
+  p_contact_phone text default null,
+  p_notes text default null,
+  p_user_agent text default null
+)
+returns table (
+  request_id uuid,
+  quote_id uuid,
+  quote_ref text,
+  status text
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  q public.quotes%rowtype;
+  new_status text;
+  req_id uuid;
+begin
+  select * into q from public.quotes where public_token = p_token;
+  if not found then
+    raise exception 'Quote not found';
+  end if;
+
+  new_status := case
+    when p_action = 'accept' then 'booking_requested'
+    else 'changes_requested'
+  end;
+
+  insert into public.booking_requests (
+    quote_id, quote_ref, contact_name, contact_email, contact_phone, notes, status, metadata
+  )
+  values (
+    q.id,
+    q.quote_ref,
+    nullif(p_contact_name, ''),
+    nullif(p_contact_email, ''),
+    nullif(p_contact_phone, ''),
+    nullif(p_notes, ''),
+    new_status,
+    jsonb_build_object(
+      'action', p_action,
+      'public_token', p_token,
+      'quote_total', q.total_after_tax,
+      'lane', concat_ws(' -> ', q.origin, q.destination),
+      'user_agent', p_user_agent
+    )
+  )
+  returning id into req_id;
+
+  update public.quotes
+     set status = new_status,
+         contact_name = coalesce(nullif(p_contact_name, ''), contact_name),
+         contact_email = coalesce(nullif(p_contact_email, ''), contact_email)
+   where id = q.id;
+
+  insert into public.quote_events (quote_id, event_type, metadata)
+  values (q.id, new_status, jsonb_build_object('request_id', req_id, 'action', p_action))
+  on conflict do nothing;
+
+  request_id := req_id;
+  quote_id := q.id;
+  quote_ref := q.quote_ref;
+  status := new_status;
+  return next;
+end;
+$$;
+revoke all on function public.submit_quote_request(uuid, text, text, text, text, text, text) from public;
+grant execute on function public.submit_quote_request(uuid, text, text, text, text, text, text) to anon, authenticated;
 
 -- 6e. Replace v1's get_quote_by_token — return expiry + view count too
 drop function if exists public.get_quote_by_token(uuid);

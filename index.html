@@ -2442,6 +2442,19 @@
 <!-- rate data now lives in Supabase (table public.lane_rates) -->
 
 <script>
+// Public browser config. The anon key is safe to publish; never put the service-role key here.
+window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
+  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
+};
+window.MONTE_CONFIG = window.MONTE_CONFIG || {
+  shareBase: "https://okecanada.github.io/montedesign/q",
+  slackNotifyOnSave: true,
+  slackNotifyOnView: false
+};
+</script>
+
+<script>
 // ============================================================
 // SUPABASE — RATES + QUOTES live server-side
 // ============================================================
@@ -3249,12 +3262,13 @@ function saveQuoteLocal(record) {
 async function saveQuoteRecord(record) {
   const cfg = getSupabaseConfig();
   if (!cfg) return saveQuoteLocal(record);
+  const session = window._monteSession;
   try {
     const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at`, {
       method: 'POST',
       headers: {
         apikey: cfg.anonKey,
-        Authorization: `Bearer ${cfg.anonKey}`,
+        Authorization: `Bearer ${session && session.access_token ? session.access_token : cfg.anonKey}`,
         'Content-Type': 'application/json',
         Prefer: 'return=representation'
       },
@@ -3270,10 +3284,11 @@ async function saveQuoteRecord(record) {
   }
 }
 
-async function saveCurrentQuote(copyLink) {
+async function saveCurrentQuote(copyLink, statusOverride) {
   const q = computeQuote();
   if (!q.hasLane || !q.hasMeasurements || !q.hasService) return null;
   const record = buildQuoteRecord(q);
+  record.status = statusOverride || (copyLink ? 'shared' : 'draft');
   // Attach the per-browser device id so the user can later claim it on login.
   record.device_id = getDeviceId();
   // Attach the logged-in user_id when present.
@@ -4116,6 +4131,14 @@ function setupActions() {
   if (shareBtn) shareBtn.addEventListener('click', async () => {
     const q = computeQuote();
     if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
+    const label = shareBtn.querySelector('span');
+    const original = label ? label.textContent : 'Share';
+    if (label) label.textContent = 'Saving';
+    const saved = await saveCurrentQuote(true, 'shared');
+    if (!saved) {
+      if (label) label.textContent = original;
+      return;
+    }
     const svc = SERVICE_LEVELS.find(s => s.id === state.service);
     const lane = q.isLocal ? `${state.origin} local` : `${state.origin} → ${state.destination}`;
     const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
@@ -4126,12 +4149,17 @@ function setupActions() {
     } catch (e) {}
     if (!shared) {
       try { await navigator.clipboard.writeText(summary); } catch (e) {}
-      openBookingModal();
+      shareBtn.classList.add('copied');
+      if (label) label.textContent = 'Copied link';
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        if (label) label.textContent = original;
+      }, 1400);
       return;
     }
     shareBtn.classList.add('copied');
-    shareBtn.querySelector('span').textContent = 'Shared';
-    setTimeout(() => { shareBtn.classList.remove('copied'); shareBtn.querySelector('span').textContent = 'Share'; }, 1400);
+    if (label) label.textContent = 'Shared';
+    setTimeout(() => { shareBtn.classList.remove('copied'); if (label) label.textContent = original; }, 1400);
   });
 
   const saveBtn = $("saveQuoteBtn");

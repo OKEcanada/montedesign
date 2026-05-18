@@ -4528,6 +4528,14 @@ function applyQuoteSnapshot(snapshot) {
   state.fscPct = Number(snapshot.fscPct) || 0;
   state.taxId = snapshot.taxId || 'none';
   state.accessorials = snapshot.accessorials || {};
+  // Re-seed service prices so loading a snapshot can never leave state.servicePrices empty
+  // (root cause of the "0 everywhere" bug: a stale snapshot would clear service price map).
+  if (!state.servicePrices) state.servicePrices = {};
+  for (const sl of SERVICE_LEVELS) {
+    if (!Number.isFinite(Number(state.servicePrices[sl.id])) || !Number(state.servicePrices[sl.id])) {
+      state.servicePrices[sl.id] = sl.defaultPrice;
+    }
+  }
 
   if ($("originInput")) $("originInput").value = state.origin || '';
   if ($("destInput")) $("destInput").value = state.destination || '';
@@ -5043,6 +5051,36 @@ function updateOutput(options = {}) {
   $("taxLabel").textContent = q.tax.rate > 0 ? `Tax amount (${q.tax.rate}%)` : "Tax amount";
   $("taxAmountOut").textContent = fmt(q.taxAmount);
   $("totalAfterTaxOut").textContent = fmt(q.totalAfterTax);
+
+  // Safety net: if every price is $0 even though showResult is true, surface a clear
+  // diagnostic line instead of silently rendering all-zeros. This is the "0 everywhere"
+  // protection — tells the user exactly what's still loading or missing.
+  try {
+    if (q.subtotal === 0 && showResult) {
+      const reasons = [];
+      if (!state.origin) reasons.push('origin city');
+      if (!state.destination && state.laneMode !== 'local') reasons.push('destination city');
+      if (!state.service && state.laneMode !== 'middle') reasons.push('service level');
+      if (!q.hasMeasurements) reasons.push('item weight + dimensions');
+      if (!q.isLocal && !q.middleMileSell && state.laneMode !== 'local') reasons.push('lane rates (loading…)');
+      const wrap = $("totalAfterTaxOut").closest('.b-row');
+      let diag = document.getElementById('calcDiag');
+      if (!diag && wrap) {
+        diag = document.createElement('div');
+        diag.id = 'calcDiag';
+        diag.style.cssText = 'margin-top:8px;padding:9px 12px;border-radius:9px;background:rgba(255,122,69,0.10);border:1px solid rgba(255,122,69,0.30);color:rgba(255,210,180,0.95);font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.06em;line-height:1.4';
+        wrap.parentNode.appendChild(diag);
+      }
+      if (diag) {
+        diag.textContent = reasons.length
+          ? 'Showing zero because: ' + reasons.join(', ') + '.'
+          : 'Quote is recalculating. Try changing the service level or re-entering measurements.';
+      }
+    } else {
+      const old = document.getElementById('calcDiag');
+      if (old) old.remove();
+    }
+  } catch (_) {}
 
   // ---- Enhanced chips & journey & compare ----
   // Province-pair distance estimate (km). Same city = 25, same prov = 250, neighbour = 800, far = 2200, very far = 3800

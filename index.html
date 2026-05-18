@@ -1,0 +1,4334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Monte Design national final mile delivery calculator powered by One Kind Express." />
+<meta name="theme-color" content="#0b0f24" />
+<title>Monte Design National Final Mile Calculator | One Kind Express</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0c1024;
+    --ink-soft: #1e2342;
+    --ink-muted: #6b7191;
+    --ink-faint: #a6abc5;
+    --paper: #fbfaf6;
+    --paper-card: rgba(255, 254, 250, 0.96);
+    --paper-alt: #f1eee3;
+    --line: rgba(12, 16, 36, 0.10);
+    --line-soft: rgba(12, 16, 36, 0.055);
+    --accent: #ff7a45;
+    --accent-deep: #c64411;
+    --accent-light: #ffa572;
+    --accent-soft: #ffe6d6;
+    --accent-glow: rgba(255, 122, 69, 0.22);
+    --cool: #4fd1c5;
+    --cool-deep: #0e7490;
+    --cool-soft: #d1f4f1;
+    --positive: #16a34a;
+    --positive-soft: #dcfce7;
+    --danger: #ef4444;
+    --danger-soft: #fee2e2;
+    --bg-deep: #07091a;
+    --bg-mid: #0e1230;
+    --bg-glow: #1a2050;
+    --shadow-card: 0 24px 60px -12px rgba(255, 122, 69, 0.14), 0 12px 28px -8px rgba(7, 9, 26, 0.20), 0 1px 0 rgba(255,255,255,0.7) inset;
+    --shadow-lift: 0 30px 80px -10px rgba(255, 122, 69, 0.20), 0 14px 30px -10px rgba(7, 9, 26, 0.30), 0 1px 0 rgba(255,255,255,0.08) inset;
+    --shadow-soft: 0 8px 24px -6px rgba(255, 122, 69, 0.18), 0 4px 12px -4px rgba(7, 9, 26, 0.15);
+    --accent-secondary: #06d6a0;
+    --accent-secondary-soft: rgba(6, 214, 160, 0.14);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 26px;
+    --transition: 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-display: "Instrument Serif", "Inter", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg-deep);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  /* ============================================================
+     HERO SCENE - layered logistics atlas
+     ============================================================ */
+  .scene {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    background:
+      radial-gradient(ellipse 100% 78% at 74% 12%, rgba(255,122,69,0.12), transparent 56%),
+      radial-gradient(ellipse 80% 70% at 12% 86%, rgba(79,209,197,0.10), transparent 62%),
+      linear-gradient(180deg, #050717 0%, #0a0e28 48%, #071321 100%);
+    isolation: isolate;
+    --mx: 80%;
+    --my: 12%;
+    --scene-x: 0px;
+    --scene-y: 0px;
+    --scene-x-soft: 0px;
+    --scene-y-soft: 0px;
+    --scene-x-hard: 0px;
+    --scene-y-hard: 0px;
+    contain: paint;
+  }
+  .scene::before {
+    content: "";
+    position: absolute; inset: -18%;
+    background:
+      repeating-linear-gradient(116deg, rgba(255,255,255,0.030) 0 1px, transparent 1px 72px),
+      repeating-linear-gradient(26deg, rgba(79,209,197,0.040) 0 1px, transparent 1px 92px),
+      linear-gradient(130deg, transparent 0%, rgba(255,122,69,0.08) 45%, transparent 68%),
+      linear-gradient(225deg, transparent 8%, rgba(79,209,197,0.06) 52%, transparent 82%);
+    opacity: 0.62;
+    mix-blend-mode: normal;
+    transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0);
+    -webkit-mask-image: radial-gradient(ellipse 78% 72% at 55% 50%, #000 0%, transparent 82%);
+    mask-image: radial-gradient(ellipse 78% 72% at 55% 50%, #000 0%, transparent 82%);
+    will-change: transform, opacity;
+  }
+  .scene::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 8;
+    background:
+      linear-gradient(90deg, rgba(5,7,23,0.70) 0%, transparent 20%, transparent 74%, rgba(5,7,23,0.72) 100%),
+      radial-gradient(ellipse 110% 92% at 50% 54%, transparent 52%, rgba(0,0,0,0.58) 100%),
+      linear-gradient(180deg, rgba(5,7,23,0.12) 0%, transparent 42%, rgba(5,7,23,0.66) 100%);
+  }
+  .scene-mesh {
+    position: absolute; inset: -22%; z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 54% at var(--mx) var(--my), rgba(255,122,69,0.34) 0%, rgba(255,122,69,0.12) 34%, transparent 68%),
+      conic-gradient(from 225deg at 74% 18%, rgba(255,122,69,0.16), transparent 24%, rgba(79,209,197,0.14) 44%, transparent 64%, rgba(114,128,255,0.18), rgba(255,122,69,0.16)),
+      linear-gradient(138deg, rgba(6,214,160,0.18) 0%, transparent 33%, rgba(255,122,69,0.10) 62%, transparent 100%),
+      linear-gradient(170deg, #050717 0%, #0d1232 52%, #101a36 100%);
+    filter: none;
+    transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0) scale(1.03);
+    will-change: auto;
+  }
+  .scene-depth {
+    position: absolute; inset: -8%; z-index: 1;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 64px, rgba(255,255,255,0.030) 64px 65px, transparent 65px 128px),
+      repeating-linear-gradient(0deg, transparent 0 64px, rgba(255,255,255,0.022) 64px 65px, transparent 65px 128px),
+      repeating-linear-gradient(45deg, transparent 0 34px, rgba(255,122,69,0.025) 34px 35px, transparent 35px 70px);
+    opacity: 0.52;
+    mix-blend-mode: normal;
+    transform: translate3d(var(--scene-x), var(--scene-y), 0);
+    will-change: auto;
+  }
+  .scene-grid {
+    position: absolute; left: -26%; right: -26%; bottom: -18%; z-index: 2;
+    height: 56%;
+    background:
+      repeating-linear-gradient(90deg, rgba(79,209,197,0.16) 0 1px, transparent 1px 74px),
+      repeating-linear-gradient(0deg, rgba(255,122,69,0.12) 0 1px, transparent 1px 54px),
+      linear-gradient(180deg, rgba(79,209,197,0.10), transparent 58%);
+    opacity: 0.56;
+    transform: perspective(780px) rotateX(64deg) translate3d(var(--scene-x-soft), 0, 0);
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 100%);
+    will-change: auto;
+  }
+  .scene-aurora {
+    position: absolute; inset: -28%; z-index: 3;
+    background:
+      radial-gradient(ellipse 52% 22% at 72% 22%, rgba(255,122,69,0.34), transparent 70%),
+      radial-gradient(ellipse 42% 18% at 28% 72%, rgba(79,209,197,0.24), transparent 72%),
+      conic-gradient(from 210deg at 52% 46%, transparent 0deg, rgba(255,122,69,0.10) 54deg, transparent 126deg, rgba(79,209,197,0.12) 202deg, transparent 302deg);
+    filter: none;
+    opacity: 0.52;
+    mix-blend-mode: normal;
+    transform: translate3d(0, 0, 0) rotate(-3deg);
+    will-change: auto;
+  }
+  .scene-topography {
+    position: absolute; inset: -10%; z-index: 3;
+    background:
+      repeating-radial-gradient(ellipse at 76% 24%, transparent 0 28px, rgba(255,255,255,0.040) 29px 30px, transparent 31px 58px),
+      repeating-radial-gradient(ellipse at 18% 82%, transparent 0 34px, rgba(79,209,197,0.034) 35px 36px, transparent 37px 72px),
+      repeating-linear-gradient(132deg, transparent 0 88px, rgba(255,122,69,0.035) 88px 89px, transparent 89px 176px);
+    opacity: 0.36;
+    mix-blend-mode: normal;
+    transform: translate3d(var(--scene-x), var(--scene-y), 0);
+    -webkit-mask-image: radial-gradient(ellipse 86% 70% at 56% 52%, #000 0%, transparent 78%);
+    mask-image: radial-gradient(ellipse 86% 70% at 56% 52%, #000 0%, transparent 78%);
+    will-change: auto;
+  }
+  .scene-orbits {
+    position: absolute; inset: -18%; z-index: 5;
+    background:
+      radial-gradient(ellipse at 78% 30%, transparent 0 19%, rgba(255,122,69,0.13) 19.2% 19.45%, transparent 19.7% 31%, rgba(79,209,197,0.09) 31.2% 31.45%, transparent 31.7%),
+      radial-gradient(ellipse at 20% 74%, transparent 0 17%, rgba(79,209,197,0.10) 17.2% 17.45%, transparent 17.7% 29%, rgba(255,122,69,0.09) 29.2% 29.45%, transparent 29.7%);
+    opacity: 0.36;
+    mix-blend-mode: normal;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+  .scene-particles {
+    position: absolute; inset: 0; z-index: 5;
+    background:
+      radial-gradient(circle at 12% 24%, rgba(255,255,255,0.48) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 28% 72%, rgba(79,209,197,0.45) 0 1px, transparent 1.8px),
+      radial-gradient(circle at 46% 18%, rgba(255,122,69,0.52) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 68% 62%, rgba(255,255,255,0.36) 0 1px, transparent 1.8px),
+      radial-gradient(circle at 88% 36%, rgba(79,209,197,0.44) 0 1px, transparent 1.9px),
+      radial-gradient(circle at 74% 84%, rgba(255,122,69,0.44) 0 1px, transparent 1.7px);
+    background-size: 260px 220px, 320px 280px, 380px 260px, 290px 330px, 360px 300px, 420px 360px;
+    opacity: 0.42;
+    mix-blend-mode: normal;
+    transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0);
+    will-change: auto;
+  }
+  .scene-sweep {
+    position: absolute; inset: -20% -45%; z-index: 6;
+    background: linear-gradient(104deg, transparent 0%, transparent 42%, rgba(255,255,255,0.09) 49%, rgba(79,209,197,0.07) 52%, transparent 60%, transparent 100%);
+    mix-blend-mode: normal;
+    opacity: 0.28;
+    transform: translateX(-40%) rotate(0.001deg);
+    animation: sceneSweep 28s cubic-bezier(.55, .05, .25, 1) infinite;
+    will-change: transform, opacity;
+  }
+  .scene-scan {
+    position: absolute; inset: 0; z-index: 6;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.055) 48%, transparent 52%),
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 7px);
+    opacity: 0.12;
+    mix-blend-mode: normal;
+    transform: translateY(-100%);
+    animation: none;
+    will-change: auto;
+  }
+  .scene-radar {
+    position: absolute; right: -8vw; top: -10vh; width: min(560px, 46vw); aspect-ratio: 1; z-index: 5;
+    border-radius: 50%;
+    border: 1px solid rgba(79,209,197,0.12);
+    background:
+      conic-gradient(from 0deg, rgba(79,209,197,0.22), transparent 16%, transparent 100%),
+      radial-gradient(circle, transparent 0 34%, rgba(255,255,255,0.04) 34.2% 34.45%, transparent 34.7% 56%, rgba(255,122,69,0.06) 56.2% 56.45%, transparent 56.7%);
+    opacity: 0.30;
+    mix-blend-mode: normal;
+    transform: translate3d(var(--scene-x-hard), var(--scene-y-hard), 0);
+    animation: radarSpin 60s linear infinite;
+    will-change: transform;
+  }
+  .scene-radar::after {
+    content: "";
+    position: absolute; inset: 16%;
+    border-radius: inherit;
+    border: 1px dashed rgba(255,255,255,0.10);
+  }
+  .scene-grain {
+    position: absolute; inset: 0; z-index: 7;
+    background:
+      radial-gradient(ellipse 120% 92% at 50% 50%, transparent 58%, rgba(0,0,0,0.42) 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: normal;
+    opacity: 0.42;
+  }
+  .scene-route {
+    position: absolute; inset: 0; z-index: 4;
+    width: 100%; height: 100%; opacity: 0.96;
+    transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0);
+    filter: none;
+    will-change: auto;
+  }
+  .scene-route .h-grid-surface { opacity: 0.20; mix-blend-mode: normal; }
+  .scene-route .h-land path { opacity: 0.16; stroke-dasharray: 1 18; }
+  .scene-route .h-secondary-routes path {
+    stroke-dasharray: 12 18;
+    animation: hRouteFlow 14s linear infinite;
+  }
+  .scene-route .h-secondary-routes path:nth-child(2) { animation: none; }
+  .scene-route .h-secondary-routes path:nth-child(3) { animation: none; }
+  .scene-route .h-site rect, .scene-route .h-site path {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: hSiteGlow 5.8s ease-in-out infinite;
+  }
+  .scene-route .h-site:nth-child(2) rect, .scene-route .h-site:nth-child(2) path { animation-delay: -1.8s; }
+  .scene-route .h-site:nth-child(3) rect, .scene-route .h-site:nth-child(3) path { animation-delay: -3.2s; }
+  .scene-route .h-node circle:nth-child(1) { animation: hNodePulse 3.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .scene-route .h-node-b circle:nth-child(1) { animation-delay: 1.8s; }
+  .scene-route .h-air-lanes path {
+    stroke-dasharray: 2 14;
+    animation: hRouteFlow 24s linear infinite reverse;
+  }
+  .scene-route .h-packet { filter: none; }
+  .scene-route .h-packet.cool { filter: none; }
+  .scene-route .h-micro-node circle { animation: hMicroTwinkle 4.8s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .scene-route .h-micro-node:nth-child(2n) circle { animation-delay: -1.6s; }
+  .scene-route .h-micro-node:nth-child(3n) circle { animation-delay: -2.7s; }
+  @keyframes sceneBreath {
+    0% { filter: saturate(1.08) brightness(0.95); }
+    100% { filter: saturate(1.25) brightness(1.08); }
+  }
+  @keyframes atlasDrift {
+    0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+    100% { background-position: 180px -120px, -160px 120px, 0 0, 0 0; }
+  }
+  @keyframes depthSlide {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 128px 0, 0 128px, 70px 70px; }
+  }
+  @keyframes gridRunway {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 74px 0, 0 54px, 0 0; }
+  }
+  @keyframes auroraFold {
+    0% { transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0) rotate(-4deg) scale(1); opacity: 0.62; }
+    100% { transform: translate3d(var(--scene-x-soft), var(--scene-y-soft), 0) rotate(3deg) scale(1.08); opacity: 0.86; }
+  }
+  @keyframes topoDrift {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 160px -120px, -140px 160px, 220px 0; }
+  }
+  @keyframes orbitTurn {
+    0% { transform: translate3d(var(--scene-x-hard), var(--scene-y-hard), 0) rotate(0deg); }
+    100% { transform: translate3d(var(--scene-x-hard), var(--scene-y-hard), 0) rotate(360deg); }
+  }
+  @keyframes particleDrift {
+    0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+    100% { background-position: 120px -80px, -90px 110px, 160px 70px, -130px -90px, 90px 150px, -180px 120px; }
+  }
+  @keyframes scanPass {
+    0%, 18% { transform: translateY(-110%); opacity: 0; }
+    34% { opacity: 0.26; }
+    58% { opacity: 0.18; }
+    82%, 100% { transform: translateY(110%); opacity: 0; }
+  }
+  @keyframes radarSpin {
+    to { transform: translate3d(var(--scene-x-hard), var(--scene-y-hard), 0) rotate(360deg); }
+  }
+  @keyframes sceneSweep {
+    0%, 18% { transform: translateX(-44%); opacity: 0; }
+    38% { opacity: 0.52; }
+    62% { opacity: 0.32; }
+    82%, 100% { transform: translateX(44%); opacity: 0; }
+  }
+  @keyframes hRouteFlow {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -240; }
+  }
+  @keyframes hLandDrift {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -180; }
+  }
+  @keyframes hSiteGlow {
+    0%, 100% { opacity: 0.56; transform: scale(0.985); }
+    50% { opacity: 0.92; transform: scale(1.035); }
+  }
+  @keyframes hNodePulse {
+    0%, 100% { opacity: 0.55; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+  @keyframes hMicroTwinkle {
+    0%, 100% { opacity: 0.28; transform: scale(0.82); }
+    45% { opacity: 0.9; transform: scale(1.18); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scene::before, .scene-mesh, .scene-depth, .scene-grid, .scene-aurora,
+    .scene-topography, .scene-orbits, .scene-particles, .scene-sweep, .scene-scan, .scene-radar,
+    .scene-route .h-land path, .scene-route .h-secondary-routes path,
+    .scene-route .h-site rect, .scene-route .h-site path,
+    .scene-route .h-node circle:nth-child(1),
+    .scene-route .h-air-lanes path,
+    .scene-route .h-micro-node circle { animation: none !important; }
+    .scene-route animateMotion { display: none; }
+    .card::before, .card::after, .result-card::before { animation: none !important; }
+  }
+
+
+  .page {
+    position: relative; z-index: 1; min-height: 100vh;
+    padding: 140px 22px 76px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .topbar {
+    width: 100%; max-width: 1240px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px; padding: 14px 18px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 26px -8px rgba(255,122,69,0.18), 0 4px 14px -4px rgba(0,0,0,0.30), 0 1px 0 rgba(255,255,255,0.08) inset;
+  }
+  .wordmark {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; font-size: 16px; letter-spacing: -0.01em; color: var(--paper);
+  }
+  .wordmark-mark {
+    min-width: 38px; height: 34px; padding: 0 8px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, #ff5e2c 60%, var(--accent-deep) 100%);
+    box-shadow: 0 10px 24px rgba(255,122,69,0.45), 0 1px 0 rgba(255,255,255,0.25) inset;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px; letter-spacing: 0.02em;
+    position: relative;
+  }
+  .wordmark-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .wordmark-text .brand { font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em; }
+  .wordmark-text .brand em { font-style: normal; color: var(--accent-light); }
+  .wordmark-text .tag { font-family: var(--font-mono); font-size: 9.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.50); margin-top: 2px; }
+  .topbar-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 12px;
+    border: 1px solid rgba(79,209,197,0.30);
+    border-radius: 999px;
+    background: rgba(79,209,197,0.10);
+    color: rgba(255,255,255,0.85);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+  }
+  .topbar-badge::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cool);
+    box-shadow: 0 0 10px var(--cool);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .topbar-tools { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 38px; height: 38px;
+    border: 1px solid var(--line);
+    background: var(--paper-card); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink-soft);
+    transition: all var(--transition);
+  }
+  .icon-btn:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-soft); }
+  .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .grid {
+    width: 100%; max-width: 1240px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(360px, 0.72fr);
+    gap: 20px; align-items: start;
+  }
+  @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 78% 40% at 88% -10%, rgba(255,122,69,0.14), transparent 58%),
+      radial-gradient(ellipse 60% 38% at 5% 104%, rgba(79,209,197,0.10), transparent 62%),
+      linear-gradient(180deg, rgba(255,254,250,0.94), rgba(248,246,238,0.88));
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: var(--radius-lg);
+    padding: 34px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.9) inset,
+      0 0 0 1px rgba(255,255,255,0.18),
+      0 30px 90px rgba(7, 9, 26, 0.35),
+      0 60px 140px -40px rgba(255, 122, 69, 0.18);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transform: translateZ(0);
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0; height: 4px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 22%, rgba(255,255,255,0.78) 50%, var(--cool) 78%, transparent 100%);
+    background-size: 220% 100%;
+    opacity: 0.7;
+    animation: panelEdge 7s ease-in-out infinite;
+  }
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 92% 0%, rgba(255,122,69,0.13), transparent 24%),
+      radial-gradient(circle at 0% 98%, rgba(79,209,197,0.08), transparent 26%),
+      linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.28) 45%, transparent 54%);
+    background-size: auto, auto, 220% 100%;
+    pointer-events: none;
+    opacity: 0.62;
+    animation: none;
+  }
+  .card > * { position: relative; z-index: 1; }
+  @media (max-width: 600px) { .card { padding: 22px; } }
+
+  .card-h1 {
+    font-size: clamp(30px, 4.4vw, 52px);
+    font-weight: 900; letter-spacing: -0.025em; margin-bottom: 8px;
+    line-height: 1.0;
+    color: var(--ink);
+    background: linear-gradient(110deg, var(--ink) 0%, var(--ink) 55%, var(--accent-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .card-h1 em { font-style: italic; color: var(--accent-deep); font-weight: 800; -webkit-text-fill-color: var(--accent-deep); }
+  .card-sub { font-size: 13.5px; color: var(--ink-muted); margin-bottom: 22px; max-width: 650px; }
+
+  /* Progress stepper */
+  .stepper { margin: 0 0 28px; }
+  .stepper-track { position: relative; height: 3px; background: rgba(12,16,36,0.08); border-radius: 999px; overflow: hidden; }
+  .stepper-fill {
+    position: absolute; inset: 0 auto 0 0; width: 0%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+    box-shadow: 0 0 12px rgba(255,122,69,0.35);
+    transition: width 480ms cubic-bezier(.2,.9,.3,1.2);
+  }
+  .stepper-dots {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-top: 10px;
+  }
+  .stp-dot {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11.5px; color: var(--ink-muted);
+    transition: color 280ms;
+  }
+  .stp-dot .stp-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(12,16,36,0.06); color: var(--ink-muted);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    transition: all 320ms cubic-bezier(.2,.9,.3,1.2);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .stp-dot .stp-lbl { font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stp-dot.active .stp-num {
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255,122,69,0.38);
+    transform: scale(1.08);
+  }
+  .stp-dot.active { color: var(--ink); }
+  .stp-dot.done .stp-num {
+    background: var(--accent-secondary); color: #fff;
+    box-shadow: 0 2px 8px rgba(6,214,160,0.30);
+  }
+  .stp-dot.done .stp-num::before {
+    content: "\2713"; font-size: 12px;
+  }
+  .stp-dot.done .stp-num .stp-num-text { display: none; }
+
+  /* Mobile sticky CTA */
+  .mobile-cta {
+    display: none;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom)) 14px;
+    background: linear-gradient(180deg, rgba(12,16,36,0.86), rgba(12,16,36,0.96));
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    align-items: center; gap: 12px;
+    transform: translateY(110%);
+    transition: transform 320ms cubic-bezier(.2,.9,.3,1.2);
+  }
+  .mobile-cta.show { transform: translateY(0); }
+  .mobile-cta .mc-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .mobile-cta .mc-label {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 600;
+  }
+  .mobile-cta .mc-total { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+  .mobile-cta .mc-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 22px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    color: #fff; font-weight: 700; font-size: 14px; border-radius: 14px;
+    box-shadow: 0 8px 20px -4px rgba(255,122,69,0.45);
+    font-family: inherit;
+    transition: transform 200ms, box-shadow 200ms;
+  }
+  .mobile-cta .mc-btn:active { transform: scale(0.96); }
+  .mobile-cta .mc-btn svg { width: 16px; height: 16px; }
+  @media (max-width: 900px) {
+    .mobile-cta { display: flex; }
+    .page { padding-bottom: 110px; }
+  }
+
+  /* Confetti canvas */
+  .confetti-canvas {
+    position: fixed; inset: 0; z-index: 10000; pointer-events: none;
+    width: 100vw; height: 100vh;
+  }
+
+  .lane-control-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-muted); margin-bottom: 12px;
+  }
+  .section-divider {
+    border: 0; height: 1px; margin: 28px 0;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+  ::selection { background: var(--accent-glow); color: var(--ink); }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+  input[type="text"], input[type="password"], input[type="number"], select {
+    width: 100%; padding: 13px 14px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    border: 1px solid var(--line); border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.82); color: var(--ink);
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    -webkit-appearance: none; appearance: none;
+  }
+  input::placeholder { color: var(--ink-faint); font-weight: 400; }
+  input:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    background: #fffdf9;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+  input.mono { font-family: var(--font-mono); font-size: 13.5px; }
+
+  .lane-row {
+    position: relative; z-index: 5;
+    display: grid; grid-template-columns: 1fr 32px 1fr;
+    gap: 12px; align-items: end; margin-bottom: 24px;
+  }
+  .lane-row.local { grid-template-columns: 1fr; }
+  .lane-row.local .lane-arrow,
+  .lane-row.local #destField { display: none; }
+  @media (max-width: 600px) {
+    .lane-row { grid-template-columns: 1fr; gap: 14px; }
+    .lane-arrow { display: none; }
+  }
+  .lane-arrow { align-self: end; margin-bottom: 12px; text-align: center; color: var(--accent); opacity: 0.7; }
+  .lane-arrow svg { width: 22px; height: 22px; }
+
+  .autocomplete { position: relative; }
+  .autocomplete-list {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #fffefa; border: 1px solid var(--line);
+    border-radius: var(--radius-sm); max-height: 280px; overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(12,16,36,0.22), 0 2px 6px rgba(12,16,36,0.08);
+    z-index: 100; display: none;
+  }
+  .autocomplete-list.open { display: block; }
+  .autocomplete-list::-webkit-scrollbar { width: 6px; }
+  .autocomplete-list::-webkit-scrollbar-track { background: transparent; }
+  .autocomplete-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  .ac-item {
+    padding: 10px 14px; font-family: var(--font-mono); font-size: 13px;
+    cursor: pointer; border-bottom: 1px solid var(--line-soft);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    transition: background var(--transition); color: var(--ink);
+  }
+  .ac-item:last-child { border-bottom: 0; }
+  .ac-item:hover, .ac-item.active { background: var(--accent-soft); }
+  .ac-item .ac-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ac-item .match { color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(255,122,69,0.30); padding: 1px 4px; border-radius: 3px; font-weight: 700; }
+  .ac-item .ac-count { font-size: 10px; color: var(--ink-muted); background: var(--paper-alt); padding: 2px 7px; border-radius: 999px; flex-shrink: 0; }
+  .ac-empty { padding: 14px; text-align: center; color: var(--ink-muted); font-size: 12.5px; }
+
+  /* Service level cards */
+  .svc-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .svc-grid { grid-template-columns: 1fr 1fr; } }
+  .svc-card {
+    position: relative; overflow: hidden;
+    min-height: 96px;
+    padding: 16px 14px 14px;
+    background: rgba(255,255,255,0.60);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition), color var(--transition);
+    text-align: left;
+    display: flex; flex-direction: column; gap: 5px;
+    will-change: transform;
+  }
+  .svc-card:hover { border-color: rgba(255,122,69,0.40); transform: translateY(-2px); box-shadow: 0 14px 30px rgba(12,16,36,0.10); }
+  .svc-card:active { transform: translateY(0); }
+  .svc-card.active {
+    border-color: transparent;
+    background:
+      radial-gradient(ellipse 90% 60% at 100% 0%, rgba(255,122,69,0.30), transparent 60%),
+      linear-gradient(155deg, #0c1024 0%, #1a2050 100%);
+    color: var(--paper);
+    box-shadow:
+      0 18px 38px rgba(12,16,36,0.40),
+      0 0 0 1px rgba(255,122,69,0.40),
+      0 30px 60px -20px rgba(255,122,69,0.30);
+    transform: translateY(-2px);
+  }
+  .svc-card.active::after {
+    content: "";
+    position: absolute;
+    right: -36px; top: -36px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(255,122,69,0.32), transparent 70%);
+    pointer-events: none;
+  }
+  .svc-card .svc-dot {
+    position: absolute; right: 12px; top: 12px;
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    transition: all var(--transition);
+  }
+  .svc-card.active .svc-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,122,69,0.20);
+  }
+  .svc-card.active .svc-dot::after {
+    content: "✓";
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 9px; font-weight: 800; line-height: 1;
+  }
+  .svc-card .svc-name {
+    font-size: 13.5px; font-weight: 700; letter-spacing: -0.005em;
+  }
+  .svc-card .svc-desc {
+    font-family: var(--font-mono); font-size: 10px; line-height: 1.4;
+    color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .svc-card.active .svc-desc { color: rgba(250,248,241,0.6); }
+
+  .seg.seg-sm { padding: 2px; }
+  .seg.seg-sm .seg-btn { padding: 6px 10px; font-size: 10.5px; letter-spacing: 0; white-space: nowrap; }
+  @media (max-width: 720px) {
+    .lane-control-head { flex-direction: column; align-items: stretch; gap: 8px; }
+    .lane-control-head .seg.seg-sm { width: 100%; display: flex; }
+    .lane-control-head .seg.seg-sm .seg-btn { flex: 1; padding: 8px 6px; font-size: 10.5px; }
+  }
+
+  .seg {
+    display: inline-flex; background: rgba(48,42,30,0.065);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 3px;
+  }
+  .seg-btn {
+    padding: 8px 16px; border: 0; background: transparent;
+    font-family: var(--font-body); font-size: 12.5px; font-weight: 600;
+    color: var(--ink-muted); cursor: pointer; border-radius: 9px;
+    transition: all var(--transition); letter-spacing: 0;
+  }
+  .seg-btn:hover { color: var(--ink); }
+  .seg-btn.active { background: linear-gradient(155deg, var(--ink), #1a2050); color: var(--accent-light); box-shadow: 0 10px 18px rgba(12,16,36,0.22); }
+
+  .seg-mini {
+    display: inline-flex; background: rgba(48,42,30,0.065);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 2px; height: 28px;
+  }
+  .seg-mini-btn {
+    padding: 0 10px; border: 0; background: transparent;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    color: var(--ink-muted); cursor: pointer; border-radius: 5px;
+    transition: all var(--transition); line-height: 1; letter-spacing: 0;
+  }
+  .seg-mini-btn.active { background: var(--ink); color: var(--accent-light); }
+  .measure-row {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    align-items: end; margin-bottom: 18px;
+  }
+  .unit-pair {
+    margin-left: auto; display: flex; gap: 12px; align-items: end;
+  }
+
+  .pieces { display: flex; flex-direction: column; gap: 12px; }
+  .piece {
+    position: relative; padding: 16px 16px 14px 18px;
+    background: rgba(255,255,255,0.58);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    transition: all var(--transition);
+  }
+  .piece:hover { border-color: rgba(255,122,69,0.34); background: rgba(255,255,255,0.78); }
+  .piece-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .piece-name { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--ink); }
+  .piece-num {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, var(--ink), #1a2050); color: var(--accent-light); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  }
+  .piece-remove {
+    width: 28px; height: 28px; border: 0; background: transparent;
+    color: var(--ink-faint); cursor: pointer; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .piece-remove:hover { background: var(--danger-soft); color: var(--danger); }
+  .piece-remove svg { width: 14px; height: 14px; }
+  .piece-grid { display: grid; gap: 10px; }
+  .piece-grid.dim { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+  .piece-grid.cf { grid-template-columns: 1fr 1fr 1fr; }
+  .piece-grid.pallet { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; }
+  @media (max-width: 700px) {
+    .piece-grid.dim { grid-template-columns: 1fr 1fr; }
+    .piece-grid.cf { grid-template-columns: 1fr 1fr; }
+    .piece-grid.pallet { grid-template-columns: 1fr 1fr; }
+  }
+  .piece-grid .field-label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0;
+    color: var(--ink-muted); white-space: nowrap;
+  }
+  .piece-grid input { padding: 10px 12px; font-size: 13.5px; }
+  .piece-meta {
+    margin-top: 10px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);
+  }
+  .piece-meta .tag { padding: 3px 8px; background: rgba(48,42,30,0.055); border: 1px solid var(--line); border-radius: 999px; font-weight: 500; }
+  .piece-meta .tag.warn { background: var(--accent-soft); border-color: rgba(255,122,69,0.30); color: var(--accent-deep); font-weight: 700; }
+
+  .add-piece-btn {
+    margin-top: 12px; width: 100%; padding: 14px;
+    background: rgba(255,255,255,0.30); border: 1.5px dashed rgba(255,122,69,0.30);
+    border-radius: var(--radius); color: var(--ink-muted);
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .add-piece-btn { position: relative; overflow: hidden; }
+  .add-piece-btn::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,122,69,0.18) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 600ms ease;
+  }
+  .add-piece-btn:hover::before { transform: translateX(100%); }
+  .add-piece-btn:hover { border-color: var(--accent); color: var(--accent-deep); background: rgba(255,230,214,0.62); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,122,69,0.18); }
+  .add-piece-btn svg { width: 16px; height: 16px; }
+  .add-piece-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .accessorials-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 14px 16px;
+    background: rgba(255,255,255,0.58); border: 1px solid var(--line);
+    border-radius: var(--radius); cursor: pointer; user-select: none;
+    transition: all var(--transition);
+    gap: 12px;
+  }
+  .accessorials-toggle:hover { border-color: rgba(255,122,69,0.34); background: rgba(255,255,255,0.72); }
+  .accessorials-toggle.open { background: rgba(255,255,255,0.72); border-color: rgba(255,122,69,0.30); border-radius: var(--radius) var(--radius) 0 0; }
+  .accessorials-toggle .at-left { display: flex; align-items: center; gap: 11px; min-width: 0; flex: 1; }
+  .accessorials-toggle .at-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .accessorials-toggle .at-icon {
+    width: 24px; height: 24px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--accent-soft), #ffd1b8);
+    border: 1px solid rgba(255,122,69,0.30);
+    color: var(--accent-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; line-height: 1;
+    transition: transform var(--transition);
+  }
+  .accessorials-toggle.open .at-icon { transform: rotate(45deg); }
+  .accessorials-toggle .at-name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .accessorials-toggle .at-count {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    color: var(--ink-muted); background: var(--paper-alt);
+    padding: 3px 9px; border-radius: 999px;
+    transition: all var(--transition);
+  }
+  .accessorials-toggle .at-count.has {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    box-shadow: 0 4px 10px rgba(255,122,69,0.30);
+  }
+  .accessorials-toggle .at-chev { color: var(--ink-faint); transition: transform var(--transition); display: flex; }
+  .accessorials-toggle.open .at-chev { transform: rotate(180deg); color: var(--accent-deep); }
+  .accessorials-toggle .at-chev svg { width: 16px; height: 16px; }
+  .accessorials-content {
+    display: none; padding: 16px 16px 6px;
+    background: rgba(255,255,255,0.48);
+    border: 1px solid var(--line); border-top: 0;
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin-top: -1px;
+  }
+  .accessorials-content.open { display: block; animation: accReveal 280ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  @keyframes accReveal {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .acc-list {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    grid-auto-rows: 1fr;
+  }
+  @media (max-width: 600px) { .acc-list { grid-template-columns: 1fr; grid-auto-rows: auto; } }
+  .acc-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.55); border: 1px solid var(--line);
+    cursor: pointer; transition: all var(--transition);
+    user-select: none; min-height: 60px; height: 100%;
+    gap: 10px;
+  }
+  .acc-row:hover { border-color: rgba(255,122,69,0.40); transform: translateY(-1px); }
+  .acc-row.checked { background: linear-gradient(180deg, rgba(255,230,214,0.88), rgba(255,240,229,0.76)); border-color: rgba(255,122,69,0.42); }
+  .acc-row .acc-label { font-size: 12.5px; font-weight: 500; color: var(--ink-soft); }
+  .acc-row.checked .acc-label { color: var(--ink); font-weight: 600; }
+  .acc-row .acc-price { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); white-space: nowrap; }
+  .acc-row.checked .acc-price { color: var(--accent-deep); font-weight: 700; }
+  .acc-row .acc-check {
+    width: 16px; height: 16px; border: 1.5px solid var(--line);
+    border-radius: 4px; flex-shrink: 0; margin-right: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--paper-card);
+  }
+  .acc-row.checked .acc-check { background: var(--accent); border-color: var(--accent); }
+  .acc-row .acc-check svg {
+    width: 10px; height: 10px; stroke: #fff;
+    fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+    opacity: 0; transition: opacity var(--transition);
+  }
+  .acc-row.checked .acc-check svg { opacity: 1; }
+  .acc-row-inner { display: flex; align-items: center; flex: 1; min-width: 0; }
+  .acc-row-text { flex: 1; min-width: 0; }
+  .acc-row .acc-qty {
+    width: 60px; padding: 6px 8px;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    text-align: center;
+    background: var(--paper-card); border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .acc-row:not(.checked) .acc-qty { opacity: 0.35; pointer-events: none; }
+
+  /* RESULT CARD */
+  .result-card {
+    position: sticky; top: 24px;
+    background:
+      radial-gradient(ellipse 80% 50% at 100% 0%, rgba(255, 122, 69, 0.36), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 0% 100%, rgba(79, 209, 197, 0.24), transparent 60%),
+      linear-gradient(120deg, rgba(255,255,255,0.08), transparent 38%, rgba(79,209,197,0.05) 72%, transparent),
+      conic-gradient(from 220deg at 70% 30%, rgba(120,90,220,0.10), rgba(255,122,69,0.08), rgba(79,209,197,0.10), rgba(120,90,220,0.10)),
+      linear-gradient(170deg, #0e1230 0%, #07091a 100%);
+    color: var(--paper);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-lg); padding: 32px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.10) inset,
+      0 36px 110px rgba(0, 0, 0, 0.55),
+      0 60px 160px -30px rgba(255, 122, 69, 0.22);
+    overflow: hidden;
+    backdrop-filter: blur(8px) saturate(108%);
+    -webkit-backdrop-filter: blur(8px) saturate(108%);
+    transform: translateZ(0);
+  }
+  .result-card::before {
+    content: ''; position: absolute;
+    left: 0; right: 0; top: 0; height: 4px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 28%, rgba(255,255,255,0.88) 50%, var(--cool) 72%, transparent 100%);
+    background-size: 220% 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+    animation: panelEdge 6.4s ease-in-out infinite reverse;
+  }
+  .result-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 22%, rgba(255,255,255,0.06) 0 1px, transparent 1.5px) 0 0 / 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .result-card > * { position: relative; z-index: 1; }
+  .r-label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(250,248,241,0.55); margin-bottom: 12px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .r-label::before {
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .r-total {
+    font-size: clamp(48px, 7.5vw, 72px); font-weight: 900;
+    letter-spacing: -0.035em; line-height: 0.95; margin-bottom: 8px;
+    font-feature-settings: "tnum";
+    background: linear-gradient(135deg, #ffffff 0%, #ffe6d3 45%, var(--accent-light) 75%, #ff9466 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 8px 40px rgba(255, 165, 114, 0.25);
+    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .r-total.bump { animation: totalPop 460ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  @keyframes totalPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.045); }
+    100% { transform: scale(1); }
+  }
+  #resultContent { animation: fadeUp 360ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes panelEdge {
+    0%, 100% { background-position: 0% 0; opacity: 0.62; }
+    50% { background-position: 100% 0; opacity: 0.9; }
+  }
+  @keyframes glassGlint {
+    0%, 70%, 100% { background-position: 0 0, 0 0, -130% 0; }
+    82% { background-position: 0 0, 0 0, 130% 0; }
+  }
+  .r-total-sub { font-size: 12.5px; color: rgba(250,248,241,0.6); margin-bottom: 22px; }
+  .r-total-sub em { color: var(--accent-light); font-style: normal; font-weight: 600; }
+
+  .r-empty {
+    text-align: center; padding: 36px 4px 24px;
+    color: rgba(250,248,241,0.62);
+    font-size: 13.5px; line-height: 1.6;
+  }
+  .r-empty-icon {
+    width: 56px; height: 56px; margin: 0 auto 16px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: var(--accent-light);
+    background: linear-gradient(155deg, rgba(255,122,69,0.18), rgba(79,209,197,0.10));
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,122,69,0.10) inset;
+  }
+  .r-empty-title {
+    font-size: 15px; font-weight: 700; color: var(--paper);
+    letter-spacing: -0.005em; margin-bottom: 4px;
+  }
+  .r-empty-sub {
+    font-size: 12.5px; color: rgba(250,248,241,0.55);
+    margin-bottom: 22px;
+  }
+  .r-checklist {
+    list-style: none; padding: 14px; margin: 0;
+    text-align: left;
+    background: rgba(250,248,241,0.045);
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: var(--radius-sm);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .r-checklist li {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 11px; border-radius: 8px;
+    font-size: 12.5px; color: rgba(250,248,241,0.72);
+    transition: all var(--transition);
+  }
+  .r-checklist li[hidden] { display: none; }
+  .rc-mark {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid rgba(250,248,241,0.25);
+    background: transparent;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+    position: relative;
+  }
+  .r-checklist li.next .rc-mark {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,122,69,0.15);
+  }
+  .r-checklist li.next .rc-mark::after {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .r-checklist li.next {
+    background: rgba(255,122,69,0.08);
+    color: var(--paper);
+    font-weight: 600;
+  }
+  .r-checklist li.done .rc-mark {
+    background: var(--cool); border-color: var(--cool);
+  }
+  .r-checklist li.done .rc-mark::after {
+    content: "✓"; color: #07091a; font-size: 11px; font-weight: 800; line-height: 1;
+    animation: none;
+  }
+  .r-checklist li.done {
+    color: rgba(250,248,241,0.45);
+    text-decoration: line-through;
+    text-decoration-color: rgba(250,248,241,0.25);
+    text-decoration-thickness: 1px;
+  }
+
+  .r-box {
+    background: rgba(250,248,241,0.075);
+    border: 1px solid rgba(250,248,241,0.13);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .r-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; padding: 3px 0; }
+  .r-row .l { color: rgba(250,248,241,0.6); }
+  .r-row .v { font-family: var(--font-mono); color: var(--paper); font-weight: 500; }
+  .r-row.win {
+    padding-top: 8px; margin-top: 6px;
+    border-top: 1px solid rgba(250,248,241,0.12); font-weight: 700;
+  }
+  .r-row.win .l { color: var(--paper); font-weight: 700; }
+  .r-row.win .v { color: var(--accent-light); font-size: 14px; }
+
+  .lane-info {
+    background: rgba(250,248,241,0.065);
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 14px;
+    font-family: var(--font-mono); font-size: 11.5px; line-height: 1.7;
+  }
+  .lane-info .lane { color: rgba(250,248,241,0.85); font-weight: 600; }
+  .lane-info .arrow { color: var(--accent-light); margin: 0 6px; }
+  .lane-info .svc-pill {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: var(--accent-glow);
+    color: var(--accent-light);
+    border: 1px solid rgba(255,122,69,0.30);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dim-callout {
+    margin-top: 8px; padding: 8px 12px;
+    background: rgba(255,122,69,0.10);
+    border: 1px solid rgba(255,122,69,0.24);
+    border-radius: var(--radius-sm); font-size: 11px;
+    color: rgba(250,248,241,0.85); line-height: 1.5; display: none;
+  }
+  .dim-callout.show { display: block; }
+  .dim-callout strong { color: var(--accent-light); }
+
+  .r-breakdown {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 16px 0;
+    border-top: 1px solid rgba(250,248,241,0.10);
+    border-bottom: 1px solid rgba(250,248,241,0.10);
+    margin-bottom: 16px;
+  }
+  .b-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+  .b-row .l { color: rgba(250,248,241,0.65); }
+  .b-row .v { font-family: var(--font-mono); color: var(--paper); font-weight: 500; }
+  .b-row.subtotal { padding-top: 8px; border-top: 1px dashed rgba(250,248,241,0.15); font-size: 13px; }
+  .b-row.subtotal .l { color: var(--paper); font-weight: 600; }
+  .b-row.subtotal .v { color: var(--paper); font-weight: 700; }
+  .b-row.grand {
+    margin-top: 8px; padding-top: 12px;
+    border-top: 1px dashed rgba(250,248,241,0.22); font-size: 14px;
+  }
+  .b-row.grand .l { color: var(--paper); font-weight: 700; }
+  .b-row.grand .v { color: var(--accent-light); font-weight: 800; font-size: 17px; }
+
+  .pct-input-wrap {
+    display: inline-flex; align-items: center;
+    background: rgba(250,248,241,0.08);
+    border: 1px solid rgba(250,248,241,0.15);
+    border-radius: 7px; padding: 0 7px; margin-left: 8px;
+    transition: border-color var(--transition), background var(--transition);
+  }
+  .pct-input-wrap:focus-within { border-color: var(--accent); background: rgba(255,122,69,0.12); }
+  .pct-input-wrap input {
+    width: 36px; background: transparent; border: 0;
+    color: var(--paper); font-family: var(--font-mono);
+    font-size: 12px; font-weight: 700; text-align: right;
+    padding: 4px 0; outline: none;
+  }
+  .pct-suffix { color: rgba(250,248,241,0.65); font-family: var(--font-mono); font-size: 11px; margin-left: 1px; }
+  .tax-select {
+    width: 100%;
+    max-width: 178px;
+    background: rgba(250,248,241,0.08);
+    color: var(--paper);
+    border: 1px solid rgba(250,248,241,0.16);
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 650;
+    outline: none;
+  }
+  .tax-select:focus { border-color: var(--accent); background: rgba(255,122,69,0.12); }
+  .tax-select option { color: var(--ink); background: #fff; }
+
+  .r-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .r-btn {
+    flex: 1; padding: 11px 12px;
+    border: 1px solid rgba(250,248,241,0.18);
+    border-radius: var(--radius-sm);
+    background: rgba(250,248,241,0.04); color: rgba(250,248,241,0.80);
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all var(--transition);
+  }
+  .r-btn:hover {
+    background: rgba(255,122,69,0.14);
+    border-color: rgba(255,122,69,0.45); color: var(--paper);
+    transform: translateY(-1px);
+  }
+  .r-btn.copied {
+    background: rgba(79,209,197,0.16);
+    border-color: rgba(79,209,197,0.45);
+    color: var(--cool);
+  }
+  .r-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .loader {
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px; color: rgba(255,255,255,0.65); font-size: 13.5px;
+    letter-spacing: 0.05em;
+  }
+  .loader::before {
+    content: "";
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.18);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin-right: 12px;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .footer-note {
+    margin-top: 36px;
+    font-family: var(--font-mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: rgba(255,252,244,0.40); text-align: center;
+    width: 100%; max-width: 1240px;
+  }
+  .footer-note a { color: rgba(255,165,114,0.85); text-decoration: none; }
+  .footer-note a:hover { color: var(--accent-light); }
+
+  @media (max-width: 960px) {
+    .page { padding: 120px 14px 56px; }
+    .topbar { margin-bottom: 18px; padding: 11px 12px; }
+    .grid { gap: 16px; }
+    .result-card { position: static; }
+    .art-card.primary { right: -7%; top: 10%; }
+    .art-card.secondary { right: 8%; bottom: 8%; }
+  }
+
+  @media (max-width: 760px) {
+    .scene {
+      background:
+        radial-gradient(ellipse 92% 58% at 88% 8%, rgba(255,122,69,0.22), transparent 62%),
+        radial-gradient(ellipse 80% 52% at 10% 86%, rgba(79,209,197,0.16), transparent 68%),
+        linear-gradient(180deg, #07091a 0%, #0b102b 52%, #071321 100%);
+      transform: none !important;
+      contain: strict;
+    }
+    .scene::before {
+      inset: -10%;
+      opacity: 0.34;
+      animation: none !important;
+      transform: none !important;
+      background:
+        repeating-linear-gradient(116deg, rgba(255,255,255,0.026) 0 1px, transparent 1px 64px),
+        repeating-linear-gradient(26deg, rgba(79,209,197,0.030) 0 1px, transparent 1px 92px);
+    }
+    .scene::after {
+      background:
+        linear-gradient(90deg, rgba(5,7,23,0.58) 0%, transparent 32%, transparent 70%, rgba(5,7,23,0.62) 100%),
+        radial-gradient(ellipse 120% 96% at 50% 54%, transparent 48%, rgba(0,0,0,0.58) 100%),
+        linear-gradient(180deg, rgba(5,7,23,0.20) 0%, transparent 48%, rgba(5,7,23,0.72) 100%);
+    }
+    .scene-mesh {
+      inset: -14%;
+      animation: none !important;
+      transform: none !important;
+      filter: saturate(1.05);
+      background:
+        radial-gradient(ellipse 80% 54% at 84% 10%, rgba(255,122,69,0.28), rgba(255,122,69,0.08) 40%, transparent 72%),
+        radial-gradient(ellipse 72% 48% at 12% 78%, rgba(79,209,197,0.16), transparent 66%),
+        linear-gradient(170deg, #050717 0%, #0d1232 58%, #101a36 100%);
+    }
+    .scene-depth,
+    .scene-aurora,
+    .scene-grain {
+      animation: none !important;
+      transform: none !important;
+    }
+    .scene-depth {
+      opacity: 0.28;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 58px, rgba(255,255,255,0.026) 58px 59px, transparent 59px 116px),
+        repeating-linear-gradient(0deg, transparent 0 58px, rgba(255,255,255,0.018) 58px 59px, transparent 59px 116px);
+    }
+    .scene-aurora {
+      inset: -18%;
+      opacity: 0.44;
+      filter: blur(16px) saturate(1.1);
+    }
+    .scene-route,
+    .scene-grid,
+    .scene-topography,
+    .scene-orbits,
+    .scene-particles,
+    .scene-radar,
+    .scene-sweep,
+    .scene-scan {
+      display: none !important;
+    }
+    .card,
+    .result-card,
+    .mobile-cta {
+      backdrop-filter: blur(14px) saturate(115%);
+      -webkit-backdrop-filter: blur(14px) saturate(115%);
+    }
+    .card::before,
+    .card::after,
+    .result-card::before {
+      animation: none !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .scene { background-attachment: scroll; }
+    .scene-art { opacity: 0.55; }
+    .scene-art::before { width: 120vw; height: 78vh; right: -56vw; top: 5vh; }
+    .scene-art::after { width: 100vw; height: 60vh; left: -36vw; }
+    .art-card.primary { width: 220px; height: 140px; right: -74px; top: 54px; }
+    .art-card.secondary { width: 160px; height: 98px; right: 10px; bottom: 42px; }
+    .art-card.tertiary { display: none; }
+    .art-line.one { width: 128vw; left: -8%; top: 36%; }
+    .art-line.two { width: 105vw; left: -16%; top: 66%; }
+    .art-node.a { left: 12%; top: 35%; }
+    .art-node.b { right: 24%; top: 27%; }
+    .page { padding: 100px 12px 44px; }
+    .topbar {
+      align-items: center; gap: 10px;
+      flex-wrap: wrap; border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .wordmark { font-size: 14.5px; gap: 10px; }
+    .wordmark-mark { min-width: 34px; height: 30px; font-size: 12.5px; padding: 0 7px; border-radius: 9px; }
+    .wordmark-text .brand { font-size: 14px; }
+    .topbar-badge {
+      width: 100%; justify-content: center;
+      font-size: 9.5px; padding: 6px 10px;
+      letter-spacing: 0.1em;
+    }
+    .card, .result-card { border-radius: 20px; padding: 20px 18px; }
+    .card-h1 { font-size: 24px; line-height: 1.15; letter-spacing: -0.015em; }
+    .card-sub { margin-bottom: 20px; font-size: 13px; }
+    .lane-control-head { flex-direction: column; align-items: stretch; gap: 10px; }
+    .lane-row { gap: 12px; }
+    .seg { width: 100%; }
+    .seg-btn { flex: 1; padding: 10px 12px; font-size: 12px; }
+    .measure-row { gap: 12px; }
+    .measure-row > div:first-child { width: 100%; }
+    .unit-pair { width: 100%; margin-left: 0; justify-content: space-between; gap: 10px; }
+    .unit-pair > div { flex: 1; min-width: 0; }
+    .seg-mini { width: 100%; height: 32px; }
+    .seg-mini-btn { flex: 1; }
+    .svc-grid { gap: 8px; }
+    .svc-card { min-height: 86px; padding: 14px 12px 12px; }
+    .svc-card .svc-name { font-size: 13px; }
+    .svc-card .svc-desc { font-size: 9.5px; }
+    .piece { padding: 14px; }
+    .piece-grid input { padding: 11px 12px; font-size: 14px; }
+    .add-piece-btn { padding: 14px; }
+    .accessorials-toggle { padding: 14px; }
+    .accessorials-toggle .at-name { font-size: 13px; }
+    .accessorials-toggle .at-count { font-size: 10px; padding: 3px 8px; }
+    .acc-row { padding: 12px; min-height: 56px; }
+    .result-card { padding: 22px 18px; }
+    .r-total { font-size: 42px; }
+    .r-empty { padding: 24px 4px 16px; }
+    .r-checklist { padding: 10px; }
+    .r-checklist li { padding: 8px 10px; font-size: 12.5px; }
+    .r-actions { flex-wrap: wrap; gap: 8px; }
+    .r-actions .r-btn { min-width: calc(33% - 6px); padding: 12px 10px; }
+    .b-row, .r-row { gap: 12px; }
+    .b-row .v, .r-row .v { text-align: right; }
+  }
+
+  /* JOURNEY TIMELINE (mini route map) */
+  .r-journey {
+    margin: 18px 0 16px;
+    padding: 16px 14px 12px;
+    background: rgba(250,248,241,0.05);
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm);
+    position: relative; overflow: hidden;
+  }
+  .r-journey::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 90% at 50% 0%, rgba(255,122,69,0.10), transparent 60%);
+    pointer-events: none;
+  }
+  .r-journey-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: rgba(250,248,241,0.55); margin-bottom: 14px;
+    position: relative;
+  }
+  .r-journey-head .est { color: var(--cool); }
+  .r-route { position: relative; height: 50px; margin: 0 12px; }
+  .r-route-line {
+    position: absolute; top: 50%; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, rgba(255,255,255,0.35) 50%, var(--cool) 100%);
+    transform: translateY(-50%); border-radius: 999px; overflow: hidden;
+  }
+  .r-route-line::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+    transform: translateX(-100%);
+    animation: routeShimmer 2.6s ease-in-out infinite;
+  }
+  @keyframes routeShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+  .r-route-stop {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #07091a; border: 2px solid var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,122,69,0.18), 0 0 20px rgba(255,122,69,0.6);
+    z-index: 2;
+  }
+  .r-route-stop.end { border-color: var(--cool); box-shadow: 0 0 0 4px rgba(79,209,197,0.18), 0 0 20px rgba(79,209,197,0.6); }
+  .r-route-stop.mid {
+    width: 8px; height: 8px; background: var(--accent-light); border: 0;
+    box-shadow: 0 0 10px rgba(255,165,114,0.8); opacity: 0.65;
+  }
+  .r-route-truck {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 36px; height: 22px; z-index: 3;
+    animation: truckGo 6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    filter: drop-shadow(0 4px 8px rgba(255,122,69,0.55));
+  }
+  @keyframes truckGo {
+    0%, 6% { left: 4%; opacity: 0; }
+    14% { opacity: 1; }
+    86% { opacity: 1; }
+    94%, 100% { left: 96%; opacity: 0; }
+  }
+  .r-route-labels {
+    display: flex; justify-content: space-between;
+    margin-top: 4px; padding: 0 4px;
+    font-family: var(--font-mono); font-size: 10.5px; color: rgba(250,248,241,0.65);
+  }
+  .r-route-labels b { display: block; color: var(--paper); font-weight: 700; font-size: 11.5px; letter-spacing: 0.02em; }
+  .r-route-labels .to { text-align: right; }
+  .r-stages {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 4px; margin-top: 14px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: rgba(250,248,241,0.50);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .r-stages.is-three { grid-template-columns: repeat(3, 1fr); }
+  .r-stages span { text-align: center; padding: 6px 2px; border-radius: 6px; background: rgba(250,248,241,0.04); }
+  .r-stages span.on { color: var(--accent-light); background: rgba(255,122,69,0.12); border: 1px solid rgba(255,122,69,0.25); }
+
+  .r-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .r-chip {
+    flex: 1; min-width: 120px; padding: 10px 12px;
+    background: rgba(250,248,241,0.05); border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 2px;
+  }
+  .r-chip .label {
+    font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: rgba(250,248,241,0.50);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .r-chip .label svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .r-chip .val { font-family: var(--font-mono); font-size: 13.5px; font-weight: 700; color: var(--paper); }
+  .r-chip.eco .val { color: var(--cool); }
+  .r-chip.fast .val { color: var(--accent-light); }
+
+  .r-compare {
+    margin: 14px 0; padding: 14px;
+    background: rgba(250,248,241,0.045);
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm);
+  }
+  .r-compare-head {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: rgba(250,248,241,0.55); margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .r-compare-head .hint {
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+    color: rgba(250,248,241,0.45); font-family: var(--font-body); font-size: 10.5px;
+  }
+  .r-cmp-row {
+    display: grid; grid-template-columns: 86px 1fr 70px;
+    align-items: center; gap: 10px; padding: 6px 0;
+    cursor: pointer; transition: opacity var(--transition);
+  }
+  .r-cmp-row:hover { opacity: 0.92; }
+  .r-cmp-row .nm { font-size: 11.5px; color: rgba(250,248,241,0.75); font-weight: 600; }
+  .r-cmp-row .bar-wrap { height: 8px; background: rgba(250,248,241,0.08); border-radius: 999px; overflow: hidden; position: relative; }
+  .r-cmp-row .bar {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 999px; transform-origin: left center;
+    animation: barGrow 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 12px rgba(255,122,69,0.5);
+  }
+  @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .r-cmp-row.active .nm { color: var(--accent-light); }
+  .r-cmp-row.active .bar { background: linear-gradient(90deg, #fff, var(--accent-light)); }
+  .r-cmp-row .price { font-family: var(--font-mono); font-size: 12px; color: var(--paper); text-align: right; font-weight: 700; }
+  .r-cmp-row.active .price { color: var(--accent-light); }
+  .cmp-badge {
+    display: inline-block; padding: 1px 6px; margin-left: 4px;
+    font-family: var(--font-mono); font-size: 8.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 999px; vertical-align: 1px;
+  }
+  .cmp-badge.save { background: rgba(79,209,197,0.18); color: var(--cool); border: 1px solid rgba(79,209,197,0.35); }
+  .cmp-badge.premium { background: rgba(255,122,69,0.18); color: var(--accent-light); border: 1px solid rgba(255,122,69,0.35); }
+
+  .r-intel {
+    display: grid; gap: 12px;
+  }
+  .intel-hero {
+    display: grid; grid-template-columns: 86px 1fr; gap: 14px; align-items: center;
+    padding: 14px;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,0.10), transparent 34%),
+      radial-gradient(circle at 86% 0%, rgba(255,122,69,0.18), transparent 40%),
+      linear-gradient(135deg, rgba(250,248,241,0.08), rgba(79,209,197,0.045));
+    border: 1px solid rgba(250,248,241,0.13);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+  }
+  .intel-hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 18%, rgba(255,255,255,0.06) 48%, transparent 78%);
+    pointer-events: none;
+  }
+  .intel-score {
+    --score: 86;
+    width: 76px; aspect-ratio: 1; border-radius: 50%;
+    display: grid; place-items: center;
+    background:
+      radial-gradient(circle, #11162f 0 55%, transparent 56%),
+      conic-gradient(var(--cool) calc(var(--score) * 1%), rgba(250,248,241,0.10) 0);
+    box-shadow: 0 0 26px rgba(79,209,197,0.20), 0 1px 0 rgba(255,255,255,0.14) inset;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .intel-copy { position: relative; z-index: 1; min-width: 0; }
+  .intel-kicker {
+    display: block;
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 700;
+    color: var(--cool); letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .intel-title { font-size: 17px; line-height: 1.15; font-weight: 800; color: var(--paper); margin-bottom: 4px; }
+  .intel-sub { font-size: 11.5px; line-height: 1.45; color: rgba(250,248,241,0.58); }
+  .intel-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px;
+  }
+  .intel-card {
+    min-height: 74px;
+    padding: 11px 12px;
+    border: 1px solid rgba(250,248,241,0.11);
+    border-radius: var(--radius-sm);
+    background: rgba(250,248,241,0.045);
+  }
+  .intel-card span {
+    display: block;
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: rgba(250,248,241,0.42);
+    margin-bottom: 6px;
+  }
+  .intel-card b {
+    display: block;
+    color: var(--paper);
+    font-size: 12.5px;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .intel-card em {
+    display: block;
+    font-style: normal;
+    color: rgba(250,248,241,0.50);
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+  .intel-strip {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+  }
+  .intel-pill {
+    min-width: 0;
+    text-align: center;
+    padding: 7px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(250,248,241,0.10);
+    background: rgba(250,248,241,0.045);
+    color: rgba(250,248,241,0.58);
+    font-family: var(--font-mono);
+    font-size: 9.2px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .intel-pill.ok { color: var(--cool); border-color: rgba(79,209,197,0.28); background: rgba(79,209,197,0.08); }
+  .intel-pill.warn { color: var(--accent-light); border-color: rgba(255,122,69,0.30); background: rgba(255,122,69,0.10); }
+
+  .r-visibility-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+    margin-top: 12px;
+  }
+  .vis-card {
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(250,248,241,0.11);
+    background:
+      radial-gradient(circle at 85% 0%, rgba(79,209,197,0.10), transparent 42%),
+      rgba(250,248,241,0.045);
+  }
+  .vis-card span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 8.8px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: rgba(250,248,241,0.42);
+    margin-bottom: 5px;
+  }
+  .vis-card b {
+    display: block;
+    color: var(--paper);
+    font-size: 12px;
+    line-height: 1.15;
+  }
+  .vis-card em {
+    display: block;
+    font-style: normal;
+    color: rgba(250,248,241,0.50);
+    font-size: 10px;
+    line-height: 1.35;
+    margin-top: 4px;
+  }
+
+  .r-tabs {
+    display: flex; gap: 4px; padding: 3px;
+    background: rgba(250,248,241,0.06);
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: 9px; margin-bottom: 14px;
+  }
+  .r-tab {
+    flex: 1; padding: 7px 8px; border: 0; background: transparent;
+    color: rgba(250,248,241,0.55);
+    font-family: var(--font-body); font-size: 11px; font-weight: 600;
+    border-radius: 6px; cursor: pointer; transition: all var(--transition);
+    letter-spacing: 0.02em;
+  }
+  .r-tab:hover { color: var(--paper); }
+  .r-tab.active {
+    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    color: #fff; box-shadow: 0 6px 14px rgba(255,122,69,0.40);
+  }
+  .r-pane { display: none; }
+  .r-pane.active { display: block; animation: fadeUp 320ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+
+  .r-pickup {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 12px; margin-bottom: 12px;
+    background: rgba(250,248,241,0.05);
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px; color: rgba(250,248,241,0.70);
+  }
+  .r-pickup label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: rgba(250,248,241,0.55);
+  }
+  .r-pickup input[type="date"] {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(250,248,241,0.16);
+    color: var(--paper); font-family: var(--font-mono); font-size: 12px;
+    padding: 5px 8px; border-radius: 7px; outline: none;
+    color-scheme: dark;
+  }
+  .r-pickup input[type="date"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .r-pickup #deliveryEta { margin-left: auto; color: var(--cool); font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; }
+
+  .r-density {
+    margin-bottom: 12px; padding: 10px 12px;
+    background: rgba(250,248,241,0.045);
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: var(--radius-sm);
+  }
+  .r-density-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: rgba(250,248,241,0.55); margin-bottom: 8px;
+  }
+  .r-density-head em { font-style: normal; color: var(--paper); font-weight: 700; font-size: 11.5px; letter-spacing: 0.02em; }
+  .dens-badge {
+    padding: 2px 7px; border-radius: 999px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    background: rgba(250,248,241,0.08); color: rgba(250,248,241,0.65);
+  }
+  .dens-badge.low { background: rgba(255,122,69,0.18); color: var(--accent-light); border: 1px solid rgba(255,122,69,0.30); }
+  .dens-badge.mid { background: rgba(250,248,241,0.10); color: var(--paper); border: 1px solid rgba(250,248,241,0.18); }
+  .dens-badge.high { background: rgba(79,209,197,0.18); color: var(--cool); border: 1px solid rgba(79,209,197,0.30); }
+  .r-density-bar {
+    height: 6px; border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255,122,69,0.20), rgba(250,248,241,0.10), rgba(79,209,197,0.20));
+    position: relative; overflow: hidden;
+  }
+  .r-density-fill {
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light) 40%, var(--cool));
+    transition: width 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    box-shadow: 0 0 12px rgba(255,165,114,0.45);
+  }
+  .r-density-scale {
+    display: flex; justify-content: space-between;
+    margin-top: 6px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: rgba(250,248,241,0.40);
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  .r-book {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 16px; padding: 14px 18px;
+    background: linear-gradient(135deg, var(--accent) 0%, #ff5e2c 60%, var(--accent-deep) 100%);
+    color: #fff; font-size: 13.5px; font-weight: 700;
+    border-radius: 12px; text-decoration: none;
+    box-shadow: 0 6px 14px rgba(255,122,69,0.28), 0 1px 0 rgba(255,255,255,0.20) inset;
+    transition: transform var(--transition), box-shadow var(--transition);
+    position: relative; overflow: hidden; cursor: pointer; border: none;
+  }
+  .r-book::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.30) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 700ms ease;
+  }
+  .r-book:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(255,122,69,0.36), 0 1px 0 rgba(255,255,255,0.24) inset; }
+  .r-book:hover::before { transform: translateX(100%); }
+  .r-book svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal.open { display: flex; animation: modalFade .22s ease-out; }
+  @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+  .modal-backdrop { position: absolute; inset: 0; background: rgba(20, 24, 32, 0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; }
+  .modal-card {
+    position: relative; z-index: 2; width: 100%; max-width: 480px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));
+    backdrop-filter: blur(28px) saturate(140%); -webkit-backdrop-filter: blur(28px) saturate(140%);
+    border-radius: 22px; padding: 26px 24px 22px;
+    box-shadow: 0 30px 80px rgba(10,14,22,0.35), 0 1px 0 rgba(255,255,255,0.9) inset;
+    border: 1px solid rgba(255,255,255,0.7);
+    animation: modalPop .26s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes modalPop { from { transform: translateY(20px) scale(.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+  .modal-close {
+    position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(20,24,32,0.06); border: none; color: var(--ink, #1a1f2b); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: background .15s;
+  }
+  .modal-close:hover { background: rgba(20,24,32,0.12); }
+  .modal-close svg { width: 16px; height: 16px; }
+  .modal-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent, #ff7a45); font-weight: 700; margin-bottom: 6px; }
+  .modal-title { font-size: 20px; font-weight: 800; margin: 0 0 6px; color: var(--ink, #1a1f2b); line-height: 1.25; }
+  .modal-sub { font-size: 13px; color: rgba(20,24,32,0.65); margin: 0 0 16px; line-height: 1.45; }
+  .modal-summary {
+    background: rgba(20,24,32,0.04); border-radius: 12px; padding: 12px 14px;
+    font-size: 12.5px; line-height: 1.6; color: rgba(20,24,32,0.78);
+    margin-bottom: 14px; white-space: pre-line; max-height: 140px; overflow-y: auto;
+  }
+  .booking-form {
+    display: grid; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .booking-form-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .booking-field {
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .booking-field label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(20,24,32,0.52);
+  }
+  .booking-field input,
+  .booking-field textarea {
+    width: 100%;
+    border: 1px solid rgba(20,24,32,0.10);
+    background: rgba(255,255,255,0.78);
+    color: var(--ink);
+    border-radius: 12px;
+    padding: 10px 11px;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .booking-field textarea { min-height: 70px; resize: vertical; }
+  .booking-field input:focus,
+  .booking-field textarea:focus {
+    border-color: rgba(255,122,69,0.55);
+    box-shadow: 0 0 0 3px rgba(255,122,69,0.12);
+  }
+  .modal-submit {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #11162f, #1f2a4d);
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(17,22,47,0.18), 0 1px 0 rgba(255,255,255,0.20) inset;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .modal-submit:hover { transform: translateY(-1px); box-shadow: 0 16px 34px rgba(17,22,47,0.24); }
+  .modal-submit.saved { background: linear-gradient(135deg, #0f9f78, #0e7490); }
+  .booking-status {
+    min-height: 18px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(20,24,32,0.60);
+  }
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-act {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+    background: #fff; border: 1px solid rgba(20,24,32,0.10); border-radius: 14px;
+    text-decoration: none; color: var(--ink, #1a1f2b); cursor: pointer; font-family: inherit;
+    text-align: left; transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .modal-act:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(20,24,32,0.12); border-color: rgba(20,24,32,0.18); }
+  .modal-act svg { width: 22px; height: 22px; flex-shrink: 0; stroke: var(--accent, #ff7a45); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .modal-act div { display: flex; flex-direction: column; min-width: 0; }
+  .modal-act b { font-size: 13.5px; font-weight: 700; }
+  .modal-act span { font-size: 11px; color: rgba(20,24,32,0.55); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .modal-act.primary { background: linear-gradient(135deg, #ff7a45, #ff5a7a); border-color: transparent; color: #fff; }
+  .modal-act.primary svg { stroke: #fff; }
+  .modal-act.primary span { color: rgba(255,255,255,0.85); }
+  .modal-act.primary:hover { box-shadow: 0 14px 30px rgba(255,122,69,0.45); }
+  .modal-act.copied b { color: #10b981; }
+  .modal-act.copied.primary b { color: #fff; }
+
+  @media (max-width: 520px) {
+    .modal { padding: 0; align-items: flex-end; }
+    .modal-card { max-width: none; border-radius: 22px 22px 0 0; padding: 22px 18px 26px; max-height: 92vh; overflow-y: auto; }
+    .modal-actions { grid-template-columns: 1fr; }
+    .booking-form-row { grid-template-columns: 1fr; }
+    .modal-act { padding: 14px 16px; }
+    .modal-act b { font-size: 14.5px; }
+    .modal-title { font-size: 18px; }
+  }
+
+  @media (max-width: 600px) {
+    .r-chips { gap: 6px; }
+    .r-chip { min-width: 100px; padding: 9px 10px; }
+    .r-chip .val { font-size: 12.5px; }
+    .intel-hero { grid-template-columns: 68px 1fr; gap: 11px; padding: 12px; }
+    .intel-score { width: 62px; font-size: 18px; }
+    .intel-grid, .r-visibility-grid { grid-template-columns: 1fr; }
+    .intel-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .r-route { margin: 0 6px; height: 44px; }
+    .r-cmp-row { grid-template-columns: 74px 1fr 60px; gap: 8px; }
+    .r-stages { font-size: 9px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media print {
+    .scene { display: none !important; }
+    body { background: white !important; }
+    .add-piece-btn, .piece-remove, .r-actions, .footer-note,
+    .topbar-tools, .accessorials-toggle, .accessorials-content { display: none !important; }
+    .grid { grid-template-columns: 1fr 1fr !important; }
+    .result-card, .card { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background illustration: minimal logistics scene -->
+<div class="scene" aria-hidden="true">
+  <div class="scene-mesh"></div>
+  <div class="scene-depth"></div>
+  <div class="scene-grid"></div>
+  <div class="scene-aurora"></div>
+  <div class="scene-topography"></div>
+  <div class="scene-orbits"></div>
+  <div class="scene-particles"></div>
+  <div class="scene-radar"></div>
+  <div class="scene-sweep"></div>
+  <div class="scene-scan"></div>
+  <div class="scene-grain"></div>
+  <svg class="scene-route" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="hRouteGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0"/>
+        <stop offset="25%" stop-color="#ff7a45" stop-opacity="0.55"/>
+        <stop offset="75%" stop-color="#06d6a0" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="hSignalGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0.05"/>
+        <stop offset="44%" stop-color="#ff7a45" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0.16"/>
+      </linearGradient>
+      <linearGradient id="hAirGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="45%" stop-color="#ffffff" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="hPanelGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+        <stop offset="48%" stop-color="#ff7a45" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0.06"/>
+      </linearGradient>
+      <linearGradient id="hGlassGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+      </linearGradient>
+      <pattern id="hMicroGrid" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M80 0H0V80" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="0.8"/>
+        <path d="M20 0V80M40 0V80M60 0V80M0 20H80M0 40H80M0 60H80" fill="none" stroke="#4fd1c5" stroke-opacity="0.035" stroke-width="0.6"/>
+      </pattern>
+      <radialGradient id="hNodeWarm" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0.9"/>
+        <stop offset="55%" stop-color="#ff7a45" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#ff7a45" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="hNodeCool" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#06d6a0" stop-opacity="0.9"/>
+        <stop offset="55%" stop-color="#06d6a0" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0"/>
+      </radialGradient>
+      <symbol id="hTruck" viewBox="-22 -12 44 24">
+        <rect x="-20" y="-9" width="22" height="14" rx="2.5" fill="#ff7a45"/>
+        <rect x="2" y="-5" width="9" height="10" rx="1.5" fill="#fff" fill-opacity="0.94"/>
+        <rect x="3.5" y="-3.5" width="6" height="5" fill="#0c1024" fill-opacity="0.85"/>
+        <circle cx="-13" cy="7" r="3" fill="#0c1024"/>
+        <circle cx="-13" cy="7" r="1.4" fill="#ff7a45"/>
+        <circle cx="6" cy="7" r="3" fill="#0c1024"/>
+        <circle cx="6" cy="7" r="1.4" fill="#ff7a45"/>
+      </symbol>
+    </defs>
+    <rect class="h-grid-surface" x="-80" y="-80" width="1760" height="1060" fill="url(#hMicroGrid)"/>
+    <g class="h-land" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
+      <path d="M80 198 C240 146, 360 232, 520 196 S822 98, 1066 162 1380 114, 1540 174"/>
+      <path d="M-20 692 C198 610, 410 690, 590 620 S860 500, 1040 552 1272 708, 1640 596"/>
+      <path d="M218 808 C412 736, 572 842, 760 768 S1048 640, 1240 704 1462 806, 1680 728"/>
+      <path d="M92 360 C276 302, 484 398, 660 342 S910 220, 1126 292 1346 410, 1560 354"/>
+    </g>
+    <g class="h-air-lanes" fill="none" stroke="url(#hAirGrad)" stroke-width="1" stroke-linecap="round" opacity="0.78">
+      <path d="M40 126 C330 74, 600 148, 816 102 S1260 36, 1582 94"/>
+      <path d="M-40 276 C258 214, 520 286, 748 238 S1198 156, 1640 250"/>
+      <path d="M28 842 C356 764, 672 858, 960 780 S1302 684, 1608 728"/>
+    </g>
+    <g class="h-secondary-routes" fill="none" stroke-linecap="round" stroke-width="1.35">
+      <path d="M-120 438 C180 310, 438 410, 706 338 S1110 196, 1710 234" stroke="url(#hSignalGrad)" opacity="0.72"/>
+      <path d="M-80 710 C192 612, 428 626, 696 548 S1128 418, 1680 520" stroke="#4fd1c5" stroke-opacity="0.20"/>
+      <path d="M126 96 C310 276, 444 300, 642 462 S982 714, 1386 806" stroke="#ff7a45" stroke-opacity="0.22"/>
+    </g>
+    <g class="h-glass-panels" fill="url(#hPanelGrad)" stroke="#ffffff" stroke-opacity="0.10">
+      <path d="M94 184h176l42 44-34 92H104L68 254z" opacity="0.22"/>
+      <path d="M1050 118h210l58 54-44 108h-206l-52-70z" opacity="0.19"/>
+      <path d="M1280 668h198l50 46-38 92h-198l-42-60z" opacity="0.18"/>
+    </g>
+    <g class="h-sites" fill="url(#hGlassGrad)" stroke="#ffffff" stroke-opacity="0.14">
+      <g class="h-site" transform="translate(305 314) rotate(-8)">
+        <rect x="-54" y="-28" width="108" height="56" rx="6"/>
+        <path d="M-42 -12H42M-42 4H42M-42 20H18" stroke="#ff7a45" stroke-opacity="0.22" stroke-width="2"/>
+      </g>
+      <g class="h-site" transform="translate(900 250) rotate(6)">
+        <rect x="-66" y="-34" width="132" height="68" rx="7"/>
+        <path d="M-50 -14H50M-50 4H50M-50 22H12" stroke="#4fd1c5" stroke-opacity="0.22" stroke-width="2"/>
+      </g>
+      <g class="h-site" transform="translate(1226 610) rotate(-5)">
+        <rect x="-58" y="-30" width="116" height="60" rx="7"/>
+        <path d="M-44 -10H44M-44 8H44M-44 24H8" stroke="#ff7a45" stroke-opacity="0.20" stroke-width="2"/>
+      </g>
+    </g>
+    <g class="h-micro-nodes" fill="#ffffff">
+      <g class="h-micro-node"><circle cx="258" cy="248" r="3" fill="#ff7a45"/><circle cx="258" cy="248" r="12" fill="#ff7a45" opacity="0.08"/></g>
+      <g class="h-micro-node"><circle cx="462" cy="416" r="2.5" fill="#4fd1c5"/><circle cx="462" cy="416" r="10" fill="#4fd1c5" opacity="0.08"/></g>
+      <g class="h-micro-node"><circle cx="724" cy="336" r="2.5" fill="#ffffff"/><circle cx="724" cy="336" r="10" fill="#ffffff" opacity="0.06"/></g>
+      <g class="h-micro-node"><circle cx="982" cy="458" r="3" fill="#ff7a45"/><circle cx="982" cy="458" r="12" fill="#ff7a45" opacity="0.08"/></g>
+      <g class="h-micro-node"><circle cx="1138" cy="420" r="2.5" fill="#4fd1c5"/><circle cx="1138" cy="420" r="10" fill="#4fd1c5" opacity="0.08"/></g>
+      <g class="h-micro-node"><circle cx="1346" cy="394" r="3" fill="#ffffff"/><circle cx="1346" cy="394" r="11" fill="#ffffff" opacity="0.06"/></g>
+    </g>
+    <path d="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320" fill="none" stroke="#ff7a45" stroke-width="18" stroke-linecap="round" opacity="0.08"/>
+    <path id="hRoutePath" d="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320" fill="none" stroke="url(#hRouteGrad)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0 8 220 8" opacity="0.95">
+      <animate attributeName="stroke-dashoffset" from="0" to="-460" dur="16s" repeatCount="indefinite"/>
+    </path>
+    <g class="h-node h-node-a">
+      <circle cx="180" cy="540" r="54" fill="url(#hNodeWarm)"/>
+      <circle cx="180" cy="540" r="7" fill="#ff7a45"/>
+      <circle cx="180" cy="540" r="3" fill="#fff"/>
+    </g>
+    <g class="h-node h-node-b">
+      <circle cx="1500" cy="320" r="56" fill="url(#hNodeCool)"/>
+      <circle cx="1500" cy="320" r="7" fill="#06d6a0"/>
+      <circle cx="1500" cy="320" r="3" fill="#fff"/>
+    </g>
+    <g class="h-packet" opacity="0.9">
+      <circle r="4.5" fill="#ff7a45"/>
+      <circle r="12" fill="#ff7a45" opacity="0.10"/>
+      <animateMotion dur="7.5s" repeatCount="indefinite" path="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320"/>
+    </g>
+    <g class="h-packet cool" opacity="0.82">
+      <circle r="3.6" fill="#4fd1c5"/>
+      <circle r="10" fill="#4fd1c5" opacity="0.12"/>
+      <animateMotion dur="10.5s" begin="-3s" repeatCount="indefinite" path="M-80 710 C192 612, 428 626, 696 548 S1128 418, 1680 520"/>
+    </g>
+    <g class="h-packet cool" opacity="0.68">
+      <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#ffffff" fill-opacity="0.86"/>
+      <animateMotion dur="13s" begin="-6s" repeatCount="indefinite" path="M-120 438 C180 310, 438 410, 706 338 S1110 196, 1710 234"/>
+    </g>
+    <g class="h-truck">
+      <use href="#hTruck" width="56" height="30" x="-28" y="-15">
+        <animateMotion dur="24s" repeatCount="indefinite" rotate="auto" path="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320"/>
+      </use>
+    </g>
+  </svg>
+</div>
+
+<div class="page">
+  <header class="topbar">
+    <div class="wordmark">
+      <div class="wordmark-mark" aria-hidden="true">OKE</div>
+      <div class="wordmark-text">
+        <span class="brand"><span>Monte Design</span><em> Final Mile</em></span>
+      </div>
+    </div>
+    <div class="topbar-badge">Powered by One Kind Express</div>
+  </header>
+
+  <div id="loadingView" class="loader">Loading rate data…</div>
+
+  <div id="mainView" class="grid" style="display: none;">
+    <main class="card">
+      <h1 class="card-h1">National Final Mile Delivery Calculator <em>for Monte Design</em></h1>
+      <div class="card-sub">Powered by One Kind Express for national final-mile delivery quotes</div>
+
+      <div class="stepper" id="stepper" aria-label="Quote progress">
+        <div class="stepper-track"><div class="stepper-fill" id="stepperFill"></div></div>
+        <div class="stepper-dots">
+          <div class="stp-dot" data-step="lane"><span class="stp-num"><span class="stp-num-text">1</span></span><span class="stp-lbl">Lane</span></div>
+          <div class="stp-dot" data-step="service"><span class="stp-num"><span class="stp-num-text">2</span></span><span class="stp-lbl">Service</span></div>
+          <div class="stp-dot" data-step="items"><span class="stp-num"><span class="stp-num-text">3</span></span><span class="stp-lbl">Items</span></div>
+          <div class="stp-dot" data-step="book"><span class="stp-num"><span class="stp-num-text">4</span></span><span class="stp-lbl">Review</span></div>
+        </div>
+      </div>
+
+      <div class="section-label lane-control-head">
+        <span id="laneLabelHdr">Lane</span>
+        <div class="seg seg-sm" id="lhToggle">
+          <button class="seg-btn active" data-lh="line">Full quote</button>
+          <button class="seg-btn" data-lh="local">Final mile only</button>
+          <button class="seg-btn" data-lh="middle">Middle mile only</button>
+        </div>
+      </div>
+      <div class="lane-row" id="laneRow">
+        <div class="field autocomplete">
+          <label class="field-label" id="originLabel">Origin city</label>
+          <input type="text" id="originInput" class="mono" placeholder="Start typing…" autocomplete="off" />
+          <div class="autocomplete-list" id="originList"></div>
+        </div>
+        <div class="lane-arrow" id="laneArrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </div>
+        <div class="field autocomplete" id="destField">
+          <label class="field-label">Destination city</label>
+          <input type="text" id="destInput" class="mono" placeholder="Select origin first" autocomplete="off" disabled />
+          <div class="autocomplete-list" id="destList"></div>
+        </div>
+      </div>
+
+      <hr class="section-divider"/>
+
+      <div class="section-label">Service level</div>
+      <div class="svc-grid" id="svcGrid"></div>
+
+      <div class="measure-row">
+        <div>
+          <div class="section-label">Measurement</div>
+          <div class="seg" id="modeToggle">
+            <button class="seg-btn active" data-mode="dim">Dimensions</button>
+            <button class="seg-btn" data-mode="cf">Cubic feet</button>
+            <button class="seg-btn" data-mode="pallet">Pallets</button>
+          </div>
+        </div>
+        <div class="unit-pair">
+          <div>
+            <div class="section-label" style="margin-bottom: 6px;">Length</div>
+            <div class="seg-mini" id="lenUnitToggle">
+              <button class="seg-mini-btn active" data-unit="in">IN</button>
+              <button class="seg-mini-btn" data-unit="cm">CM</button>
+            </div>
+          </div>
+          <div>
+            <div class="section-label" style="margin-bottom: 6px;">Weight</div>
+            <div class="seg-mini" id="wtUnitToggle">
+              <button class="seg-mini-btn active" data-unit="lb">LB</button>
+              <button class="seg-mini-btn" data-unit="kg">KG</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top: 6px;">
+        Items · <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included · $25 each beyond</span>
+      </div>
+      <div class="pieces" id="piecesWrap"></div>
+      <button class="add-piece-btn" id="addPieceBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add another item
+      </button>
+
+      <hr class="section-divider"/>
+
+      <div class="accessorials-toggle" id="accToggle">
+        <div class="at-left">
+          <div class="at-icon">+</div>
+          <div class="at-name">Additional services</div>
+        </div>
+        <div class="at-right">
+          <span class="at-count" id="accCount">0 selected</span>
+          <span class="at-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+      <div class="accessorials-content" id="accContent">
+        <div class="acc-list" id="accList"></div>
+      </div>
+    </main>
+
+    <aside>
+      <div class="result-card">
+        <div id="resultEmpty" class="r-empty">
+          <div class="r-empty-icon">→</div>
+          <div class="r-empty-title">A few quick details first.</div>
+          <div class="r-empty-sub">Fill these in and your live quote will appear here.</div>
+          <ul class="r-checklist" id="rChecklist">
+            <li data-key="origin"><span class="rc-mark" aria-hidden="true"></span><span class="rc-label">Origin city</span></li>
+            <li data-key="dest"><span class="rc-mark" aria-hidden="true"></span><span class="rc-label">Destination city</span></li>
+            <li data-key="service"><span class="rc-mark" aria-hidden="true"></span><span class="rc-label">Service level</span></li>
+            <li data-key="items"><span class="rc-mark" aria-hidden="true"></span><span class="rc-label">Item weight &amp; dimensions</span></li>
+          </ul>
+        </div>
+        <div id="resultContent" style="display:none;">
+          <div class="r-label">Your live quote · <span id="quoteRef" style="color:rgba(250,248,241,0.40);font-family:var(--font-mono);">#—</span></div>
+          <div class="r-total" id="grandTotal">$0.00</div>
+          <div class="r-total-sub">Lane: <em id="laneLabel">—</em></div>
+
+          <div class="r-chips">
+            <div class="r-chip fast">
+              <span class="label"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ETA</span>
+              <span class="val" id="etaOut">—</span>
+            </div>
+            <div class="r-chip eco" id="co2Chip" title="Estimated CO₂e emissions for this shipment, based on billable weight and route distance. About a third lower than the trucking-industry baseline for similar loads.">
+              <span class="label"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13a7 7 0 0 1 13.94-1"/><path d="M17 8V3l3 3"/></svg> Est. emissions</span>
+              <span class="val" id="co2Out">—</span>
+              <span class="aw-sub" id="co2Sub" style="font-family:var(--font-body);font-size:9.5px;color:rgba(250,248,241,0.45);letter-spacing:0.02em;margin-top:1px;">vs avg trucking</span>
+            </div>
+            <div class="r-chip">
+              <span class="label"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Volume</span>
+              <span class="val" id="volOut">—</span>
+            </div>
+          </div>
+
+          <div class="r-pickup">
+            <label for="pickupDate">Preferred pickup</label>
+            <input type="date" id="pickupDate" />
+            <span id="deliveryEta">—</span>
+          </div>
+
+          <div class="r-density">
+            <div class="r-density-head">
+              <span>Density · <em id="densityVal">— lb/ft³</em></span>
+              <span id="densityBadge" class="dens-badge">—</span>
+            </div>
+            <div class="r-density-bar"><div class="r-density-fill" id="densityFill" style="width: 0%;"></div></div>
+            <div class="r-density-scale"><span>Light · dim weight</span><span>Dense</span></div>
+          </div>
+
+          <div class="r-tabs" role="tablist">
+            <button class="r-tab active" data-pane="breakdown">Breakdown</button>
+            <button class="r-tab" data-pane="intel">Intel</button>
+            <button class="r-tab" data-pane="journey">Journey</button>
+            <button class="r-tab" data-pane="compare">Compare</button>
+          </div>
+
+          <div class="r-pane active" id="pane-breakdown">
+
+          <div class="lane-info" id="laneInfo" style="display: none;">
+            <div class="lane">
+              <span id="originOut">—</span><span class="arrow">→</span><span id="destOut">—</span>
+              <span class="svc-pill" id="svcPill">—</span>
+            </div>
+          </div>
+
+          <div class="r-box">
+            <div class="r-row"><span class="l">Actual weight</span><span class="v" id="actualWtOut">0 lbs</span></div>
+            <div class="r-row"><span class="l">Cubic feet</span><span class="v" id="cubicFtOut">0.00 ft³</span></div>
+            <div class="r-row"><span class="l">Dim weight</span><span class="v" id="dimWtOut">0 lbs</span></div>
+            <div class="r-row win"><span class="l">Billable weight</span><span class="v" id="billableOut">0 lbs</span></div>
+            <div class="dim-callout" id="dimCallout"><strong>Dimensional weight applies.</strong> Bulky low-density freight billed by volume.</div>
+          </div>
+
+          <div class="r-breakdown">
+            <div class="b-row"><span class="l" id="baseLabelOut">Base delivery</span><span class="v" id="baseOut">$0.00</span></div>
+            <div class="b-row" id="extraPieceRow" style="display:none;"><span class="l">Extra items</span><span class="v" id="extraPieceOut">$0.00</span></div>
+            <div class="b-row" id="accBreakdownRow" style="display:none;"><span class="l">Additional services</span><span class="v" id="accAmountOut">$0.00</span></div>
+            <div class="b-row subtotal"><span class="l">Subtotal</span><span class="v" id="subtotalOut">$0.00</span></div>
+            <div class="b-row">
+              <span class="l">
+                Fuel surcharge
+                <span class="pct-input-wrap">
+                  <input type="text" inputmode="decimal" id="fscInput" value="0" />
+                  <span class="pct-suffix">%</span>
+                </span>
+              </span>
+              <span class="v" id="fscAmountOut">$0.00</span>
+            </div>
+            <div class="b-row grand"><span class="l">Total before tax</span><span class="v" id="grandTotal2">$0.00</span></div>
+            <div class="b-row">
+              <span class="l">Tax</span>
+              <select id="taxSelect" class="tax-select" aria-label="Canadian tax selection"></select>
+            </div>
+            <div class="b-row"><span class="l" id="taxLabel">Tax amount</span><span class="v" id="taxAmountOut">$0.00</span></div>
+            <div class="b-row grand"><span class="l">Total after tax</span><span class="v" id="totalAfterTaxOut">$0.00</span></div>
+          </div>
+          </div><!-- /pane-breakdown -->
+
+          <div class="r-pane" id="pane-intel">
+            <div class="r-intel">
+              <div class="intel-hero">
+                <div class="intel-score" id="intelScore" style="--score: 86;"><span id="intelScoreVal">86</span></div>
+                <div class="intel-copy">
+                  <span class="intel-kicker">Quote intelligence</span>
+                  <div class="intel-title" id="intelTitle">Ready to route</div>
+                  <div class="intel-sub" id="intelSummary">Lane, handling, and billing signals are aligned for booking.</div>
+                </div>
+              </div>
+              <div class="intel-grid">
+                <div class="intel-card">
+                  <span>Billing method</span>
+                  <b id="intelBilling">Actual weight</b>
+                  <em id="intelBillingSub">Billable weight selected automatically.</em>
+                </div>
+                <div class="intel-card">
+                  <span>Lane mode</span>
+                  <b id="intelLane">Line haul + final mile</b>
+                  <em id="intelLaneSub">Full delivery flow is active.</em>
+                </div>
+                <div class="intel-card">
+                  <span>Rate guard</span>
+                  <b id="intelMargin">Rate floor covered</b>
+                  <em id="intelMarginSub">Current sell logic is applied.</em>
+                </div>
+                <div class="intel-card">
+                  <span>Next action</span>
+                  <b id="intelAction">Booking-ready</b>
+                  <em id="intelActionSub">Summary and contact actions are prepared.</em>
+                </div>
+              </div>
+              <div class="intel-strip">
+                <span class="intel-pill ok" id="intelPillLane">Lane ok</span>
+                <span class="intel-pill ok" id="intelPillDims">Dims ok</span>
+                <span class="intel-pill" id="intelPillFuel">Fuel manual</span>
+                <span class="intel-pill" id="intelPillTax">Tax optional</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="r-pane" id="pane-journey">
+            <div class="r-journey">
+              <div class="r-journey-head">
+                <span>Shipment journey</span>
+                <span class="est" id="etaPill">— transit days</span>
+              </div>
+              <div class="r-route" id="rRoute">
+                <div class="r-route-line"></div>
+                <div class="r-route-stop" style="left: 4%;"></div>
+                <div class="r-route-stop mid" data-mid style="left: 35%;"></div>
+                <div class="r-route-stop mid" data-mid style="left: 65%;"></div>
+                <div class="r-route-stop end" style="left: 96%;"></div>
+                <svg class="r-route-truck" viewBox="-22 -12 44 24" aria-hidden="true">
+                  <rect x="-20" y="-9" width="22" height="14" rx="2" fill="#ff7a45" stroke="#fff" stroke-opacity="0.5" stroke-width="0.8"/>
+                  <rect x="2" y="-5" width="9" height="10" rx="1.5" fill="#fff"/>
+                  <rect x="3.5" y="-3.5" width="6" height="5" fill="#0c1024"/>
+                  <circle cx="-13" cy="7" r="3" fill="#0c1024" stroke="#ff7a45" stroke-width="1"/>
+                  <circle cx="6" cy="7" r="3" fill="#0c1024" stroke="#ff7a45" stroke-width="1"/>
+                </svg>
+              </div>
+              <div class="r-route-labels">
+                <div><b id="jOrigin">Origin</b><span id="jOriginSub">Pickup point</span></div>
+                <div class="to"><b id="jDest">Destination</b><span id="jDestSub">Final mile delivery</span></div>
+              </div>
+              <div class="r-stages" id="rStages">
+                <span class="on">Pickup</span>
+                <span>Line haul</span>
+                <span>Sort hub</span>
+                <span>Delivered</span>
+              </div>
+              <div class="r-visibility-grid">
+                <div class="vis-card">
+                  <span>ETA confidence</span>
+                  <b id="visEta">Balanced</b>
+                  <em id="visEtaSub">Window updates with lane distance.</em>
+                </div>
+                <div class="vis-card">
+                  <span>Handoff</span>
+                  <b id="visHandoff">Pickup to delivery</b>
+                  <em id="visHandoffSub">Stops adapt to quote mode.</em>
+                </div>
+                <div class="vis-card">
+                  <span>Customer flow</span>
+                  <b id="visCustomer">Summary ready</b>
+                  <em id="visCustomerSub">Booking details are prepared.</em>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="r-pane" id="pane-compare">
+            <div class="r-compare">
+              <div class="r-compare-head">
+                <span>Service level comparison</span>
+                <span class="hint">tap to switch</span>
+              </div>
+              <div id="cmpRows"></div>
+            </div>
+          </div>
+
+          <button class="r-book" id="bookBtn" type="button">
+            <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+            <span>Request this booking</span>
+          </button>
+
+          <div class="r-actions">
+            <button class="r-btn" id="copyBtn">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy</span>
+            </button>
+            <button class="r-btn" id="shareBtn">
+              <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span>Share</span>
+            </button>
+            <button class="r-btn" id="saveQuoteBtn">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>Save</span>
+            </button>
+            <button class="r-btn" id="printBtn">
+              <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print
+            </button>
+            <button class="r-btn" id="resetBtn">
+              <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="mobile-cta" id="mobileCta" aria-hidden="true">
+    <div class="mc-info">
+      <span class="mc-label">Live total</span>
+      <span class="mc-total" id="stickyTotal">$0.00</span>
+    </div>
+    <button class="mc-btn" id="mobileBookBtn" type="button">
+      <span>Book</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+
+  <canvas class="confetti-canvas" id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <div class="modal" id="bookModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+      <button class="modal-close" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+      <div class="modal-label">Booking request</div>
+      <h2 class="modal-title" id="bookTitle">Send this quote to One Kind Express</h2>
+      <p class="modal-sub">Pick how you'd like to send it. We'll prepare the message with your quote details — you confirm before sending.</p>
+
+      <div class="modal-summary" id="modalSummary"></div>
+
+      <div class="booking-form" id="bookingForm">
+        <div class="booking-form-row">
+          <div class="booking-field">
+            <label for="bookingName">Name</label>
+            <input id="bookingName" type="text" autocomplete="name" placeholder="Contact name" />
+          </div>
+          <div class="booking-field">
+            <label for="bookingPhone">Phone</label>
+            <input id="bookingPhone" type="tel" autocomplete="tel" placeholder="Phone number" />
+          </div>
+        </div>
+        <div class="booking-field">
+          <label for="bookingEmail">Email</label>
+          <input id="bookingEmail" type="email" autocomplete="email" placeholder="Email address" />
+        </div>
+        <div class="booking-field">
+          <label for="bookingNotes">Notes</label>
+          <textarea id="bookingNotes" placeholder="Pickup/delivery details, access notes, timing, or questions"></textarea>
+        </div>
+        <button class="modal-submit" id="bookingSubmit" type="button">Confirm this booking</button>
+        <div class="booking-status" id="bookingStatus" aria-live="polite"></div>
+      </div>
+
+      <div class="modal-actions">
+        <a class="modal-act primary" id="mEmail" href="#" target="_top" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+          <div><b>Email</b><span>info@onekindexpress.com</span></div>
+        </a>
+        <a class="modal-act" id="mCall" href="tel:+18336535777" target="_top">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div><b>Call</b><span>1-833-653-5777</span></div>
+        </a>
+        <button class="modal-act" id="mCopy" type="button">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <div><b id="mCopyLabel">Copy details</b><span>Paste into any chat</span></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note" id="footerNote" style="display:none;">Monte Design National Final Mile Calculator - One Kind Express</div>
+</div>
+
+<!-- rate data now lives in Supabase (table public.lane_rates) -->
+
+<script>
+// ============================================================
+// SUPABASE — RATES + QUOTES live server-side
+// ============================================================
+//
+// Rates have moved off the HTML for two reasons:
+//   1. Competitive: 6,332 lane prices in a public file = free intel for rivals.
+//   2. Operations: rate updates are one SQL run, not a code deploy.
+//
+// The client now talks to three RPCs:
+//   - list_origins()                              -> origin city list
+//   - list_destinations(origin)                   -> destinations served from an origin
+//   - calculate_line_haul(o, d, billable_lbs)     -> cheapest cwt column + min-charge guard
+//
+// All RPCs are SECURITY DEFINER; the lane_rates table is closed to anon.
+// ============================================================
+
+const MONTE_CONFIG = window.MONTE_CONFIG || {
+  // Public viewer URL for share links. Set to your customer host
+  // (e.g. "https://monte.onekindexpress.com/q"). Falls back to current location.
+  shareBase: null,
+  // Slack notify is wired via the notify-slack Edge Function (no secret in browser).
+  slackNotifyOnSave: true,
+  slackNotifyOnView: false
+};
+
+// ============================================================
+// monteAuth — minimal session bootstrap (magic-link UX lives on my-quotes.html)
+// ============================================================
+const monteAuth = {
+  bootFromStorage() {
+    try {
+      const raw = localStorage.getItem('monteSession');
+      if (!raw) return null;
+      const sess = JSON.parse(raw);
+      if (!sess || !sess.access_token) return null;
+      // expires_at is seconds since epoch from Supabase
+      if (sess.expires_at && Date.now() / 1000 > sess.expires_at - 30) {
+        localStorage.removeItem('monteSession');
+        return null;
+      }
+      window._monteSession = sess;
+      return sess;
+    } catch (e) { return null; }
+  },
+  signOut() {
+    localStorage.removeItem('monteSession');
+    window._monteSession = null;
+  },
+  user() {
+    return window._monteSession && window._monteSession.user || null;
+  }
+};
+
+// Per-browser device id used to "claim" anonymous quotes after login.
+function getDeviceId() {
+  let id = localStorage.getItem('monteDeviceId');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    localStorage.setItem('monteDeviceId', id);
+  }
+  return id;
+}
+
+// Fire-and-forget Slack notification (calls the notify-slack Edge Function).
+async function notifySlack(event, payload) {
+  if (!MONTE_CONFIG.slackNotifyOnSave && event === 'quote.saved') return;
+  if (!MONTE_CONFIG.slackNotifyOnView && event === 'quote.viewed') return;
+  const cfg = sbCfg();
+  if (!cfg) return;
+  try {
+    await fetch(`${cfg.url}/functions/v1/notify-slack`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+      body: JSON.stringify({ event, payload })
+    });
+  } catch (e) { /* swallow */ }
+}
+
+function sbCfg() {
+  const cfg = window.MONTE_SUPABASE || {};
+  if (!cfg.url || !cfg.anonKey) return null;
+  return { url: String(cfg.url).replace(/\/+$/, ''), anonKey: String(cfg.anonKey) };
+}
+
+async function sbRpc(name, params = {}) {
+  const cfg = sbCfg();
+  if (!cfg) throw new Error('Supabase not configured');
+  const headers = {
+    apikey: cfg.anonKey,
+    Authorization: `Bearer ${cfg.anonKey}`,
+    'Content-Type': 'application/json'
+  };
+  if (window._monteSession && window._monteSession.access_token) {
+    headers.Authorization = `Bearer ${window._monteSession.access_token}`;
+  }
+  const res = await fetch(`${cfg.url}/rest/v1/rpc/${name}`, {
+    method: 'POST', headers, body: JSON.stringify(params)
+  });
+  if (!res.ok) throw new Error(`${name}: ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+let ORIGINS = [];
+const DEST_CACHE = Object.create(null);   // { origin: [destinations] }
+const LANE_CACHE = Object.create(null);   // { 'origin||dest||billable': result }
+// RATES proxy preserves the few `RATES[origin]` lookups in legacy code paths.
+const RATES = new Proxy({}, {
+  get(_t, key) {
+    if (typeof key !== 'string') return undefined;
+    const dests = DEST_CACHE[key];
+    return dests ? dests.map(d => [d]) : undefined;
+  },
+  has(_t, key) { return typeof key === 'string' && !!DEST_CACHE[key]; }
+});
+
+async function loadOrigins() {
+  const list = await sbRpc('list_origins');
+  return Array.isArray(list) ? list.map(r => typeof r === 'string' ? r : r.list_origins || r).filter(Boolean) : [];
+}
+
+async function fetchDestinations(origin) {
+  if (DEST_CACHE[origin]) return DEST_CACHE[origin];
+  const list = await sbRpc('list_destinations', { p_origin: origin });
+  DEST_CACHE[origin] = Array.isArray(list)
+    ? list.map(r => typeof r === 'string' ? r : r.list_destinations || r).filter(Boolean)
+    : [];
+  return DEST_CACHE[origin];
+}
+
+async function fetchLaneQuote(origin, destination, billable) {
+  const billableInt = Math.max(1, Math.ceil(billable || 0));
+  const key = `${origin}||${destination}||${billableInt}`;
+  if (LANE_CACHE[key]) return LANE_CACHE[key];
+  const rows = await sbRpc('calculate_line_haul', {
+    p_origin: origin, p_destination: destination, p_billable_lbs: billableInt
+  });
+  const row = Array.isArray(rows) ? rows[0] : rows;
+  if (!row || row.lane_found === false) { LANE_CACHE[key] = null; return null; }
+  const parsed = {
+    middleMileSell: Number(row.middle_mile_sell) || 0,
+    cwtCol:    row.cwt_col,
+    cwtRate:   Number(row.cwt_rate) || 0,
+    weightCharge: Number(row.weight_charge) || 0,
+    min:       Number(row.min_charge) || 0
+  };
+  LANE_CACHE[key] = parsed;
+  return parsed;
+}
+
+// Most recent server-resolved lane quote, indexed by origin+dest+billable.
+// computeQuote() reads from this; nothing else needed for the sync path.
+let CURRENT_LANE_QUOTE = null;
+
+// ============================================================
+// CLIENT STATE
+// ============================================================
+
+// ============================================================
+// SERVICE LEVELS
+// ============================================================
+const SERVICE_LEVELS = [
+  { id: 'curbside',    name: 'Curbside',       desc: 'Driveway / first dry area',  defaultPrice: 164.85 },
+  { id: 'threshold',   name: 'Threshold',      desc: 'Inside front door',          defaultPrice: 191.63 },
+  { id: 'roc',         name: 'Room of Choice', desc: 'Carried to chosen room',     defaultPrice: 208.52 },
+  { id: 'whiteGlove',  name: 'White Glove',    desc: 'Unbox / assemble / debris',  defaultPrice: 231.00 },
+];
+
+// ============================================================
+// ADDITIONAL SERVICES
+// ============================================================
+const ACCESSORIALS = [
+  { id: 'stairs',       name: 'Stairs (per flight, beyond 1st)',       default: 12,  qty: true,  qtyLabel: 'flights' },
+  { id: 'doorRemoval',  name: 'Door removal (per door)',               default: 25,  qty: true,  qtyLabel: 'doors' },
+  { id: 'haulAway',     name: 'Haul-away / disposal (per piece)',      default: 75,  qty: true,  qtyLabel: 'pieces' },
+  { id: 'dedicatedAppt',name: 'Dedicated delivery / appointment',      default: 500, qty: false },
+  { id: 'heavyItem',    name: 'Heavy item (>200 lbs / piece)',         default: 195, qty: true,  qtyLabel: 'items' },
+  { id: 'returnsPrep',  name: 'Returns prep / repacking',              default: 65,  qty: true,  qtyLabel: 'pieces' },
+  { id: 'tvRemoval',    name: 'TV removal',                            default: 35,  qty: true,  qtyLabel: 'TVs' },
+  { id: 'extraMan',     name: 'Extra crew member (per hour)',          default: 75,  qty: true,  qtyLabel: 'hours' },
+];
+
+const TAX_OPTIONS = [
+  { id: 'none', label: 'No tax / exempt', rate: 0 },
+  { id: 'gst5', label: 'GST 5% (AB, NT, NU, YT)', rate: 5 },
+  { id: 'bc', label: 'BC 12% (GST + PST)', rate: 12 },
+  { id: 'mb', label: 'MB 12% (GST + RST)', rate: 12 },
+  { id: 'sk', label: 'SK 11% (GST + PST)', rate: 11 },
+  { id: 'on', label: 'ON HST 13%', rate: 13 },
+  { id: 'ns', label: 'NS HST 14%', rate: 14 },
+  { id: 'qc', label: 'QC 14.975% (GST + QST)', rate: 14.975 },
+  { id: 'hst15', label: 'HST 15% (NB, NL, PE)', rate: 15 },
+];
+
+// Middle-mile remains Day & Ross x 35%; final-mile agent sell prices use 40%.
+const MIDDLE_MILE_TABLE_MARKUP = 1.35;
+const FINAL_MILE_AGENT_MARKUP = 1.40;
+
+function loadAccPrices() {
+  const out = {};
+  for (const a of ACCESSORIALS) out[a.id] = a.default;
+  return out;
+}
+
+const state = {
+  origin: null,
+  destination: null,
+  laneMode: 'line',  // 'line' (origin → destination), 'local' (final mile only, single city), 'middle' (middle mile only, no final delivery)
+  service: null,
+  mode: 'dim',
+  lenUnit: 'in',
+  wtUnit: 'lb',
+  pieces: [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
+  fscPct: 0,
+  taxId: 'none',
+    dimFactor: 10,
+  extraPiece: 25,
+  servicePrices: {},
+  accPrices: loadAccPrices(),
+  accessorials: {}, // {id: {selected: true, qty: 2}}
+};
+
+for (const s of SERVICE_LEVELS) {
+  state.servicePrices[s.id] = s.defaultPrice;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const fmt = n => "$" + n.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtW = n => Math.round(n).toLocaleString("en-CA") + " lbs";
+const fmtCF = n => n.toFixed(2) + " ft³";
+const cmToIn = v => v / 2.54;
+const kgToLb = v => v / 0.45359237;
+const toInches = v => state.lenUnit === 'cm' ? cmToIn(v) : v;
+const toLbs = v => state.wtUnit === 'kg' ? kgToLb(v) : v;
+
+// Legacy callers expected a per-lane rate-column matrix; we now resolve server-side.
+// Returns the resolved single best column so existing render code keeps working.
+function getRatesForLane(origin, dest) {
+  if (!CURRENT_LANE_QUOTE) return null;
+  if (CURRENT_LANE_QUOTE.origin !== origin || CURRENT_LANE_QUOTE.destination !== dest) return null;
+  const q = CURRENT_LANE_QUOTE;
+  return {
+    destination: dest,
+    min: q.min,
+    ltl: q.cwtCol === 'LTL' ? q.cwtRate : null,
+    cwt1000: q.cwtCol === 'CWT 1k' ? q.cwtRate : null,
+    cwt2000: q.cwtCol === 'CWT 2k' ? q.cwtRate : null,
+    cwt5000: q.cwtCol === 'CWT 5k' ? q.cwtRate : null,
+    cwt10000: q.cwtCol === 'CWT 10k' ? q.cwtRate : null,
+    cwtCol: q.cwtCol,
+    cwtRate: q.cwtRate,
+    weightCharge: q.weightCharge
+  };
+}
+
+// Recompute the server-side line haul whenever lane or billable weight changes.
+// Debounced so typing into the weight field doesn't hammer the RPC.
+let _laneRpcSeq = 0;
+let _laneRpcTimer = null;
+function scheduleLaneQuoteRefresh() {
+  if (!state.origin || !state.destination || state.laneMode === 'local') {
+    CURRENT_LANE_QUOTE = null;
+    return;
+  }
+  // billable calc duplicated lightly from computeQuote — we just need a number
+  let actualWtLbs = 0, cubicFt = 0;
+  for (const p of state.pieces) {
+    actualWtLbs += computePieceActualWeight(p);
+    cubicFt += computePieceCF(p) * volumetricCount(p);
+  }
+  const dimWt = cubicFt * state.dimFactor;
+  const billable = Math.ceil(Math.max(actualWtLbs, dimWt, 1));
+  if (billable <= 1) return;
+
+  if (_laneRpcTimer) clearTimeout(_laneRpcTimer);
+  const seq = ++_laneRpcSeq;
+  _laneRpcTimer = setTimeout(async () => {
+    try {
+      const q = await fetchLaneQuote(state.origin, state.destination, billable);
+      if (seq !== _laneRpcSeq) return; // a newer request superseded us
+      CURRENT_LANE_QUOTE = q ? { ...q, origin: state.origin, destination: state.destination, billable } : null;
+      if (typeof render === 'function') render();
+    } catch (e) {
+      console.warn('lane fetch failed', e);
+    }
+  }, 180);
+}
+
+function piecesCount(p) {
+  if (state.mode === 'pallet') {
+    const pal = Number(p.pallets) > 0 ? Number(p.pallets) : 1;
+    const ipp = Number(p.itemsPerPallet) > 0 ? Number(p.itemsPerPallet) : 1;
+    return pal * ipp;
+  }
+  return Number(p.qty) > 0 ? Number(p.qty) : 1;
+}
+
+// For volume/weight aggregation: pallets count the pallet unit, not the inner items.
+function volumetricCount(p) {
+  if (state.mode === 'pallet') {
+    return Number(p.pallets) > 0 ? Number(p.pallets) : 1;
+  }
+  return Number(p.qty) > 0 ? Number(p.qty) : 1;
+}
+
+function computePieceCF(p) {
+  if (state.mode === 'cf') return Number(p.cf) || 0;
+  const L = Number(p.L) || 0, W = Number(p.W) || 0, H = Number(p.H) || 0;
+  if (L > 0 && W > 0 && H > 0) {
+    const Lin = toInches(L), Win = toInches(W), Hin = toInches(H);
+    return (Lin * Win * Hin) / 1728;
+  }
+  return 0;
+}
+
+function computePieceActualWeight(p) {
+  const weight = toLbs(Number(p.weight) || 0);
+  return state.mode === 'pallet' ? weight * volumetricCount(p) : weight;
+}
+
+function computePieceLinearFt(p) {
+  if (state.mode === 'cf') return 0;
+  const L = Number(p.L) || 0, W = Number(p.W) || 0;
+  if (L <= 0 || W <= 0) return 0;
+  const Lin = toInches(L), Win = toInches(W);
+  return Math.ceil(((Lin * Win) / (96 * 12)) * 2) / 2 * volumetricCount(p);
+}
+
+function hasPricedItem() {
+  return state.pieces.some(p => {
+    if (state.mode === 'cf') return Number(p.cf) > 0;
+    if (state.mode === 'pallet') return Number(p.weight) > 0 && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0 && Number(p.pallets) > 0;
+    return Number(p.weight) > 0 && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0;
+  });
+}
+
+function totalPieceCount() {
+  let n = 0;
+  for (const p of state.pieces) n += piecesCount(p);
+  return n;
+}
+
+// ============================================================
+// AUTOCOMPLETE
+// ============================================================
+function setupAutocomplete(inputId, listId, getItems, onSelect) {
+  const input = $(inputId);
+  const list = $(listId);
+  let activeIdx = -1;
+  let currentItems = [];
+
+  function render(query) {
+    const all = getItems();
+    const q = query.trim().toUpperCase();
+    currentItems = q ? all.filter(it => it.label.toUpperCase().includes(q)) : all;
+    if (currentItems.length === 0) {
+      list.innerHTML = `<div class="ac-empty">No matches</div>`;
+    } else {
+      list.innerHTML = currentItems.map((it, i) => {
+        const label = q
+          ? it.label.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), m => `<span class="match">${m}</span>`)
+          : it.label;
+        const ct = it.count ? `<span class="ac-count">${it.count}</span>` : '';
+        return `<div class="ac-item" data-idx="${i}"><span class="ac-label">${label}</span>${ct}</div>`;
+      }).join('');
+    }
+    activeIdx = -1;
+    list.classList.add('open');
+    list.querySelectorAll('.ac-item').forEach(el => {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        pick(Number(el.dataset.idx));
+      });
+    });
+  }
+  function pick(idx) {
+    if (idx < 0 || idx >= currentItems.length) return;
+    const it = currentItems[idx];
+    input.value = it.label;
+    list.classList.remove('open');
+    onSelect(it.label);
+  }
+  function updateActive() {
+    list.querySelectorAll('.ac-item').forEach((el, i) => {
+      el.classList.toggle('active', i === activeIdx);
+      if (i === activeIdx) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+  input.addEventListener('input', e => render(e.target.value));
+  input.addEventListener('focus', e => render(e.target.value));
+  input.addEventListener('blur', () => setTimeout(() => list.classList.remove('open'), 160));
+  input.addEventListener('keydown', e => {
+    const items = list.querySelectorAll('.ac-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, items.length-1); updateActive(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); updateActive(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (activeIdx>=0) pick(activeIdx); else if (currentItems.length===1) pick(0); }
+    else if (e.key === 'Escape') list.classList.remove('open'); 
+  });
+}
+
+// ============================================================
+// PRICING
+//
+// Strategy:
+//   1. Compute billable weight = MAX(actual lbs, dim weight @ factor 10)
+//   2. Line-haul rate = lane table with deficit-weight rule
+//   3. Final-mile = service-level base price
+//   4. Extra pieces = $25 x (total pieces - 2)
+//   5. Accessorials = sum of selected
+//   6. Subtotal = line-haul + final-mile + extra pieces + accessorials
+//   7. FSC = subtotal x fscPct/100
+//   8. Total = subtotal + FSC
+// ============================================================
+function computeQuote() {
+  const tax = TAX_OPTIONS.find(t => t.id === state.taxId) || TAX_OPTIONS[0];
+  let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
+  for (const p of state.pieces) {
+    const vc = volumetricCount(p);
+    actualWtLbs += computePieceActualWeight(p);
+    cubicFt += computePieceCF(p) * vc;
+    linearFt += computePieceLinearFt(p);
+  }
+  const dimWt = cubicFt * state.dimFactor;
+  const linearWt = linearFt > 10 ? linearFt * 1000 : 0;
+  const billable = Math.ceil(Math.max(actualWtLbs, dimWt, linearWt));
+  const dimWins = dimWt > actualWtLbs && dimWt > 0;
+  const linearWins = linearWt >= actualWtLbs && linearWt >= dimWt && linearWt > 0;
+
+  // Final-mile base — suppressed entirely in middle-mile-only mode
+  const middleOnly = state.laneMode === 'middle';
+  const svc = middleOnly ? null : SERVICE_LEVELS.find(s => s.id === state.service);
+  const hasService = middleOnly || !!svc;
+  const baseFinalMile = svc ? state.servicePrices[svc.id] : 0;
+
+  // Extra pieces (final-mile concept; suppressed in middle-mile-only mode)
+  const totalPcs = totalPieceCount();
+  const extraPieces = middleOnly ? 0 : Math.max(0, totalPcs - 2);
+  const extraPieceCharge = extraPieces * state.extraPiece;
+
+  // Accessorials are final-mile services in this calculator; middle-mile-only
+  // stays pure dock-to-dock for clean Day & Ross rate comparisons.
+  let accAmount = 0;
+  const accSelected = [];
+  if (!middleOnly) {
+    for (const a of ACCESSORIALS) {
+      const sel = state.accessorials[a.id];
+      if (sel && sel.selected) {
+        const qty = a.qty ? Math.max(1, Number(sel.qty) || 1) : 1;
+        const price = state.accPrices[a.id] || a.default;
+        const amount = price * qty;
+        accAmount += amount;
+        accSelected.push({ ...a, qty, amount });
+      }
+    }
+  }
+
+  // Middle-mile (full quote and middle-mile-only both use the marked-up lane table)
+  let middleMileSell = 0;
+  let rates = null;
+  let hasLocation = false;
+  // Auto-detect same-city as local for full quotes; middle-mile remains dock to dock.
+  const sameCity = state.origin && state.destination && state.origin === state.destination;
+  const effectiveLocal = state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity);
+  if (effectiveLocal) {
+    // Local delivery: only need a city, skip middle-mile entirely
+    hasLocation = !!state.origin;
+  } else {
+    // Line haul: need both origin and destination. Server resolves the cheapest
+    // cwt column via calculate_line_haul (kept in CURRENT_LANE_QUOTE).
+    if (state.origin && state.destination) {
+      rates = getRatesForLane(state.origin, state.destination);
+      if (rates) {
+        hasLocation = true;
+        middleMileSell = CURRENT_LANE_QUOTE.middleMileSell;
+      }
+    }
+  }
+
+  const subtotal = middleMileSell + baseFinalMile + extraPieceCharge + accAmount;
+  const fscAmount = subtotal * (state.fscPct / 100);
+  const total = subtotal + fscAmount;
+  const taxAmount = total * (tax.rate / 100);
+  const totalAfterTax = total + taxAmount;
+
+  return {
+    actualWt: actualWtLbs, cubicFt, dimWt, linearFt, linearWt, billable, dimWins, linearWins,
+    rates, hasLane: hasLocation, hasMeasurements: hasPricedItem(), hasService, isLocal: effectiveLocal,
+    baseFinalMile, middleMileSell, middleMileMarkup: MIDDLE_MILE_TABLE_MARKUP, finalMileMarkup: FINAL_MILE_AGENT_MARKUP,
+    totalPcs, extraPieces, extraPieceCharge,
+    accAmount, accSelected,
+    subtotal, fscAmount, total,
+    tax, taxAmount, totalAfterTax,
+  };
+}
+
+// ============================================================
+// RENDER PIECES
+// ============================================================
+function renderPieces() {
+  const wrap = $("piecesWrap");
+  wrap.innerHTML = "";
+  const lenLabel = state.lenUnit.toUpperCase();
+  const wtLabel = state.wtUnit.toUpperCase();
+
+  state.pieces.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "piece";
+
+    let inputsHtml = "";
+    if (state.mode === 'dim') {
+      inputsHtml = `<div class="piece-grid dim">
+        <div class="field"><label class="field-label"># Pcs</label><input type="text" inputmode="decimal" data-p="${i}" data-k="qty" value="${p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Total wt (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="H" value="${p.H ?? ""}" placeholder="0" /></div>
+      </div>`;
+    } else if (state.mode === 'cf') {
+      inputsHtml = `<div class="piece-grid cf">
+        <div class="field"><label class="field-label"># Pcs</label><input type="text" inputmode="decimal" data-p="${i}" data-k="qty" value="${p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Total wt (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Cubic feet per pc</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
+      </div>`;
+    } else if (state.mode === 'pallet') {
+      inputsHtml = `<div class="piece-grid pallet">
+        <div class="field"><label class="field-label"># Pallets</label><input type="text" inputmode="decimal" data-p="${i}" data-k="pallets" value="${p.pallets ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Items / pallet</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemsPerPallet" value="${p.itemsPerPallet ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Weight / pallet (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? (state.lenUnit==='in'?48:122)}" placeholder="48" /></div>
+        <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? (state.lenUnit==='in'?40:102)}" placeholder="40" /></div>
+        <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="H" value="${p.H ?? ""}" placeholder="height" /></div>
+      </div>`;
+    }
+
+    const removeBtn = state.pieces.length > 1
+      ? `<button class="piece-remove" data-remove="${i}" aria-label="Remove item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+          </svg>
+        </button>`
+      : '';
+
+    div.innerHTML = `
+      <div class="piece-head">
+        <div class="piece-name">
+          <span class="piece-num">${i + 1}</span>
+          <span>Item ${i + 1}</span>
+        </div>
+        ${removeBtn}
+      </div>
+      ${inputsHtml}
+      <div class="piece-meta" data-meta="${i}"></div>
+    `;
+    wrap.appendChild(div);
+  });
+
+  wrap.querySelectorAll('input[data-p]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = Number(e.target.dataset.p);
+      const k = e.target.dataset.k;
+      state.pieces[i][k] = e.target.value === "" ? null : Number(e.target.value);
+      updatePieceTags();
+      renderAccessorials();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = Number(e.currentTarget.dataset.remove);
+      state.pieces.splice(idx, 1);
+      renderPieces();
+      updateOutput();
+    });
+  });
+
+  updatePieceTags();
+  $("addPieceBtn").disabled = state.pieces.length >= 20;
+}
+
+function updatePieceTags() {
+  state.pieces.forEach((p, i) => {
+    const qty = piecesCount(p);
+    const vc = volumetricCount(p);
+    const cfPer = computePieceCF(p);
+    const cfTotal = cfPer * vc;
+    const wTotal = computePieceActualWeight(p);
+    const linearFt = computePieceLinearFt(p);
+    const linearWt = linearFt > 10 ? linearFt * 1000 : 0;
+    const dimTotal = cfTotal * state.dimFactor;
+    const dimWins = dimTotal > Math.max(wTotal, linearWt) && dimTotal > 0;
+    const linearWins = linearWt >= Math.max(wTotal, dimTotal) && linearWt > 0;
+    const meta = document.querySelector(`[data-meta="${i}"]`);
+    if (!meta) return;
+    const parts = [];
+    if (cfTotal > 0) parts.push(`<span class="tag">${cfTotal.toFixed(2)} ft³ total</span>`);
+    if (linearFt > 0) parts.push(`<span class="tag">${linearFt.toFixed(1)} linear ft</span>`);
+    if (state.mode === 'pallet') {
+      if (vc > 0) parts.push(`<span class="tag">${vc} pallet${vc>1?'s':''}</span>`);
+      if (qty > vc) parts.push(`<span class="tag">${qty} item${qty>1?'s':''} total</span>`);
+    } else if (qty > 1) {
+      parts.push(`<span class="tag">×${qty}</span>`);
+    }
+    if (linearWins) parts.push(`<span class="tag warn">LINEAR FT APPLIES</span>`);
+    else if (dimWins) parts.push(`<span class="tag warn">DIM WT APPLIES</span>`);
+    meta.innerHTML = parts.join('');
+  });
+}
+
+// ============================================================
+// SERVICE LEVELS
+// ============================================================
+function renderServiceLevels() {
+  const wrap = $("svcGrid");
+  wrap.innerHTML = SERVICE_LEVELS.map(s => `
+    <button class="svc-card ${state.service === s.id ? 'active' : ''}" data-svc="${s.id}">
+      <span class="svc-dot" aria-hidden="true"></span>
+      <span class="svc-name">${s.name}</span>
+      <span class="svc-desc">${s.desc}</span>
+    </button>
+  `).join('');
+  wrap.querySelectorAll('.svc-card').forEach(el => {
+    el.addEventListener('click', () => {
+      state.service = el.dataset.svc;
+      renderServiceLevels();
+      updateOutput();
+    });
+  });
+}
+
+// ============================================================
+// ADDITIONAL SERVICES
+// ============================================================
+function renderAccessorials() {
+  const list = $("accList");
+  list.innerHTML = ACCESSORIALS.map(a => {
+    const sel = state.accessorials[a.id] || {};
+    const checked = !!sel.selected;
+    const qty = sel.qty || 1;
+    const price = state.accPrices[a.id] || a.default;
+    const priceLabel = hasPricedItem() ? `$${price}` : 'Select';
+    const qtyHtml = a.qty
+      ? `<input type="number" min="1" class="acc-qty" data-acc-qty="${a.id}" value="${qty}" />`
+      : '';
+    return `<div class="acc-row ${checked ? 'checked' : ''}" data-acc="${a.id}">
+      <div class="acc-row-inner">
+        <span class="acc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="acc-row-text">
+          <div class="acc-label">${a.name}</div>
+        </div>
+      </div>
+      ${qtyHtml}
+      <span class="acc-price">${priceLabel}</span>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-acc]').forEach(el => {
+    el.addEventListener('click', e => {
+      // Don't toggle when clicking the qty input
+      if (e.target.matches('input[data-acc-qty]')) return;
+      const id = el.dataset.acc;
+      if (!state.accessorials[id]) state.accessorials[id] = { qty: 1 };
+      state.accessorials[id].selected = !state.accessorials[id].selected;
+      renderAccessorials();
+      updateAccCount();
+      updateOutput();
+    });
+  });
+  list.querySelectorAll('input[data-acc-qty]').forEach(inp => {
+    inp.addEventListener('click', e => e.stopPropagation());
+    inp.addEventListener('input', e => {
+      const id = e.target.dataset.accQty;
+      if (!state.accessorials[id]) state.accessorials[id] = { selected: false };
+      state.accessorials[id].qty = Math.max(1, Number(e.target.value) || 1);
+      updateOutput();
+    });
+  });
+  updateAccCount();
+}
+
+function renderTaxOptions() {
+  const select = $("taxSelect");
+  if (!select) return;
+  select.innerHTML = TAX_OPTIONS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+  select.value = state.taxId;
+}
+function updateAccCount() {
+  const count = Object.values(state.accessorials).filter(a => a && a.selected).length;
+  const el = $("accCount");
+  el.textContent = count === 0 ? "0 selected" : `${count} selected`;
+  el.classList.toggle('has', count > 0);
+}
+
+function getSupabaseConfig() {
+  const cfg = window.MONTE_SUPABASE || {};
+  if (!cfg.url || !cfg.anonKey) return null;
+  return {
+    url: String(cfg.url).replace(/\/+$/, ''),
+    anonKey: String(cfg.anonKey)
+  };
+}
+
+function makePublicToken() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'quote-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function quoteStateSnapshot() {
+  const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
+  return {
+    origin: state.origin,
+    destination: state.destination,
+    laneMode: state.laneMode,
+    service: state.service,
+    mode: state.mode,
+    lenUnit: state.lenUnit,
+    wtUnit: state.wtUnit,
+    pieces: JSON.parse(JSON.stringify(state.pieces || [])),
+    fscPct: state.fscPct,
+    taxId: state.taxId,
+    accessorials: JSON.parse(JSON.stringify(state.accessorials || {})),
+    pickupDate
+  };
+}
+
+function buildQuoteRecord(q) {
+  if (!window._quoteRef) {
+    const base = Date.now().toString(36).slice(-4).toUpperCase();
+    const rnd = Math.random().toString(36).slice(2, 5).toUpperCase();
+    window._quoteRef = 'MD-' + base + '-' + rnd;
+  }
+  const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+  const tax = q.tax || TAX_OPTIONS[0];
+  const snapshot = quoteStateSnapshot();
+  return {
+    quote_ref: window._quoteRef,
+    public_token: makePublicToken(),
+    status: 'draft',
+    lane_mode: state.laneMode,
+    origin: state.origin,
+    destination: q.isLocal ? null : state.destination,
+    service_id: svc ? svc.id : null,
+    service_name: svc ? svc.name : null,
+    pickup_date: snapshot.pickupDate || null,
+    measurement_mode: state.mode,
+    total_pcs: q.totalPcs || 0,
+    actual_weight_lbs: Number((q.actualWt || 0).toFixed(2)),
+    cubic_ft: Number((q.cubicFt || 0).toFixed(2)),
+    dim_weight_lbs: Number((q.dimWt || 0).toFixed(2)),
+    billable_weight_lbs: Math.round(q.billable || 0),
+    middle_mile_sell: Number((q.middleMileSell || 0).toFixed(2)),
+    final_mile_base: Number((q.baseFinalMile || 0).toFixed(2)),
+    extra_piece_charge: Number((q.extraPieceCharge || 0).toFixed(2)),
+    accessorials_amount: Number((q.accAmount || 0).toFixed(2)),
+    subtotal: Number((q.subtotal || 0).toFixed(2)),
+    fuel_pct: Number(state.fscPct || 0),
+    fuel_amount: Number((q.fscAmount || 0).toFixed(2)),
+    tax_id: tax.id,
+    tax_label: tax.label,
+    tax_rate: Number(tax.rate || 0),
+    tax_amount: Number((q.taxAmount || 0).toFixed(2)),
+    total_before_tax: Number((q.total || 0).toFixed(2)),
+    total_after_tax: Number((q.totalAfterTax || 0).toFixed(2)),
+    payload: {
+      state: snapshot,
+      quote: {
+        billable: q.billable,
+        dimWins: q.dimWins,
+        linearWins: q.linearWins,
+        linearFt: q.linearFt,
+        rateColumn: q.rates ? q.rates.cwtCol : null,
+        bookingSummary: window._bookingSummary || '',
+        bookingEmailBody: window._bookingEmailBody || ''
+      }
+    }
+  };
+}
+
+function quoteShareUrl(publicToken) {
+  // Prefer MONTE_CONFIG.shareBase if set (e.g. "https://monte.onekindexpress.com/q")
+  if (MONTE_CONFIG.shareBase) {
+    const base = String(MONTE_CONFIG.shareBase).replace(/\/+$/, '');
+    return `${base}/${publicToken}`;
+  }
+  // Fallback: same calculator URL with ?quote=<token>
+  const url = new URL(window.location.href);
+  url.searchParams.set('quote', publicToken);
+  return url.toString();
+}
+
+function localQuotes() {
+  try { return JSON.parse(localStorage.getItem('monteSavedQuotes') || '[]'); }
+  catch (e) { return []; }
+}
+
+function saveQuoteLocal(record) {
+  const saved = localQuotes().filter(q => q.quote_ref !== record.quote_ref);
+  const withMeta = { ...record, id: record.id || record.public_token, storage: 'local', created_at: new Date().toISOString() };
+  saved.unshift(withMeta);
+  localStorage.setItem('monteSavedQuotes', JSON.stringify(saved.slice(0, 50)));
+  return withMeta;
+}
+
+async function saveQuoteRecord(record) {
+  const cfg = getSupabaseConfig();
+  if (!cfg) return saveQuoteLocal(record);
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at`, {
+      method: 'POST',
+      headers: {
+        apikey: cfg.anonKey,
+        Authorization: `Bearer ${cfg.anonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(record)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const rows = await res.json();
+    return { ...record, ...(rows && rows[0] ? rows[0] : {}), storage: 'supabase' };
+  } catch (e) {
+    const local = saveQuoteLocal(record);
+    local.sync_error = e.message || String(e);
+    return local;
+  }
+}
+
+async function saveCurrentQuote(copyLink) {
+  const q = computeQuote();
+  if (!q.hasLane || !q.hasMeasurements || !q.hasService) return null;
+  const record = buildQuoteRecord(q);
+  // Attach the per-browser device id so the user can later claim it on login.
+  record.device_id = getDeviceId();
+  // Attach the logged-in user_id when present.
+  if (monteAuth.user() && monteAuth.user().id) record.user_id = monteAuth.user().id;
+  const saved = await saveQuoteRecord(record);
+  window._lastSavedQuote = saved;
+  window._lastQuoteShareUrl = quoteShareUrl(saved.public_token);
+  if (copyLink) {
+    try { await navigator.clipboard.writeText(window._lastQuoteShareUrl); } catch (e) {}
+  }
+  notifySlack('quote.saved', {
+    quote_ref: saved.quote_ref,
+    origin: saved.origin,
+    destination: saved.destination,
+    total: saved.total_after_tax,
+    share_url: window._lastQuoteShareUrl
+  });
+  return saved;
+}
+
+function applyQuoteSnapshot(snapshot) {
+  if (!snapshot) return false;
+  state.origin = snapshot.origin || null;
+  state.destination = snapshot.destination || null;
+  state.laneMode = snapshot.laneMode || 'line';
+  state.service = snapshot.service || null;
+  state.mode = snapshot.mode || 'dim';
+  state.lenUnit = snapshot.lenUnit || 'in';
+  state.wtUnit = snapshot.wtUnit || 'lb';
+  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  state.fscPct = Number(snapshot.fscPct) || 0;
+  state.taxId = snapshot.taxId || 'none';
+  state.accessorials = snapshot.accessorials || {};
+
+  if ($("originInput")) $("originInput").value = state.origin || '';
+  if ($("destInput")) $("destInput").value = state.destination || '';
+  $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.lh === state.laneMode));
+  $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+  $("lenUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === state.lenUnit));
+  $("wtUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === state.wtUnit));
+  applyLaneMode();
+  render();
+  if (snapshot.pickupDate && $("pickupDate")) {
+    $("pickupDate").value = snapshot.pickupDate;
+    updateOutput();
+  }
+  return true;
+}
+
+async function loadSharedQuoteIfPresent() {
+  const token = new URL(window.location.href).searchParams.get('quote');
+  if (!token) return false;
+  const cfg = getSupabaseConfig();
+  if (cfg) {
+    try {
+      const res = await fetch(`${cfg.url}/rest/v1/rpc/get_quote_by_token`, {
+        method: 'POST',
+        headers: {
+          apikey: cfg.anonKey,
+          Authorization: `Bearer ${cfg.anonKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ share_token: token })
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        const record = Array.isArray(rows) ? rows[0] : rows;
+        if (record && record.payload && applyQuoteSnapshot(record.payload.state)) {
+          window._quoteRef = record.quote_ref || window._quoteRef;
+          window._lastSavedQuote = record;
+          window._lastQuoteShareUrl = quoteShareUrl(token);
+          return true;
+        }
+      }
+    } catch (e) {}
+  }
+  const local = localQuotes().find(q => q.public_token === token);
+  if (local && local.payload && applyQuoteSnapshot(local.payload.state)) {
+    window._quoteRef = local.quote_ref || window._quoteRef;
+    window._lastSavedQuote = local;
+    window._lastQuoteShareUrl = quoteShareUrl(token);
+    return true;
+  }
+  return false;
+}
+
+function updateIntelligencePanel(q, distKm, etaText, density) {
+  const setText = (id, text) => {
+    const el = $(id);
+    if (el) el.textContent = text;
+  };
+  const setPill = (id, text, tone) => {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove('ok', 'warn');
+    if (tone) el.classList.add(tone);
+  };
+  const middleOnly = state.laneMode === 'middle';
+  const complexityPenalty =
+    (q.linearWins ? 12 : q.dimWins ? 7 : 0) +
+    (q.extraPieces > 6 ? 5 : q.extraPieces > 0 ? 2 : 0) +
+    (distKm > 2500 ? 4 : 0) +
+    (q.accAmount > 0 ? 2 : 0);
+  const score = Math.max(72, Math.min(98, Math.round(94 - complexityPenalty)));
+  const scoreEl = $("intelScore");
+  if (scoreEl) scoreEl.style.setProperty('--score', score);
+  setText('intelScoreVal', String(score));
+  setText('intelTitle', score >= 88 ? 'Ready to route' : 'Review handling');
+  setText('intelSummary', middleOnly
+    ? `Dock-to-dock quote is clean at ${etaText}. Final-mile services are excluded.`
+    : `Quote is built for ${etaText} with ${q.totalPcs} piece${q.totalPcs === 1 ? '' : 's'} and ${Math.round(q.billable).toLocaleString('en-CA')} lbs billable.`
+  );
+
+  const billingName = q.linearWins ? 'Linear-foot rule' : q.dimWins ? 'Dimensional billing' : 'Actual weight';
+  const billingSub = q.linearWins
+    ? `${(q.linearFt || 0).toFixed(1)} linear ft controls the billable weight.`
+    : q.dimWins
+      ? `${density.toFixed(1)} lb/ft3 density is billing by volume.`
+      : 'Physical weight is the highest billing signal.';
+  setText('intelBilling', billingName);
+  setText('intelBillingSub', billingSub);
+
+  const laneName = middleOnly ? 'Dock to dock' : q.isLocal ? 'Local final mile' : 'Line haul + final mile';
+  const laneSub = middleOnly
+    ? 'Journey shows origin dock to destination dock only.'
+    : q.isLocal
+      ? 'Middle-mile pricing is bypassed for same-city delivery.'
+      : 'Journey includes line haul, handoff, and final delivery.';
+  setText('intelLane', laneName);
+  setText('intelLaneSub', laneSub);
+
+  setText('intelMargin', middleOnly ? 'Middle-mile guard active' : 'Rate floor covered');
+  setText('intelMarginSub', middleOnly
+    ? 'Middle-mile sell logic is applied.'
+    : 'Middle-mile and final-mile sell logic are applied before extras.'
+  );
+
+  const actionName = q.fscAmount > 0 ? 'Fuel included' : q.accAmount > 0 ? 'Extras included' : 'Booking-ready';
+  const actionSub = q.fscAmount > 0
+    ? 'Fuel surcharge is included in this total.'
+    : q.accAmount > 0
+      ? `${q.accSelected.length} additional service${q.accSelected.length === 1 ? '' : 's'} selected.`
+      : 'Summary and contact actions are prepared.';
+  setText('intelAction', actionName);
+  setText('intelActionSub', actionSub);
+
+  setPill('intelPillLane', middleOnly ? 'Dock to dock' : 'Lane ok', 'ok');
+  setPill('intelPillDims', q.linearWins ? 'Linear ft' : q.dimWins ? 'Dim weight' : 'Dims ok', (q.linearWins || q.dimWins) ? 'warn' : 'ok');
+  setPill('intelPillFuel', q.fscAmount > 0 ? 'Fuel added' : 'Fuel manual', q.fscAmount > 0 ? 'ok' : '');
+  setPill('intelPillTax', q.tax.rate > 0 ? 'Tax set' : 'Tax optional', q.tax.rate > 0 ? 'ok' : '');
+
+  const etaConfidence = distKm > 2500 ? 'Long-haul' : distKm > 900 ? 'Steady' : 'High';
+  setText('visEta', etaConfidence);
+  setText('visEtaSub', `${etaText} based on lane distance.`);
+  setText('visHandoff', middleOnly ? 'Dock handoff' : q.isLocal ? 'Local crew' : 'Carrier + crew');
+  setText('visHandoffSub', middleOnly ? 'Origin dock to destination dock.' : q.isLocal ? 'One-city final-mile flow.' : 'Line-haul handoff into final mile.');
+  setText('visCustomer', middleOnly ? 'Internal lane' : 'Summary ready');
+  setText('visCustomerSub', middleOnly ? 'No final-mile customer flow added.' : 'Booking message includes lane and totals.');
+}
+
+// ============================================================
+// RENDER OUTPUT
+// ============================================================
+function updateOutput() {
+  scheduleLaneQuoteRefresh();
+  const q = computeQuote();
+  const showResult = q.hasLane && q.hasMeasurements && q.hasService;
+
+  $("resultEmpty").style.display = showResult ? "none" : "block";
+  $("resultContent").style.display = showResult ? "block" : "none";
+
+  // Update empty-state checklist based on mode
+  if (!showResult) {
+    const isLocal = state.laneMode === 'local';
+    const isMiddleOnly = state.laneMode === 'middle';
+    const originDone = !!state.origin;
+    const destDone   = isLocal ? true : !!state.destination;
+    const serviceDone = q.hasService;
+    const itemsDone  = q.hasMeasurements;
+
+    const subEl = document.querySelector('#resultEmpty .r-empty-sub');
+    if (subEl) {
+      subEl.textContent = (originDone && destDone && serviceDone && !itemsDone)
+        ? "One more step — add an item below."
+        : "Fill these in and your live quote will appear here.";
+    }
+
+    const list = $("rChecklist");
+    if (list) {
+      const setItem = (key, done, label, hidden) => {
+        const li = list.querySelector(`li[data-key="${key}"]`);
+        if (!li) return;
+        li.hidden = !!hidden;
+        li.classList.toggle('done', !!done);
+        const labelEl = li.querySelector('.rc-label');
+        if (labelEl && label) labelEl.textContent = label;
+      };
+
+      setItem('origin', originDone, isLocal ? 'Delivery city' : 'Origin city', false);
+      setItem('dest',   destDone,   'Destination city', isLocal);
+      setItem('service', serviceDone, 'Service level', isMiddleOnly);
+      setItem('items',  itemsDone,
+        state.mode === 'cf' ? 'Cubic feet per item' : 'Item weight & dimensions',
+        false);
+
+      // Mark first un-done step as "next"
+      list.querySelectorAll('li').forEach(li => li.classList.remove('next'));
+      const nextLi = Array.from(list.querySelectorAll('li')).find(li => !li.hidden && !li.classList.contains('done'));
+      if (nextLi) nextLi.classList.add('next');
+    }
+    return;
+  }
+
+  const gt = $("grandTotal");
+  const newTotal = fmt(q.totalAfterTax);
+  if (gt.textContent !== newTotal) {
+    gt.textContent = newTotal;
+    gt.classList.remove('bump');
+    void gt.offsetWidth;
+    gt.classList.add('bump');
+  }
+  $("grandTotal2").textContent = fmt(q.total);
+
+  const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+  $("svcPill").textContent = svc ? svc.name : '—';
+
+  if (q.isLocal) {
+    $("laneLabel").textContent = `${state.origin} · local delivery`;
+    $("laneInfo").style.display = "block";
+    $("originOut").textContent = state.origin;
+    $("destOut").textContent = "local";
+  } else {
+    const middleSuffix = state.laneMode === 'middle' ? ' · middle mile only' : '';
+    $("laneLabel").textContent = `${state.origin} → ${state.destination}${middleSuffix}`;
+    $("laneInfo").style.display = "block";
+    $("originOut").textContent = state.origin;
+    $("destOut").textContent = state.destination;
+  }
+  // Hide service pill in middle mode (no final-mile service applies)
+  const svcPillEl = $("svcPill");
+  if (svcPillEl) svcPillEl.style.display = (state.laneMode === 'middle') ? 'none' : '';
+
+  $("actualWtOut").textContent = fmtW(q.actualWt);
+  $("cubicFtOut").textContent = fmtCF(q.cubicFt);
+  $("dimWtOut").textContent = fmtW(q.dimWt);
+  $("billableOut").textContent = fmtW(q.billable);
+  const billableCallout = $("dimCallout");
+  if (billableCallout) {
+    billableCallout.classList.toggle("show", q.dimWins || q.linearWins);
+    billableCallout.innerHTML = q.linearWins
+      ? `<strong>Linear-foot rule applies.</strong> Freight over 10 linear feet is billed at 1,000 lbs per linear foot.`
+      : `<strong>Dimensional weight applies.</strong> Bulky low-density freight billed by volume.`;
+  }
+
+  // Full quote combines middle-mile + final-mile into one base line; middle-only
+  // labels the line-haul explicitly so dock-to-dock totals are not mistaken for final-mile quotes.
+  const baseTotal = q.baseFinalMile + q.middleMileSell;
+  const baseLabel = $("baseLabelOut");
+  if (baseLabel) {
+    baseLabel.textContent = state.laneMode === 'middle'
+      ? 'Middle mile'
+      : (q.isLocal ? 'Final mile' : 'Base delivery');
+  }
+  $("baseOut").textContent = fmt(baseTotal);
+
+  if (q.extraPieces > 0) {
+    $("extraPieceRow").style.display = "flex";
+    $("extraPieceOut").textContent = `${q.extraPieces} × ${fmt(state.extraPiece)} = ${fmt(q.extraPieceCharge)}`;
+  } else {
+    $("extraPieceRow").style.display = "none";
+  }
+
+  $("accBreakdownRow").style.display = q.accAmount > 0 ? "flex" : "none";
+  $("accAmountOut").textContent = fmt(q.accAmount);
+
+  $("subtotalOut").textContent = fmt(q.subtotal);
+  $("fscAmountOut").textContent = fmt(q.fscAmount);
+  $("taxLabel").textContent = q.tax.rate > 0 ? `Tax amount (${q.tax.rate}%)` : "Tax amount";
+  $("taxAmountOut").textContent = fmt(q.taxAmount);
+  $("totalAfterTaxOut").textContent = fmt(q.totalAfterTax);
+
+  // ---- Enhanced chips & journey & compare ----
+  // Province-pair distance estimate (km). Same city = 25, same prov = 250, neighbour = 800, far = 2200, very far = 3800
+  const provGroups = {
+    east: ['NL','PE','NS','NB'],
+    central: ['QC','ON'],
+    prairie: ['MB','SK','AB'],
+    west: ['BC','YT','NT','NU']
+  };
+  const provGroup = p => {
+    for (const k in provGroups) if (provGroups[k].includes(p)) return k;
+    return null;
+  };
+  const provOf = s => {
+    const m = (s||'').match(/,\s*([A-Z]{2})\s*$/);
+    return m ? m[1] : null;
+  };
+  const oP = provOf(state.origin), dP = provOf(state.destination);
+  let distKm;
+  if (q.isLocal) {
+    distKm = 35;
+  } else if (oP && dP) {
+    if (oP === dP) distKm = state.origin === state.destination ? 30 : 280;
+    else {
+      const gO = provGroup(oP), gD = provGroup(dP);
+      if (gO === gD) distKm = 700;
+      else if ((gO === 'central' && gD === 'prairie') || (gO === 'prairie' && gD === 'central')
+            || (gO === 'east' && gD === 'central')    || (gO === 'central' && gD === 'east')
+            || (gO === 'prairie' && gD === 'west')   || (gO === 'west' && gD === 'prairie')) distKm = 2200;
+      else distKm = 3800;
+    }
+  } else {
+    distKm = 1200;
+  }
+  // Transit days from distance + service level
+  // Base by distance:
+  let baseDayMin, baseDayMax;
+  if (q.isLocal)         { baseDayMin = 1; baseDayMax = 2; }
+  else if (distKm < 350) { baseDayMin = 1; baseDayMax = 2; }
+  else if (distKm < 900) { baseDayMin = 2; baseDayMax = 3; }
+  else if (distKm < 2500){ baseDayMin = 3; baseDayMax = 5; }
+  else                   { baseDayMin = 5; baseDayMax = 8; }
+  // Service-level adjustment (white glove a bit slower, curbside a bit faster)
+  const svcOffset = {
+    curbside: -0, threshold: 0, tailgate: 0,
+    roomOfChoice: 1, whiteGlove: 1
+  }[state.service] || 0;
+  baseDayMax += svcOffset;
+  const etaText = baseDayMin === baseDayMax ? `${baseDayMin} day${baseDayMin>1?'s':''}` : `${baseDayMin}–${baseDayMax} days`;
+
+  const etaEl = $("etaOut"), co2El = $("co2Out"), volEl = $("volOut"), etaPill = $("etaPill"), co2Sub = $("co2Sub");
+  if (etaEl) etaEl.textContent = etaText;
+  if (etaPill) etaPill.textContent = etaText + ' transit';
+
+  // CO₂: ~0.062 kg CO2e per tonne-km consolidated trucking. We assume Monte/OKE optimizes routing, ~33% lower than industry avg (~0.092 kg/t-km).
+  const tonnes = (q.billable * 0.000454);
+  const co2kg  = Math.max(0.4, tonnes * distKm * 0.062);
+  const avgKg  = Math.max(0.4, tonnes * distKm * 0.092);
+  const savedKg = Math.max(0, avgKg - co2kg);
+  if (co2El) co2El.textContent = co2kg < 10 ? co2kg.toFixed(1) + ' kg' : Math.round(co2kg) + ' kg';
+  if (co2Sub) co2Sub.textContent = savedKg >= 1 ? `~${Math.round(savedKg)} kg less than avg` : 'efficient routing';
+  if (volEl) volEl.textContent = (q.cubicFt || 0).toFixed(1) + ' ft³';
+
+  // Journey labels + local mode handling
+  const isMiddleOnly = state.laneMode === 'middle';
+  const jO = $("jOrigin"), jD = $("jDest"), jOSub = $("jOriginSub"), jDSub = $("jDestSub");
+  if (jO) jO.textContent = state.origin || 'Origin';
+  if (jD) jD.textContent = q.isLocal ? state.origin || 'Local stops' : (state.destination || 'Destination');
+  if (jOSub) jOSub.textContent = isMiddleOnly ? 'Origin dock' : 'Pickup point';
+  if (jDSub) jDSub.textContent = q.isLocal ? 'Within same city' : (isMiddleOnly ? 'Destination dock' : 'Final mile delivery');
+
+  // Toggle journey: local stays delivery-focused; middle-mile is dock to dock with no sort hub.
+  const stagesEl = $("rStages"), routeEl = $("rRoute");
+  if (stagesEl) {
+    stagesEl.classList.toggle('is-three', isMiddleOnly);
+    if (q.isLocal) {
+      stagesEl.innerHTML = `<span class="on">Pickup</span><span>Loading</span><span>Out for delivery</span><span>Delivered</span>`;
+    } else if (isMiddleOnly) {
+      stagesEl.innerHTML = `<span class="on">Origin dock</span><span>Line haul</span><span>Destination dock</span>`;
+    } else {
+      stagesEl.innerHTML = `<span class="on">Pickup</span><span>Line haul</span><span>Sort hub</span><span>Delivered</span>`;
+    }
+  }
+  if (routeEl) {
+    routeEl.querySelectorAll('[data-mid]').forEach(m => {
+      m.style.display = (q.isLocal || isMiddleOnly) ? 'none' : 'block';
+    });
+  }
+
+  // Quote reference id (stable per session)
+  if (!window._quoteRef) {
+    const base = Date.now().toString(36).slice(-4).toUpperCase();
+    const rnd = Math.random().toString(36).slice(2, 5).toUpperCase();
+    window._quoteRef = 'MD-' + base + '-' + rnd;
+  }
+  const qrEl = $("quoteRef");
+  if (qrEl) qrEl.textContent = '#' + window._quoteRef;
+
+  // Density meter — uses lb/ft³
+  const density = q.cubicFt > 0 ? q.actualWt / q.cubicFt : 0;
+  const densEl = $("densityVal"), densFill = $("densityFill"), densBadge = $("densityBadge");
+  if (densEl) densEl.textContent = density > 0 ? density.toFixed(1) + ' lb/ft³' : '— lb/ft³';
+  // 0–30 lb/ft³ scale; clamp visually
+  const pct = Math.min(100, (density / 30) * 100);
+  if (densFill) densFill.style.width = pct + '%';
+  if (densBadge) {
+    densBadge.classList.remove('low','mid','high');
+    if (density === 0) { densBadge.textContent = '—'; }
+    else if (density < 6) { densBadge.textContent = 'Bulky'; densBadge.classList.add('low'); }
+    else if (density < 15) { densBadge.textContent = 'Balanced'; densBadge.classList.add('mid'); }
+    else { densBadge.textContent = 'Dense'; densBadge.classList.add('high'); }
+  }
+  updateIntelligencePanel(q, distKm, etaText, density);
+
+  // Pickup date → delivery ETA window
+  const pkEl = $("pickupDate"), dEtaEl = $("deliveryEta");
+  if (pkEl) {
+    if (!pkEl.value) {
+      const today = new Date();
+      const tomorrow = new Date(today.getTime() + 86400000);
+      pkEl.value = tomorrow.toISOString().slice(0,10);
+      pkEl.min = today.toISOString().slice(0,10);
+    }
+    if (dEtaEl) {
+      const start = new Date(pkEl.value + 'T00:00:00');
+      const eMin = new Date(start.getTime() + baseDayMin * 86400000);
+      const eMax = new Date(start.getTime() + baseDayMax * 86400000);
+      const fmtD = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      dEtaEl.textContent = 'Delivery · ' + fmtD(eMin) + (baseDayMin !== baseDayMax ? ' – ' + fmtD(eMax) : '');
+    }
+  }
+
+  // Build booking summary and prime modal action links
+  {
+    const svcName = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || '';
+    const lane = q.isLocal ? state.origin + ' (local)' : state.origin + ' → ' + state.destination;
+    const pieceLines = (state.pieces || []).map((p, i) => {
+      if (state.mode === 'pallet') {
+        const pal = Number(p.pallets) || 1, ipp = Number(p.itemsPerPallet) || 1;
+        const L = Number(p.L)||48, W = Number(p.W)||40, H = Number(p.H)||0;
+        return `  ${i+1}. ${pal} pallet(s) × ${ipp} item(s) · ${L}×${W}×${H}" · ${Number(p.weight)||0} lbs/pallet`;
+      } else if (state.mode === 'cf') {
+        return `  ${i+1}. Qty ${Number(p.qty)||1} · ${Number(p.cf)||0} ft³ each · ${Number(p.weight)||0} lbs total`;
+      }
+      return `  ${i+1}. Qty ${Number(p.qty)||1} · ${Number(p.L)||0}×${Number(p.W)||0}×${Number(p.H)||0}" · ${Number(p.weight)||0} lbs total`;
+    });
+    const summaryLines = [
+      'Reference: ' + window._quoteRef,
+      'Lane: ' + lane,
+      'Service: ' + svcName,
+      'Items: ' + (q.totalPcs || 0) + ' · ' + (q.cubicFt||0).toFixed(2) + ' ft³ · ' + Math.round(q.billable||0) + ' lbs billable',
+      'Preferred pickup: ' + (pkEl ? pkEl.value : '—'),
+      'Total: ' + fmt(q.totalAfterTax)
+    ];
+    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' × ' + a.qty : '') + ' · ' + fmt(a.amount));
+    const fullLines = [
+      '=== Booking Request ===',
+      'Quote ID: ' + window._quoteRef,
+      'Generated: ' + new Date().toLocaleString(),
+      '',
+      'LANE',
+      '  ' + lane,
+      '',
+      'SERVICE LEVEL',
+      '  ' + svcName,
+      '',
+      'PREFERRED PICKUP DATE',
+      '  ' + (pkEl && pkEl.value ? pkEl.value : 'Not specified'),
+      '',
+      'SHIPMENT DETAILS',
+      '  Measurement mode: ' + (state.mode === 'pallet' ? 'Pallets' : state.mode === 'cf' ? 'Cubic feet' : 'Dimensions (L×W×H)'),
+      '  Length unit: ' + (state.lenUnit || 'in').toUpperCase(),
+      '  Weight unit: ' + (state.wtUnit || 'lb').toUpperCase(),
+      '  Total pieces: ' + (q.totalPcs || 0),
+      '  Cubic feet: ' + (q.cubicFt || 0).toFixed(2) + ' ft³',
+      '  Actual weight: ' + Math.round(q.actualWt || 0) + ' lbs',
+      '  Dimensional weight: ' + Math.round(q.dimWt || 0) + ' lbs',
+      q.linearWt > 0 ? '  Linear feet: ' + (q.linearFt || 0).toFixed(1) + ' ft (' + Math.round(q.linearWt || 0) + ' lbs)' : null,
+      '  Billable weight: ' + Math.round(q.billable || 0) + ' lbs' + (q.linearWins ? ' (linear ft wins)' : q.dimWins ? ' (dim wins)' : ''),
+      '',
+      'ITEMS',
+      ...(pieceLines.length ? pieceLines : ['  (none)']),
+      '',
+      'ACCESSORIALS',
+      ...(accLines.length ? accLines : ['  (none)']),
+      '',
+      'PRICING BREAKDOWN',
+      '  Middle-mile (line haul): ' + fmt(q.middleMileSell || 0),
+      '  Final-mile base: ' + fmt(q.baseFinalMile || 0),
+      '  Extra pieces (' + (q.extraPieces || 0) + ' × ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
+      '  Accessorials total: ' + fmt(q.accAmount || 0),
+      '  Subtotal: ' + fmt(q.subtotal || 0),
+      '  Fuel surcharge (' + (state.fscPct || 0) + '%): ' + fmt(q.fscAmount || 0),
+      '  Total before tax: ' + fmt(q.total || 0),
+      '  Tax — ' + ((q.tax && q.tax.label) || '—') + ': ' + fmt(q.taxAmount || 0),
+      '  ───────────────',
+      '  TOTAL: ' + fmt(q.totalAfterTax || 0),
+      '',
+      '— Please reply with your contact name, phone, and pickup/delivery addresses to confirm this booking. —',
+      '',
+      'Generated by the Monte Design Final Mile Calculator.'
+    ];
+    const summaryText = summaryLines.join('\n');
+    const fullText = fullLines.filter(Boolean).join('\r\n');
+    window._bookingSummary = summaryText;
+    window._bookingEmailBody = fullText;
+    const subj = 'Booking request ' + window._quoteRef + ' · ' + lane;
+    const mEmail = $("mEmail"), mSum = $("modalSummary");
+    if (mEmail) mEmail.href = 'mailto:info@onekindexpress.com?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(fullText);
+    if (mSum) mSum.textContent = summaryText;
+  }
+
+  // Compare bars (hide entirely in middle-mile-only mode)
+  const cmpHost = $("cmpRows");
+  const cmpTab = document.querySelector('.r-tab[data-pane="compare"]');
+  if (state.laneMode === 'middle') {
+    if (cmpHost) cmpHost.innerHTML = '<div style="padding:14px;color:rgba(250,248,241,0.55);font-size:12.5px;text-align:center;">Service comparison applies to final-mile delivery only.</div>';
+    if (cmpTab) cmpTab.style.display = 'none';
+  } else if (cmpHost && typeof SERVICE_LEVELS !== 'undefined') {
+    if (cmpTab) cmpTab.style.display = '';
+    const savedSvc = state.service;
+    const prices = SERVICE_LEVELS.map(s => {
+      state.service = s.id;
+      const r = computeQuote();
+      return { id: s.id, name: s.name, total: r.totalAfterTax };
+    });
+    state.service = savedSvc;
+    const max = Math.max(...prices.map(p => p.total), 1);
+    const cheapest = prices.slice().sort((a,b)=>a.total-b.total)[0];
+    const premium  = prices.slice().sort((a,b)=>b.total-a.total)[0];
+    cmpHost.innerHTML = prices.map(p => {
+      const pct = Math.max(6, (p.total / max) * 100);
+      const active = p.id === savedSvc ? ' active' : '';
+      let badge = '';
+      if (p.id === cheapest.id && p.id !== premium.id) badge = ' <span class="cmp-badge save">Cheapest</span>';
+      else if (p.id === premium.id && p.id !== cheapest.id) badge = ' <span class="cmp-badge premium">Premium</span>';
+      return `<div class="r-cmp-row${active}" data-svc="${p.id}">
+        <span class="nm">${p.name}${badge}</span>
+        <span class="bar-wrap"><span class="bar" style="width:${pct}%;"></span></span>
+        <span class="price">${fmt(p.total)}</span>
+      </div>`;
+    }).join('');
+    cmpHost.querySelectorAll('.r-cmp-row').forEach(row => {
+      row.addEventListener('click', () => {
+        state.service = row.dataset.svc;
+        renderServiceLevels();
+        updateOutput();
+      });
+    });
+  }
+}
+
+function render() {
+  renderServiceLevels();
+  renderPieces();
+  renderAccessorials();
+  renderTaxOptions();
+  updateOutput();
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+function setupMode() {
+  $("modeToggle").querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.mode = btn.dataset.mode;
+      if (state.mode === 'cf') {
+        state.pieces.forEach(p => { p.L=null; p.W=null; p.H=null; p.pallets=null; p.itemsPerPallet=null; });
+      } else if (state.mode === 'dim') {
+        state.pieces.forEach(p => { p.cf=null; p.pallets=null; p.itemsPerPallet=null; });
+      } else if (state.mode === 'pallet') {
+        state.pieces.forEach(p => { p.cf=null; p.qty=null; });
+      }
+      render();
+    });
+  });
+}
+function setupUnits() {
+  $("lenUnitToggle").querySelectorAll('.seg-mini-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $("lenUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.lenUnit = btn.dataset.unit;
+      render();
+    });
+  });
+  $("wtUnitToggle").querySelectorAll('.seg-mini-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $("wtUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.wtUnit = btn.dataset.unit;
+      render();
+    });
+  });
+}
+function setupPieces() {
+  $("addPieceBtn").addEventListener('click', () => {
+    if (state.pieces.length >= 20) return;
+    state.pieces.push({ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
+    render();
+  });
+}
+function setupAccordion() {
+  const t = $("accToggle"), c = $("accContent");
+  t.addEventListener('click', () => {
+    t.classList.toggle('open');
+    c.classList.toggle('open');
+  });
+}
+function setupLaneMode() {
+  $("lhToggle").querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.laneMode = btn.dataset.lh;
+      applyLaneMode();
+      updateOutput();
+    });
+  });
+  applyLaneMode();
+}
+function applyLaneMode() {
+  const isLocal = state.laneMode === 'local';
+  const isMiddle = state.laneMode === 'middle';
+  $("laneRow").classList.toggle('local', isLocal);
+  $("originLabel").textContent = isLocal ? "City" : "Origin city";
+  $("originInput").placeholder = isLocal ? "Pick a city…" : "Start typing…";
+  if (isLocal) {
+    // Clear destination since it doesn't apply
+    state.destination = null;
+    $("destInput").value = "";
+    $("destInput").disabled = true;
+  } else {
+    // Re-enable dest if origin selected (line + middle both need destination)
+    if (state.origin) {
+      $("destInput").disabled = false;
+      $("destInput").placeholder = "Start typing destination…";
+    } else {
+      $("destInput").disabled = true;
+      $("destInput").placeholder = "Select origin first";
+    }
+  }
+  // Show / hide service-level section in middle-mile-only mode
+  const svcGrid = $("svcGrid");
+  if (svcGrid) {
+    const svcLabel = svcGrid.previousElementSibling; // the "Service level" section-label
+    if (isMiddle) {
+      svcGrid.style.display = 'none';
+      if (svcLabel) svcLabel.style.display = 'none';
+      // Clear service selection so no final-mile charge sneaks in
+      state.service = null;
+    } else {
+      svcGrid.style.display = '';
+      if (svcLabel) svcLabel.style.display = '';
+    }
+  }
+}
+function setupStepper() {
+  // Update stepper + mobile sticky CTA reactively
+  const stepperFill = document.getElementById('stepperFill');
+  const dots = document.querySelectorAll('.stp-dot');
+  const mobileCta = document.getElementById('mobileCta');
+  const stickyTotal = document.getElementById('stickyTotal');
+  if (!stepperFill) return;
+  window._updateStepper = function() {
+    const q = (typeof computeQuote === 'function') ? computeQuote() : null;
+    const isMiddle = state.laneMode === 'middle';
+    // Service step is hidden in middle-mile-only mode
+    const serviceDot = document.querySelector('.stp-dot[data-step="service"]');
+    if (serviceDot) serviceDot.style.display = isMiddle ? 'none' : '';
+    const has = {
+      lane: !!(state.origin && (state.laneMode === 'local' || state.destination)),
+      service: isMiddle ? true : !!state.service, // auto-pass in middle mode
+      items: q && q.hasMeasurements,
+      book: q && q.hasLane && q.hasMeasurements && q.hasService
+    };
+    const ordered = isMiddle ? ['lane','items','book'] : ['lane','service','items','book'];
+    let activeIdx = 0;
+    for (let i = 0; i < ordered.length; i++) { if (has[ordered[i]]) activeIdx = i + 1; }
+    activeIdx = Math.min(activeIdx, ordered.length);
+    // Visible dots only (skip hidden service dot in middle mode)
+    const visibleDots = Array.from(dots).filter(d => d.style.display !== 'none');
+    const dotWrap = document.querySelector('.stepper-dots');
+    if (dotWrap) dotWrap.style.gridTemplateColumns = `repeat(${visibleDots.length}, 1fr)`;
+    visibleDots.forEach((d, i) => {
+      const numText = d.querySelector('.stp-num-text');
+      if (numText) numText.textContent = String(i + 1);
+      d.classList.toggle('done', i < activeIdx);
+      d.classList.toggle('active', i === activeIdx);
+    });
+    const pct = (activeIdx / ordered.length) * 100;
+    stepperFill.style.width = pct + '%';
+    if (mobileCta && stickyTotal && q) {
+      stickyTotal.textContent = '$' + (q.totalAfterTax || 0).toFixed(2);
+      mobileCta.classList.toggle('show', !!(q.hasLane && q.hasMeasurements && q.hasService));
+    }
+    // Trigger confetti once when reaching final step
+    if (activeIdx === ordered.length && !window._confettied) {
+      window._confettied = true;
+      launchConfetti();
+    } else if (activeIdx < ordered.length) {
+      window._confettied = false;
+    }
+  };
+  // Re-render stepper whenever the grand total mutates (proxy signal for "state changed")
+  const watched = document.getElementById('grandTotal2');
+  if (watched) {
+    const obs = new MutationObserver(() => { try { window._updateStepper(); } catch(e) {} });
+    obs.observe(watched, { childList: true, characterData: true, subtree: true });
+  }
+  // Also re-render on input/change at document level
+  document.addEventListener('input', () => { try { window._updateStepper(); } catch(e) {} }, true);
+  document.addEventListener('change', () => { try { window._updateStepper(); } catch(e) {} }, true);
+  document.addEventListener('click', () => { setTimeout(() => { try { window._updateStepper(); } catch(e) {} }, 50); }, true);
+  // Wire mobile book button
+  const mb = document.getElementById('mobileBookBtn');
+  if (mb) mb.addEventListener('click', () => { const b = document.getElementById('bookBtn'); if (b) b.click(); });
+  // Initial paint
+  try { window._updateStepper(); } catch(e) {}
+}
+
+function launchConfetti() {
+  const cv = document.getElementById('confettiCanvas');
+  if (!cv || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width = window.innerWidth;
+  const H = cv.height = window.innerHeight;
+  const colors = ['#ff7a45', '#ff9466', '#06d6a0', '#ffffff', '#ffe6d6'];
+  const N = 90;
+  const parts = [];
+  for (let i = 0; i < N; i++) {
+    parts.push({
+      x: W * 0.5 + (Math.random() - 0.5) * 200,
+      y: H * 0.35,
+      vx: (Math.random() - 0.5) * 8,
+      vy: -Math.random() * 12 - 4,
+      g: 0.35 + Math.random() * 0.18,
+      r: 4 + Math.random() * 5,
+      c: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.25,
+      life: 1
+    });
+  }
+  let raf;
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    let alive = 0;
+    for (const p of parts) {
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life -= 0.006;
+      if (p.y < H + 40 && p.life > 0) {
+        alive++;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
+        ctx.restore();
+      }
+    }
+    if (alive > 0) raf = requestAnimationFrame(tick);
+    else ctx.clearRect(0, 0, W, H);
+  }
+  tick();
+}
+
+function setupSceneMesh() {
+  const scene = document.querySelector('.scene');
+  const mesh = document.querySelector('.scene-mesh');
+  if (!scene || !mesh || window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 760px)').matches) return;
+  scene.style.setProperty('--scene-x', '0px');
+  scene.style.setProperty('--scene-y', '0px');
+  scene.style.setProperty('--scene-x-soft', '0px');
+  scene.style.setProperty('--scene-y-soft', '0px');
+  scene.style.setProperty('--scene-x-hard', '0px');
+  scene.style.setProperty('--scene-y-hard', '0px');
+}
+
+function setupNumberTween() {
+  // Animate the grand total number on change
+  const watchSelectors = ['#grandTotal2', '#stickyTotal'];
+  watchSelectors.forEach(sel => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    let prev = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
+    const obs = new MutationObserver(() => {
+      const next = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
+      if (Math.abs(next - prev) < 0.005) { prev = next; return; }
+      const from = prev, to = next, dur = 420, start = performance.now();
+      const target = el;
+      obs.disconnect();
+      function tick(t) {
+        const k = Math.min(1, (t - start) / dur);
+        const eased = 1 - Math.pow(1 - k, 3);
+        const v = from + (to - from) * eased;
+        target.textContent = '$' + v.toFixed(2);
+        if (k < 1) requestAnimationFrame(tick);
+        else { prev = to; obs.observe(target, { childList: true, characterData: true, subtree: true }); }
+      }
+      requestAnimationFrame(tick);
+    });
+    obs.observe(el, { childList: true, characterData: true, subtree: true });
+  });
+}
+
+function setupMagneticHover() {
+  // Subtle pointer-tracking on primary buttons
+  document.querySelectorAll('.r-book, .modal-act.primary').forEach(btn => {
+    btn.addEventListener('pointermove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width / 2) / r.width;
+      const dy = (e.clientY - r.top - r.height / 2) / r.height;
+      btn.style.transform = `translate(${dx * 4}px, ${dy * 3 - 1}px)`;
+    });
+    btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+  });
+}
+
+function setupActions() {
+  const copyBtn = $("copyBtn");
+  copyBtn.addEventListener('click', async () => {
+    const q = computeQuote();
+    if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
+    const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+    const lane = q.isLocal ? `${state.origin} local delivery` : `${state.origin} to ${state.destination}`;
+    const text = [
+      'Monte Design delivery quote',
+      `Lane: ${lane}`,
+      `Service: ${svc ? svc.name : ''}`,
+      `Billable weight: ${fmtW(q.billable)}`,
+      `Base delivery: ${fmt(q.baseFinalMile + q.middleMileSell)}`,
+      q.extraPieceCharge > 0 ? `Extra items: ${fmt(q.extraPieceCharge)}` : null,
+      q.accAmount > 0 ? `Additional services: ${fmt(q.accAmount)}` : null,
+      `Fuel surcharge: ${fmt(q.fscAmount)}`,
+      `Total before tax: ${fmt(q.total)}`,
+      q.tax.rate > 0 ? `Tax (${q.tax.label}): ${fmt(q.taxAmount)}` : null,
+      `Total after tax: ${fmt(q.totalAfterTax)}`,
+    ].filter(Boolean).join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.classList.add('copied');
+      copyBtn.querySelector('span').textContent = 'Copied';
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyBtn.querySelector('span').textContent = 'Copy';
+      }, 1400);
+    } catch (e) {}
+  });
+
+  const shareBtn = $("shareBtn");
+  if (shareBtn) shareBtn.addEventListener('click', async () => {
+    const q = computeQuote();
+    if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
+    const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+    const lane = q.isLocal ? `${state.origin} local` : `${state.origin} → ${state.destination}`;
+    const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
+    const summary = `Monte Design quote · ${lane} · ${svc ? svc.name : ''} · ${fmt(q.totalAfterTax)}${link}`;
+    let shared = false;
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Monte Design Delivery Quote', text: summary }); shared = true; }
+    } catch (e) {}
+    if (!shared) {
+      try { await navigator.clipboard.writeText(summary); } catch (e) {}
+      openBookingModal();
+      return;
+    }
+    shareBtn.classList.add('copied');
+    shareBtn.querySelector('span').textContent = 'Shared';
+    setTimeout(() => { shareBtn.classList.remove('copied'); shareBtn.querySelector('span').textContent = 'Share'; }, 1400);
+  });
+
+  const saveBtn = $("saveQuoteBtn");
+  if (saveBtn) saveBtn.addEventListener('click', async () => {
+    const label = saveBtn.querySelector('span');
+    const original = label ? label.textContent : 'Save';
+    saveBtn.classList.add('copied');
+    if (label) label.textContent = 'Saving';
+    try {
+      const saved = await saveCurrentQuote(true);
+      if (!saved) return;
+      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved' : 'Saved local';
+    } catch (e) {
+      if (label) label.textContent = 'Save failed';
+    }
+    setTimeout(() => {
+      saveBtn.classList.remove('copied');
+      if (label) label.textContent = original;
+    }, 1700);
+  });
+
+  // Booking modal open/close
+  const bookBtnEl = $("bookBtn");
+  const bookModal = $("bookModal");
+  function openBookingModal() {
+    if (!bookModal) return;
+    const q = computeQuote();
+    if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
+    bookModal.classList.add('open');
+    bookModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    try { if (typeof launchConfetti === 'function') launchConfetti(); } catch(e) {}
+  }
+  function closeBookingModal() {
+    if (!bookModal) return;
+    bookModal.classList.remove('open');
+    bookModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  if (bookBtnEl) bookBtnEl.addEventListener('click', openBookingModal);
+  if (bookModal) {
+    bookModal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeBookingModal));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bookModal.classList.contains('open')) closeBookingModal(); });
+  }
+  // Force email/tel to escape the Wix iframe — target="_top" alone is unreliable.
+  function escapeIframe(href) {
+    try { window.top.location.href = href; return; } catch (e) {}
+    try { window.parent.location.href = href; return; } catch (e) {}
+    try { const w = window.open(href, '_blank'); if (w) return; } catch (e) {}
+    window.location.href = href;
+  }
+  ['mEmail', 'mCall'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('click', (e) => {
+      const href = el.getAttribute('href');
+      if (!href || href === '#') return;
+      e.preventDefault();
+      escapeIframe(href);
+    });
+  });
+
+  const mCopyBtn = $("mCopy");
+  if (mCopyBtn) mCopyBtn.addEventListener('click', async () => {
+    const txt = window._bookingEmailBody || window._bookingSummary || '';
+    try { await navigator.clipboard.writeText(txt); } catch (e) {
+      const ta = document.createElement('textarea'); ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(_) {} document.body.removeChild(ta);
+    }
+    mCopyBtn.classList.add('copied');
+    const lbl = $("mCopyLabel"); const orig = lbl ? lbl.textContent : 'Copy details';
+    if (lbl) lbl.textContent = 'Copied!';
+    setTimeout(() => { mCopyBtn.classList.remove('copied'); if (lbl) lbl.textContent = orig; }, 1600);
+  });
+
+  document.querySelectorAll('.r-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.r-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.r-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const pane = document.getElementById('pane-' + tab.dataset.pane);
+      if (pane) pane.classList.add('active');
+    });
+  });
+
+  const pkInp = $("pickupDate");
+  if (pkInp) pkInp.addEventListener('change', () => updateOutput());
+
+  $("printBtn").addEventListener('click', () => window.print());
+  $("resetBtn").addEventListener('click', () => {
+    state.origin = null;
+    state.destination = null;
+    state.laneMode = 'line';
+    state.pieces = [{ weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+    state.accessorials = {};
+    state.service = null;
+    state.taxId = 'none';
+    $("originInput").value = "";
+    $("destInput").value = "";
+    $("destInput").disabled = true;
+    $("destInput").placeholder = "Select origin first";
+    // Reset lane mode toggle visually
+    $("lhToggle").querySelectorAll('.seg-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lh === 'line');
+    });
+    applyLaneMode();
+    render();
+  });
+}
+
+function setupFsc() {
+  const inp = $("fscInput");
+  inp.value = String(state.fscPct);
+  inp.addEventListener('input', e => {
+    const cleaned = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+    if (cleaned !== e.target.value) e.target.value = cleaned;
+    const n = Number(cleaned);
+    if (Number.isFinite(n) && n >= 0 && n <= 200) {
+      state.fscPct = n;
+      updateOutput();
+    } else if (cleaned === "" || cleaned === ".") {
+      state.fscPct = 0;
+      updateOutput();
+    }
+  });
+  inp.addEventListener('blur', e => {
+    if (e.target.value === "" || e.target.value === ".") { e.target.value = "0"; state.fscPct = 0; }
+    updateOutput();
+  });
+}
+function setupTax() {
+  $("taxSelect").addEventListener('change', e => {
+    state.taxId = e.target.value;
+    updateOutput();
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    if (!sbCfg()) throw new Error('Supabase not configured. Add <script>window.MONTE_SUPABASE = {url, anonKey}</script>.');
+    ORIGINS = await loadOrigins();
+    if (!ORIGINS.length) throw new Error('No lanes loaded. Did you run supabase-rates-insert.sql?');
+
+    // Restore prior auth session (magic-link)
+    monteAuth.bootFromStorage();
+
+    $("loadingView").style.display = "none";
+    $("mainView").style.display = "grid";
+    $("footerNote").style.display = "block";
+
+    setupAutocomplete("originInput", "originList",
+      () => ORIGINS.map(o => ({ label: o })),
+      async (label) => {
+        state.origin = label;
+        if (state.laneMode !== 'local') {
+          state.destination = null;
+          $("destInput").value = "";
+          $("destInput").disabled = false;
+          $("destInput").placeholder = "Start typing destination…";
+          fetchDestinations(label).catch(() => {});
+          $("destInput").focus();
+        }
+        scheduleLaneQuoteRefresh();
+        updateOutput();
+      }
+    );
+    setupAutocomplete("destInput", "destList",
+      () => state.origin && DEST_CACHE[state.origin] ? DEST_CACHE[state.origin].map(d => ({ label: d })) : [],
+      (label) => {
+        state.destination = label;
+        scheduleLaneQuoteRefresh();
+        updateOutput();
+      }
+    );
+
+    setupLaneMode();
+    setupMode();
+    setupUnits();
+    setupPieces();
+    setupAccordion();
+    setupActions();
+    setupFsc();
+    setupTax();
+    setupSceneMesh();
+    setupNumberTween();
+    setupMagneticHover();
+    setupStepper();
+    const sharedLoaded = await loadSharedQuoteIfPresent();
+    if (!sharedLoaded) render();
+  } catch (err) {
+    $("loadingView").innerHTML = `<div style="color: var(--danger);">Error: ${err.message}</div>`;
+  }
+}
+init();
+</script>
+</body>
+</html>

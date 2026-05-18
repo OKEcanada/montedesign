@@ -4889,27 +4889,59 @@ function setupSceneMesh() {
 }
 
 function setupNumberTween() {
-  // Animate the grand total number on change
+  // Animate the grand total number on change.
+  // IMPORTANT: When render() rewrites textContent mid-animation, we must
+  // re-target to the LATEST value — never lock onto a stale `to`. Previously
+  // the tween disconnected its observer and finished animating to an old
+  // value, which produced a "subtotal $31,071.75 / total $3,729.75" mismatch
+  // when the lane-rate fetch resolved after the first render.
+  const fmtMoney = (v) => {
+    try {
+      return '$' + v.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } catch (e) { return '$' + v.toFixed(2); }
+  };
   const watchSelectors = ['#grandTotal2', '#stickyTotal'];
   watchSelectors.forEach(sel => {
     const el = document.querySelector(sel);
     if (!el) return;
     let prev = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
+    let rafId = null;
+    let animTo = prev;
+    let writing = false; // guards observer re-entry on our own writes
     const obs = new MutationObserver(() => {
+      if (writing) return;
       const next = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
-      if (Math.abs(next - prev) < 0.005) { prev = next; return; }
-      const from = prev, to = next, dur = 420, start = performance.now();
-      const target = el;
-      obs.disconnect();
+      if (Math.abs(next - animTo) < 0.005 && rafId === null) { prev = next; animTo = next; return; }
+      // (Re-)target: capture current displayed value as `from`, new value as `to`
+      const from = parseFloat((el.textContent || '0').replace(/[^0-9.]/g, '')) || 0;
+      // Actually, textContent right now IS the freshly-written `next` value,
+      // so animate from the last-rendered intermediate (prev) to next.
+      const start = performance.now();
+      const dur = 420;
+      animTo = next;
+      const fromVal = prev;
+      const toVal = next;
+      if (rafId) cancelAnimationFrame(rafId);
       function tick(t) {
         const k = Math.min(1, (t - start) / dur);
         const eased = 1 - Math.pow(1 - k, 3);
-        const v = from + (to - from) * eased;
-        target.textContent = '$' + v.toFixed(2);
-        if (k < 1) requestAnimationFrame(tick);
-        else { prev = to; obs.observe(target, { childList: true, characterData: true, subtree: true }); }
+        const v = fromVal + (toVal - fromVal) * eased;
+        writing = true;
+        el.textContent = fmtMoney(v);
+        writing = false;
+        prev = v;
+        if (k < 1) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          rafId = null;
+          // Snap to the canonical formatted value at end of animation
+          writing = true;
+          el.textContent = fmtMoney(toVal);
+          writing = false;
+          prev = toVal;
+        }
       }
-      requestAnimationFrame(tick);
+      rafId = requestAnimationFrame(tick);
     });
     obs.observe(el, { childList: true, characterData: true, subtree: true });
   });

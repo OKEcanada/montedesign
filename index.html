@@ -1197,6 +1197,102 @@
   .tax-select:focus { border-color: var(--accent); background: rgba(255,122,69,0.12); }
   .tax-select option { color: var(--ink); background: #fff; }
 
+  /* AI uploader card */
+  .ai-uploader {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px dashed rgba(255,106,0,0.45);
+    border-radius: var(--radius-sm);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255,106,0,0.10), transparent 60%),
+      radial-gradient(120% 80% at 100% 100%, rgba(79,209,197,0.08), transparent 60%),
+      rgba(250,248,241,0.85);
+    color: var(--ink);
+    transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  }
+  .ai-uploader.is-drag {
+    border-color: var(--accent);
+    box-shadow: 0 12px 30px rgba(255,106,0,0.18);
+    transform: translateY(-1px);
+  }
+  .ai-uploader-inner { display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; }
+  .ai-uploader-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, #ff7a45, #ff9466);
+    color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 18px rgba(255,106,0,0.30);
+  }
+  .ai-uploader-icon svg { width: 18px; height: 18px; stroke-width: 2.2; }
+  .ai-uploader-text b { display: block; font-size: 13px; color: var(--ink); font-weight: 700; line-height: 1.2; }
+  .ai-uploader-text em { display: block; font-style: normal; font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+  .ai-uploader-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    color: #fff; font-weight: 700; font-size: 12px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: pointer; user-select: none;
+    box-shadow: 0 8px 18px rgba(255,106,0,0.30);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .ai-uploader-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 22px rgba(255,106,0,0.36); }
+  .ai-spin {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.45); border-top-color: #fff;
+    animation: spin 700ms linear infinite;
+  }
+  .ai-uploader-status { margin-top: 10px; font-size: 11.5px; color: var(--ink-faint); min-height: 14px; }
+  .ai-uploader-status.err { color: var(--danger); font-weight: 600; }
+  .ai-uploader-status.ok { color: #0f9f78; font-weight: 600; }
+  .ai-results { margin-top: 10px; display: grid; gap: 8px; }
+  .ai-result-row {
+    display: grid; grid-template-columns: 1fr auto auto auto auto auto;
+    gap: 8px; align-items: center;
+    padding: 8px 10px;
+    border: 1px solid rgba(0,0,0,0.08); border-radius: 8px;
+    background: #fff; font-size: 11.5px; color: var(--ink);
+  }
+  .ai-result-row b { font-weight: 700; }
+  .ai-result-row .ai-conf {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+    padding: 2px 6px; border-radius: 999px; text-transform: uppercase;
+  }
+  .ai-result-row .ai-conf.high { background: rgba(15,159,120,0.14); color: #0f9f78; }
+  .ai-result-row .ai-conf.medium { background: rgba(255,165,0,0.14); color: #c47700; }
+  .ai-result-row .ai-conf.low { background: rgba(220,38,38,0.10); color: var(--danger); }
+  .ai-result-row .ai-add {
+    border: 0; cursor: pointer; padding: 6px 10px; border-radius: 6px;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ai-result-row .ai-add:hover { background: var(--accent-deep); }
+  .ai-results-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;
+  }
+  .ai-results-actions button {
+    border: 1px solid rgba(0,0,0,0.10); background: #fff; color: var(--ink);
+    padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;
+  }
+  .ai-results-actions button.primary {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  /* Tabular numerics everywhere a price/weight is shown — prevents jitter on tween */
+  #grandTotal2, #stickyTotal, #subtotalOut, #totalAfterTaxOut, #taxAmountOut,
+  #fscAmountOut, #baseOut, #accAmountOut, #extraPieceOut,
+  #actualWtOut, #cubicFtOut, #dimWtOut, #billableOut {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  /* Cursor-following glow on intel cards (Linear/Raycast pattern) */
+  .intel-card { --mx: 50%; --my: 50%; }
+  .intel-card::after {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit;
+    background: radial-gradient(220px 160px at var(--mx) var(--my), rgba(255,122,69,0.18), transparent 60%);
+    opacity: 0; transition: opacity 220ms ease; pointer-events: none; z-index: 0;
+  }
+  .intel-card:hover::after { opacity: 1; }
+  .intel-card > * { position: relative; z-index: 1; }
   .r-actions {
     display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px; margin-top: 14px;
@@ -2469,6 +2565,31 @@
         </svg>
         Add another item
       </button>
+
+      <!-- AI photo identifier: drop a photo, screenshot of an order list, or a PDF page.
+           Claude vision returns identified items with dims + weight, which we drop into pieces[]. -->
+      <div class="ai-uploader" id="aiUploader">
+        <div class="ai-uploader-inner">
+          <div class="ai-uploader-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="ai-uploader-text">
+            <b>Identify items from a photo</b>
+            <em>Drop a photo, order screenshot, or PDF page — Claude reads it and fills in dims &amp; weight.</em>
+          </div>
+          <label class="ai-uploader-btn" for="aiUploadInput">
+            <span class="ai-spin" hidden></span>
+            <span class="ai-uploader-btn-label">Upload</span>
+          </label>
+          <input id="aiUploadInput" type="file" accept="image/*" multiple hidden />
+        </div>
+        <div class="ai-uploader-status" id="aiUploaderStatus" aria-live="polite"></div>
+        <div class="ai-results" id="aiResults" hidden></div>
+      </div>
 
       <hr class="section-divider"/>
 
@@ -5101,6 +5222,16 @@ window.__tweenMoney = function (sel, target) {
 };
 function setupNumberTween() { /* deprecated — use window.__tweenMoney(sel, value) */ }
 
+function setupIntelGlow() {
+  document.querySelectorAll('.intel-card').forEach(card => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+}
+
 function setupMagneticHover() {
   // Subtle pointer-tracking on primary buttons
   document.querySelectorAll('.r-book, .modal-act.primary').forEach(btn => {
@@ -5381,6 +5512,162 @@ function setupActions() {
   });
 }
 
+// ============================================================
+// AI photo identifier (Claude vision via parse-furniture edge fn)
+// ============================================================
+async function fileToDataUrl(file) {
+  // Downscale to keep base64 payload reasonable. Max edge ~1400px.
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1400;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(cv.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function setupAiUpload() {
+  const box = document.getElementById('aiUploader');
+  const input = document.getElementById('aiUploadInput');
+  const status = document.getElementById('aiUploaderStatus');
+  const results = document.getElementById('aiResults');
+  const btn = box && box.querySelector('.ai-uploader-btn');
+  const spin = box && box.querySelector('.ai-spin');
+  if (!box || !input) return;
+
+  function setStatus(txt, tone) {
+    status.textContent = txt || '';
+    status.classList.toggle('err', tone === 'err');
+    status.classList.toggle('ok', tone === 'ok');
+  }
+  function setBusy(busy) {
+    if (spin) spin.hidden = !busy;
+    btn && (btn.style.pointerEvents = busy ? 'none' : '');
+    btn && (btn.style.opacity = busy ? 0.85 : '');
+  }
+  function renderResults(items, summary) {
+    results.hidden = false;
+    results.innerHTML = '';
+    if (!items.length) {
+      results.innerHTML = '<div style="font-size:11.5px;color:var(--ink-faint)">No shippable items detected. Try a closer photo or include packaging.</div>';
+      return;
+    }
+    if (summary) {
+      const s = document.createElement('div');
+      s.style.cssText = 'font-size:11px;color:var(--ink-faint);margin-bottom:4px;font-style:italic;';
+      s.textContent = summary;
+      results.appendChild(s);
+    }
+    items.forEach((it, i) => {
+      const row = document.createElement('div');
+      row.className = 'ai-result-row';
+      row.innerHTML = `
+        <b>${escapeHtml(it.name)}</b>
+        <span class="ai-conf ${it.confidence}">${it.confidence}</span>
+        <span>${it.qty}×</span>
+        <span>${it.lengthIn}×${it.widthIn}×${it.heightIn} in</span>
+        <span>${it.weightLb} lb</span>
+        <button class="ai-add" data-i="${i}" type="button">Add</button>
+      `;
+      results.appendChild(row);
+    });
+    const actions = document.createElement('div');
+    actions.className = 'ai-results-actions';
+    actions.innerHTML = `<button id="aiAddAll" class="primary" type="button">Add all to quote</button><button id="aiClear" type="button">Clear</button>`;
+    results.appendChild(actions);
+    results.querySelectorAll('.ai-add').forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.i;
+      addAiItem(items[i]);
+      b.textContent = 'Added';
+      b.style.background = '#0f9f78';
+      b.disabled = true;
+    }));
+    document.getElementById('aiAddAll').addEventListener('click', () => {
+      items.forEach(addAiItem);
+      setStatus(`Added ${items.length} item${items.length === 1 ? '' : 's'} to your quote.`, 'ok');
+    });
+    document.getElementById('aiClear').addEventListener('click', () => {
+      results.hidden = true; results.innerHTML = ''; setStatus('');
+    });
+  }
+
+  function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function addAiItem(it) {
+    // Switch to dimensions mode (so L/W/H + weight matter) then push a piece
+    if (state.mode !== 'dim') {
+      state.mode = 'dim';
+      const dimBtn = document.querySelector('[data-mode="dim"]');
+      if (dimBtn) dimBtn.click();
+    }
+    // Ensure inches + lb
+    if (state.lenUnit !== 'in') state.lenUnit = 'in';
+    if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
+    state.pieces.push({
+      qty: it.qty || 1,
+      weight: it.weightLb || 0,
+      L: it.lengthIn || 0,
+      W: it.widthIn || 0,
+      H: it.heightIn || 0,
+      cf: null,
+      pallets: null,
+      itemsPerPallet: null,
+      label: it.name || ''
+    });
+    try { renderPieces(); } catch(_) {}
+    try { updateOutput(); } catch(_) {}
+  }
+
+  async function handleFiles(fileList) {
+    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/')).slice(0, 6);
+    if (!files.length) { setStatus('Pick at least one image.', 'err'); return; }
+    setBusy(true);
+    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with Claude…`);
+    try {
+      const images = await Promise.all(files.map(fileToDataUrl));
+      const cfg = sbCfg();
+      if (!cfg) throw new Error('Supabase config missing');
+      const res = await fetch(`${cfg.url}/functions/v1/parse-furniture`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          apikey: cfg.anonKey,
+          Authorization: `Bearer ${cfg.anonKey}`
+        },
+        body: JSON.stringify({ images })
+      });
+      if (!res.ok) throw new Error('AI request failed: ' + res.status);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      renderResults(data.items || [], data.summary || '');
+      setStatus(`Found ${(data.items || []).length} item${(data.items || []).length === 1 ? '' : 's'}. Review confidence and add.`, 'ok');
+    } catch (e) {
+      setStatus('Could not analyze: ' + (e.message || e), 'err');
+    } finally {
+      setBusy(false);
+      input.value = '';
+    }
+  }
+
+  input.addEventListener('change', e => handleFiles(e.target.files));
+  ['dragenter','dragover'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.classList.add('is-drag'); }));
+  ['dragleave','drop'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.classList.remove('is-drag'); }));
+  box.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files); });
+}
+
 function setupFsc() {
   const inp = $("fscInput");
   inp.value = String(state.fscPct);
@@ -5483,6 +5770,8 @@ async function init() {
     setupSceneMesh();
     setupNumberTween();
     setupMagneticHover();
+    setupIntelGlow();
+    setupAiUpload();
     setupStepper();
     const sharedLoaded = await loadSharedQuoteIfPresent();
     if (!sharedLoaded) render();

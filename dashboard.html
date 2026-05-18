@@ -1,195 +1,838 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>OKE Client Dashboard</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Dashboard · OKE Canada Freight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --bg:#07091a; --panel:#0f142b; --panel2:#151b38; --line:rgba(255,255,255,.10);
-    --text:#f8fafc; --muted:#9ca3af; --soft:#cbd5e1; --brand:#ff6a00; --brand2:#ff8a4c; --cool:#4fd1c5; --ok:#22c55e; --bad:#ef4444;
-    --shadow:0 24px 70px rgba(0,0,0,.34);
+    --ink: #0c1024;
+    --paper: #fbfaf6;
+    --paper-card: rgba(255, 254, 250, 0.96);
+    --line: rgba(255, 254, 250, 0.10);
+    --accent: #ff7a45;
+    --accent-deep: #c64411;
+    --accent-light: #ffa572;
+    --cool: #4fd1c5;
+    --cool-deep: #0e7490;
+    --bg-deep: #07091a;
+    --bg-mid: #0e1230;
+    --positive: #16a34a;
+    --positive-soft: rgba(22,163,74,0.18);
+    --danger: #ef4444;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-display: "Instrument Serif", "Inter", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --radius: 16px;
+    --radius-lg: 24px;
   }
-  *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:
-    radial-gradient(900px 520px at 78% -10%,rgba(255,106,0,.28),transparent 62%),
-    radial-gradient(720px 520px at 12% 108%,rgba(79,209,197,.18),transparent 58%),
-    linear-gradient(180deg,#07091a,#090d20 54%,#071321);color:var(--text);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;background:
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px}
-  header{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 28px;border-bottom:1px solid var(--line);background:rgba(7,9,26,.76);backdrop-filter:blur(18px)}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:-.02em}
-  .mark{display:grid;place-items:center;width:42px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 12px 28px rgba(255,106,0,.32)}
-  nav{display:flex;gap:8px;flex-wrap:wrap}
-  a,button{font:inherit}
-  nav a,.ghost{color:var(--text);text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:9px 13px;font-weight:750;cursor:pointer}
-  nav a:hover,.ghost:hover{border-color:rgba(79,209,197,.35);background:rgba(79,209,197,.10)}
-  main{max-width:1220px;margin:0 auto;padding:34px 20px 54px}
-  .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);gap:18px;align-items:stretch;margin-bottom:18px}
-  .panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.045));border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
-  .intro{padding:28px}
-  .kicker{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cool)}
-  h1{font-size:clamp(32px,5vw,62px);line-height:.95;margin:10px 0 12px;letter-spacing:-.055em}
-  .lead{color:var(--soft);font-size:16px;max-width:620px;margin:0}
-  .auth{padding:22px;background:rgba(255,255,255,.035)}
-  label{display:block;margin:12px 0 6px;color:var(--muted);font-size:12px;font-weight:750}
-  input{width:100%;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.08);color:var(--text);padding:13px 14px;outline:none}
-  input:focus{border-color:rgba(255,106,0,.55);box-shadow:0 0 0 4px rgba(255,106,0,.10)}
-  .primary{width:100%;margin-top:12px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--brand),#ff4f2e);color:#fff;padding:13px 15px;font-weight:850;cursor:pointer;box-shadow:0 14px 30px rgba(255,106,0,.25)}
-  .google{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#111827;padding:12px 15px;font-weight:850;cursor:pointer}
-  .status{min-height:20px;margin-top:10px;color:var(--muted);font-size:13px}.status.ok{color:var(--ok)}.status.err{color:var(--bad)}
-  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
-  .stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.055)}
-  .stat b{display:block;font-size:26px;letter-spacing:-.04em}.stat span{color:var(--muted);font-size:12px}
-  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
-  .toolbar h2{margin:0;font-size:18px}.toolbar p{margin:2px 0 0;color:var(--muted);font-size:13px}
-  .list{display:grid;gap:10px;padding:16px}
-  .quote{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);padding:14px;position:relative;overflow:hidden}
-  .quote::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,106,0,.08),transparent);transform:translateX(-120%);animation:sweep 5s ease-in-out infinite;pointer-events:none}
-  @keyframes sweep{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
-  .ref{font:800 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--brand2);letter-spacing:.04em}.lane{font-size:17px;font-weight:850;margin-top:5px}.meta{color:var(--muted);font-size:12px;margin-top:4px}
-  .total{text-align:right;font-size:22px;font-weight:900;color:#fff}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;flex-wrap:wrap}
-  .small{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:750;cursor:pointer;font-size:12px}
-  .empty{padding:34px;text-align:center;color:var(--muted)}
-  .hidden{display:none!important}
-  @media(max-width:860px){header,.hero{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.quote{grid-template-columns:1fr}.total{text-align:left}}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg-deep);
+    color: var(--paper);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background:
+      radial-gradient(ellipse 90% 50% at 80% 0%, rgba(255,122,69,0.16), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 10% 100%, rgba(79,209,197,0.14), transparent 60%),
+      linear-gradient(180deg, #05071a 0%, #0a0e28 50%, #07091a 100%);
+    background-attachment: fixed;
+  }
+  /* ============== TOP NAV ============== */
+  .topnav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: rgba(7,9,26,0.65);
+    border-bottom: 1px solid var(--line);
+  }
+  .topnav-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--paper);
+    font-weight: 800; font-size: 16px; letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 800;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(255,122,69,0.4);
+  }
+  .brand-sub {
+    font-family: var(--font-mono); font-size: 10px;
+    color: rgba(255,254,250,0.55); letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .nav-links { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+  .nav-link {
+    color: rgba(255,254,250,0.65); text-decoration: none;
+    font-size: 13.5px; font-weight: 600;
+    padding: 8px 14px; border-radius: 9px;
+    transition: color 220ms ease, background 220ms ease;
+  }
+  .nav-link:hover { color: var(--paper); background: rgba(255,254,250,0.05); }
+  .nav-link.active {
+    color: var(--paper);
+    background: rgba(255,122,69,0.14);
+    border: 1px solid rgba(255,122,69,0.30);
+  }
+  .nav-cta {
+    margin-left: 12px;
+    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    color: #fff; font-weight: 700; font-size: 13.5px;
+    padding: 9px 16px; border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(255,122,69,0.32);
+    transition: transform 220ms ease, box-shadow 220ms ease;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,122,69,0.42); }
+
+  /* ============== HERO ============== */
+  .page { max-width: 1280px; margin: 0 auto; padding: 32px 20px 80px; }
+  .hero {
+    margin-bottom: 28px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 20px;
+    flex-wrap: wrap;
+  }
+  .hero-text h1 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 500; line-height: 1.05;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, #fff 0%, #ffd28a 50%, #b4e1ff 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .hero-text p { color: rgba(255,254,250,0.65); font-size: 15px; }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px; border: 0; cursor: pointer;
+    font-family: var(--font-body); font-size: 13.5px; font-weight: 700;
+    text-decoration: none;
+    transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+  }
+  .btn-primary {
+    background: linear-gradient(155deg, var(--accent), var(--accent-deep));
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(255,122,69,0.32);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(255,122,69,0.42); }
+  .btn-ghost {
+    background: rgba(255,254,250,0.06);
+    color: var(--paper);
+    border: 1px solid rgba(255,254,250,0.14);
+  }
+  .btn-ghost:hover { background: rgba(255,254,250,0.10); }
+
+  /* ============== AUTH PANEL ============== */
+  .auth-panel {
+    margin-bottom: 24px;
+    padding: 22px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(255,254,250,0.05) 0%, rgba(255,254,250,0.02) 100%);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: relative; overflow: hidden;
+  }
+  .auth-panel::before {
+    content: ""; position: absolute; inset: -1px;
+    border-radius: inherit; padding: 1px;
+    background: conic-gradient(from 0deg, rgba(255,122,69,0) 0deg, rgba(255,122,69,0.5) 90deg, rgba(79,209,197,0.5) 180deg, rgba(255,122,69,0) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: authRing 12s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes authRing { to { transform: rotate(360deg); } }
+  .auth-panel.signed-in { background: rgba(255,254,250,0.03); }
+  .auth-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .auth-meta { flex: 1 1 240px; }
+  .auth-kicker {
+    font-family: var(--font-mono); font-size: 10px;
+    color: rgba(255,210,180,0.85); letter-spacing: 0.16em;
+    text-transform: uppercase; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .auth-title { font-size: 17px; font-weight: 700; }
+  .auth-sub { color: rgba(255,254,250,0.60); font-size: 13.5px; margin-top: 3px; }
+  .auth-input-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  .auth-input {
+    flex: 1 1 220px;
+    background: rgba(255,254,250,0.06);
+    border: 1px solid rgba(255,254,250,0.14);
+    color: var(--paper); font-family: var(--font-body);
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 14px; outline: none;
+    transition: border-color 220ms ease, box-shadow 220ms ease;
+  }
+  .auth-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,122,69,0.22); }
+  .auth-status {
+    font-family: var(--font-mono); font-size: 11.5px;
+    margin-top: 8px; color: rgba(255,254,250,0.65);
+  }
+  .auth-status.ok { color: var(--cool); }
+  .auth-status.err { color: var(--danger); }
+  .oauth-divider {
+    margin: 14px 0; display: flex; align-items: center; gap: 10px;
+    color: rgba(255,254,250,0.40); font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .oauth-divider::before, .oauth-divider::after {
+    content: ""; flex: 1; height: 1px; background: var(--line);
+  }
+  .oauth-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255,254,250,0.96); color: #1f1f1f;
+    border: 0; cursor: pointer;
+    font-family: var(--font-body); font-size: 13.5px; font-weight: 700;
+    transition: transform 220ms ease;
+  }
+  .oauth-btn:hover { transform: translateY(-1px); }
+  .google-g { width: 18px; height: 18px; }
+
+  /* ============== STATS GRID ============== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    position: relative;
+    padding: 20px;
+    border-radius: var(--radius);
+    background: rgba(12,16,36,0.42);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 280ms ease;
+  }
+  .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,122,69,0.30); }
+  .stat-card::after {
+    content: ""; position: absolute; top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, rgba(255,122,69,0.20), transparent 70%);
+    pointer-events: none;
+  }
+  .stat-card.cool::after { background: radial-gradient(circle, rgba(79,209,197,0.20), transparent 70%); }
+  .stat-card.green::after { background: radial-gradient(circle, rgba(22,163,74,0.25), transparent 70%); }
+  .stat-label {
+    font-family: var(--font-mono); font-size: 10px;
+    color: rgba(255,254,250,0.50); letter-spacing: 0.16em;
+    text-transform: uppercase; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, #fff, #ffd28a);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-card.cool .stat-value { background: linear-gradient(135deg, #fff, #b4e1ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card.green .stat-value { background: linear-gradient(135deg, #fff, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-trend { font-size: 11.5px; margin-top: 4px; color: rgba(255,254,250,0.55); font-family: var(--font-mono); }
+  .stat-trend.up { color: #86efac; }
+
+  /* ============== QUOTE LIST ============== */
+  .section-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 24px; font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .section-sub { color: rgba(255,254,250,0.55); font-size: 13px; }
+  .quotes-table {
+    border-radius: var(--radius-lg);
+    background: rgba(12,16,36,0.42);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .quotes-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 130px 120px 130px 80px;
+    gap: 16px;
+    padding: 14px 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    transition: background 200ms ease;
+  }
+  .quotes-row:last-child { border-bottom: 0; }
+  .quotes-row:hover { background: rgba(255,254,250,0.025); }
+  .quotes-row.head {
+    background: rgba(255,254,250,0.04);
+    font-family: var(--font-mono); font-size: 10px;
+    color: rgba(255,254,250,0.50); letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .q-ref { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-light); }
+  .q-lane { font-weight: 600; color: var(--paper); }
+  .q-lane-sub { color: rgba(255,254,250,0.50); font-size: 11.5px; font-family: var(--font-mono); margin-top: 2px; }
+  .q-date { font-family: var(--font-mono); font-size: 11.5px; color: rgba(255,254,250,0.65); }
+  .q-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: var(--font-mono); font-size: 10px;
+    font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .q-status .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .q-status.draft { background: rgba(255,254,250,0.06); color: rgba(255,254,250,0.70); }
+  .q-status.draft .dot { background: rgba(255,254,250,0.40); }
+  .q-status.saved { background: rgba(255,122,69,0.16); color: var(--accent-light); }
+  .q-status.saved .dot { background: var(--accent); }
+  .q-status.booking_requested { background: rgba(22,163,74,0.22); color: #86efac; }
+  .q-status.booking_requested .dot { background: var(--positive); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.6); opacity: 0.4; } }
+  .q-total { font-weight: 800; color: var(--paper); font-variant-numeric: tabular-nums; }
+  .q-action {
+    color: var(--cool); text-decoration: none;
+    font-family: var(--font-mono); font-size: 11px;
+    font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 7px;
+    background: rgba(79,209,197,0.10);
+    border: 1px solid rgba(79,209,197,0.30);
+    transition: background 220ms ease, color 220ms ease;
+  }
+  .q-action:hover { background: rgba(79,209,197,0.20); color: #fff; }
+
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: rgba(255,254,250,0.55);
+  }
+  .empty-state .es-icon {
+    font-size: 48px; margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .empty-state .es-title {
+    color: var(--paper); font-size: 18px; font-weight: 700; margin-bottom: 6px;
+  }
+
+  /* ============== TOOLS / AI / SHORTCUTS ============== */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .tool-card {
+    position: relative;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(255,254,250,0.04) 0%, rgba(255,254,250,0.01) 100%);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 280ms ease, box-shadow 280ms ease;
+  }
+  .tool-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,122,69,0.40);
+    box-shadow: 0 18px 36px rgba(255,122,69,0.18);
+  }
+  .tool-card.ai { border-color: rgba(79,209,197,0.30); }
+  .tool-card.ai::before {
+    content: ""; position: absolute; top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(79,209,197,0.30), transparent 65%);
+    pointer-events: none;
+  }
+  .tool-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 20px rgba(255,122,69,0.32);
+  }
+  .tool-card.ai .tool-icon { background: linear-gradient(135deg, var(--cool), var(--cool-deep)); box-shadow: 0 8px 20px rgba(79,209,197,0.32); }
+  .tool-card.purple .tool-icon { background: linear-gradient(135deg, #a78bfa, #7c3aed); box-shadow: 0 8px 20px rgba(167,139,250,0.32); }
+  .tool-icon svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tool-name { font-size: 16px; font-weight: 700; color: var(--paper); margin-bottom: 4px; }
+  .tool-desc { color: rgba(255,254,250,0.60); font-size: 13px; line-height: 1.5; }
+  .tool-arrow {
+    margin-top: 14px;
+    color: var(--accent-light);
+    font-family: var(--font-mono); font-size: 11px;
+    font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .tool-card.ai .tool-arrow { color: var(--cool); }
+  .tool-card.purple .tool-arrow { color: #c4b5fd; }
+
+  @media (max-width: 860px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .tools-grid { grid-template-columns: 1fr; }
+    .quotes-row { grid-template-columns: 80px 1fr 100px 100px; gap: 10px; padding: 12px 14px; font-size: 12.5px; }
+    .quotes-row .q-status { grid-column: span 2; }
+    .quotes-row .q-action { grid-column: span 2; justify-self: end; }
+    .quotes-row.head { display: none; }
+    .nav-links .nav-link { padding: 8px 10px; font-size: 12.5px; }
+    .nav-cta { padding: 8px 12px; font-size: 12.5px; }
+    .brand-sub { display: none; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><span class="mark">OKE</span><span>Client Dashboard</span></div>
-  <nav>
-    <a href="./">New quote</a>
-    <a href="manual.html">Manual</a>
-    <button class="ghost hidden" id="signOutBtn" type="button">Sign out</button>
-  </nav>
-</header>
-<main>
-  <section class="hero">
-    <div class="panel intro">
-      <div class="kicker">Passwordless account</div>
-      <h1>Your freight quote history.</h1>
-      <p class="lead">Save quotes, reopen past lanes, share tracked links, and start new requests without creating another password.</p>
-    </div>
-    <div class="panel auth" id="authPanel">
-      <div class="kicker">Sign in or register</div>
-      <label for="emailInput">Work email</label>
-      <input id="emailInput" type="email" autocomplete="email" placeholder="you@company.com">
-      <button class="primary" id="magicBtn" type="button">Send magic link</button>
-      <button class="google" id="googleBtn" type="button">Continue with Google</button>
-      <div class="status" id="authStatus">Magic link creates the account automatically and opens this dashboard.</div>
-    </div>
-  </section>
 
-  <section id="dashPanel" class="hidden">
-    <div class="stats" id="stats"></div>
-    <div class="panel">
-      <div class="toolbar">
-        <div><h2>Saved quotes</h2><p>Pick a quote to reopen it or copy a tracked share link.</p></div>
-        <a class="small" href="./">+ Create new quote</a>
-      </div>
-      <div class="list" id="quoteList"></div>
+<!-- =============== NAV =============== -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">OKE</span>
+      <span>
+        <div>OKE Canada</div>
+        <div class="brand-sub">freight platform</div>
+      </span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Calculator</a>
+      <a class="nav-link active" href="dashboard.html">Dashboard</a>
+      <a class="nav-link" href="admin.html">Admin</a>
+      <button class="nav-cta" id="navAuthBtn" type="button">Sign in</button>
     </div>
-  </section>
-</main>
-<footer style="max-width:1220px;margin:-34px auto 34px;padding:0 20px;text-align:right">
-  <a href="admin.html" style="color:rgba(248,250,252,.34);font-size:12px;text-decoration:none">Team login</a>
-</footer>
-<script>
-const SUPABASE_CONFIG = {
-  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
-};
-const sb = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, { auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, storageKey:"okeQuoteHistoryAuth" }});
-const $ = id => document.getElementById(id);
-const PROD_DASHBOARD_URL = "https://okecanada.github.io/montedesign/dashboard.html";
-function dashboardRedirectUrl(){return /^(localhost|127\.0\.0\.1)$/i.test(location.hostname) ? PROD_DASHBOARD_URL : location.href.split("#")[0];}
-const money = n => "$" + Number(n || 0).toLocaleString("en-CA",{minimumFractionDigits:0,maximumFractionDigits:0});
-const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const dateFmt = v => v ? new Date(v).toLocaleDateString("en-CA",{month:"short",day:"numeric",year:"numeric"}) : "";
-function shareUrl(token){return `${location.origin}${location.pathname.replace(/dashboard\.html$/,"")}q/${token}`;}
-function setStatus(txt,tone){$("authStatus").textContent=txt;$("authStatus").className="status "+(tone||"");}
-async function rpc(name, params){
-  const { data, error } = await sb.rpc(name, params || {});
-  if (error) throw error;
-  return data;
-}
-async function claimFromUrl(){
-  const url = new URL(location.href);
-  const token = url.searchParams.get("claim");
-  if (token) await rpc("claim_quote_by_token", { p_token: token }).catch(()=>{});
-  url.searchParams.delete("claim");
-  if (token) history.replaceState({}, "", url.pathname + url.search + url.hash);
-}
-async function sendMagic(){
-  const email = $("emailInput").value.trim();
-  if (!email) return setStatus("Enter your email first.","err");
-  setStatus("Sending secure sign-in link...");
-  const { error } = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: dashboardRedirectUrl() }});
-  setStatus(error ? error.message : "Check your email. The link opens your dashboard.", error ? "err" : "ok");
-}
-async function google(){
-  const { error } = await sb.auth.signInWithOAuth({ provider:"google", options:{ redirectTo: dashboardRedirectUrl() }});
-  if (error) setStatus(error.message,"err");
-}
-function renderStats(rows){
-  const total = rows.reduce((s,q)=>s+Number(q.total_after_tax||0),0);
-  const viewed = rows.filter(q=>Number(q.view_count||0)>0).length;
-  const booked = rows.filter(q=>["booked","booking_requested"].includes(q.status)).length;
-  $("stats").innerHTML = [
-    ["Saved", rows.length],
-    ["Viewed", viewed],
-    ["Booking signals", booked],
-    ["Quoted value", money(total)]
-  ].map(([a,b])=>`<div class="stat"><b>${esc(b)}</b><span>${esc(a)}</span></div>`).join("");
-}
-function renderQuotes(rows){
-  const list = $("quoteList");
-  if (!rows.length){list.innerHTML='<div class="empty">No saved quotes yet. Create a quote, press Save, then return here.</div>';return;}
-  list.innerHTML = rows.map(q=>{
-    const lane = q.destination ? `${q.origin||"-"} -> ${q.destination}` : `${q.origin||"-"} local`;
-    const url = shareUrl(q.public_token);
-    return `<article class="quote">
-      <div>
-        <div class="ref">${esc(q.quote_ref || "")}</div>
-        <div class="lane">${esc(lane)}</div>
-        <div class="meta">${esc(q.service_name || q.status || "Quote")} · ${dateFmt(q.created_at)} · ${Number(q.view_count||0)} view${Number(q.view_count||0)===1?"":"s"}</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Your freight dashboard.</h1>
+      <p>Every quote, booking and shipment, all in one place.</p>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="index.html">+ New Quote</a>
+      <a class="btn btn-ghost" href="#tools">Tools & AI</a>
+    </div>
+  </div>
+
+  <!-- =============== AUTH =============== -->
+  <div class="auth-panel" id="authPanel">
+    <div class="auth-row" id="authSignedOut">
+      <div class="auth-meta">
+        <div class="auth-kicker" id="authKicker">Sign in to your account</div>
+        <div class="auth-title" id="authTitle">Welcome back.</div>
+        <div class="auth-sub" id="authSub">Email + password. Your saved quotes follow you to every device.</div>
       </div>
-      <div>
-        <div class="total">${money(q.total_after_tax)}</div>
-        <div class="actions">
-          <a class="small" href="${esc(url)}" target="_blank" rel="noopener">Open</a>
-          <a class="small" href="./?quote=${encodeURIComponent(q.public_token)}">Load in calculator</a>
-          <button class="small" type="button" data-copy="${esc(url)}">Copy link</button>
+      <div style="flex: 2 1 360px">
+        <div class="auth-input-wrap" style="flex-direction:column">
+          <input class="auth-input" id="authEmail" type="email" placeholder="you@company.com" autocomplete="email" />
+          <input class="auth-input" id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+          <input class="auth-input" id="authPassword2" type="password" placeholder="Confirm password" autocomplete="new-password" style="display:none" />
         </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary" id="authSubmitBtn" type="button" style="flex:1 1 auto">Sign in</button>
+          <button class="btn btn-ghost" id="authToggleBtn" type="button">Create account</button>
+        </div>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:12px;flex-wrap:wrap;gap:8px">
+          <a href="#" id="authForgotBtn" style="color:var(--accent-light);text-decoration:none;font-weight:600;border-bottom:1px dashed rgba(255,165,114,0.4);padding-bottom:1px">Forgot password?</a>
+          <span style="color:rgba(255,254,250,0.40);font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.10em;text-transform:uppercase">Secure · Supabase</span>
+        </div>
+        <button class="oauth-btn" id="authGoogleBtn" type="button" style="margin-top:14px;display:none">
+          <svg class="google-g" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <div class="auth-status" id="authStatus" aria-live="polite"></div>
       </div>
-    </article>`;
-  }).join("");
-  list.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(btn.dataset.copy)}catch{} btn.textContent="Copied"; setTimeout(()=>btn.textContent="Copy link",1300);}));
-}
-async function refresh(){
-  const { data: { session } } = await sb.auth.getSession();
-  $("authPanel").classList.toggle("hidden", !!session);
-  $("dashPanel").classList.toggle("hidden", !session);
-  $("signOutBtn").classList.toggle("hidden", !session);
-  if (!session) return;
-  await claimFromUrl();
-  const { data, error } = await sb.from("quotes").select("id,quote_ref,public_token,status,origin,destination,service_name,total_after_tax,created_at,valid_until,view_count,payload").order("created_at",{ascending:false}).limit(100);
-  if (error){$("quoteList").innerHTML=`<div class="empty">${esc(error.message)}</div>`;return;}
-  renderStats(data||[]);
-  renderQuotes(data||[]);
-}
-document.addEventListener("DOMContentLoaded", async()=>{
-  $("magicBtn").addEventListener("click",sendMagic);
-  $("googleBtn").addEventListener("click",google);
-  $("signOutBtn").addEventListener("click",async()=>{await sb.auth.signOut(); refresh();});
-  await refresh();
-  sb.auth.onAuthStateChange(()=>refresh());
+    </div>
+    <div class="auth-row signed-in" id="authSignedIn" style="display:none">
+      <div class="auth-meta">
+        <div class="auth-kicker">Signed in</div>
+        <div class="auth-title" id="userEmail">—</div>
+        <div class="auth-sub">All your saved quotes are on this account.</div>
+      </div>
+      <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+
+  <!-- =============== STATS =============== -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Quotes</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-trend" id="statTotalSub">All time</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Booked</div>
+      <div class="stat-value" id="statBooked">—</div>
+      <div class="stat-trend up" id="statBookedSub">Booking requested</div>
+    </div>
+    <div class="stat-card cool">
+      <div class="stat-label">GMV Tracked</div>
+      <div class="stat-value" id="statGmv">—</div>
+      <div class="stat-trend" id="statGmvSub">Across all quotes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last Activity</div>
+      <div class="stat-value" id="statLast">—</div>
+      <div class="stat-trend" id="statLastSub">—</div>
+    </div>
+  </div>
+
+  <!-- =============== QUOTES =============== -->
+  <div class="section-head">
+    <div>
+      <div class="section-title">Your quotes</div>
+      <div class="section-sub">Reopen any quote on this device or once signed in.</div>
+    </div>
+    <div class="section-sub" id="quotesCount">—</div>
+  </div>
+
+  <div class="quotes-table" id="quotesTable">
+    <div class="quotes-row head">
+      <span>Reference</span><span>Lane</span><span>Date</span><span>Status</span><span>Total</span><span></span>
+    </div>
+    <div id="quotesBody">
+      <div class="empty-state" id="emptyState">
+        <div class="es-icon">⌖</div>
+        <div class="es-title">Loading your quotes…</div>
+        <div>Sit tight, this only takes a moment.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== TOOLS & AI =============== -->
+  <div id="tools" class="section-head" style="margin-top:36px">
+    <div>
+      <div class="section-title">Tools & AI</div>
+      <div class="section-sub">Power-features for high-volume shippers.</div>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+    <a class="tool-card ai" href="index.html#ai">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      </div>
+      <div class="tool-name">AI Furniture Identifier</div>
+      <div class="tool-desc">Upload a photo or PDF. Claude vision identifies pieces, estimates packed dimensions in inches and shipping weight in pounds, then drops them straight into your quote.</div>
+      <div class="tool-arrow">Try it now →</div>
+    </a>
+
+    <a class="tool-card" href="index.html">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+      </div>
+      <div class="tool-name">Live Quote Calculator</div>
+      <div class="tool-desc">Dimensional weight, linear-foot rule, fuel surcharge (live Canadian diesel), accessorials, tax — every line itemized in real time.</div>
+      <div class="tool-arrow">Open calculator →</div>
+    </a>
+
+    <a class="tool-card purple" href="admin.html">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+      </div>
+      <div class="tool-name">Admin Console</div>
+      <div class="tool-desc">For OKE dispatch. Live booking feed, customer pipeline, top lanes, monthly GMV, rate-table edits.</div>
+      <div class="tool-arrow">Open admin →</div>
+    </a>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// Supabase wiring
+// ============================================================
+const SB_URL = "https://wwtaadvzonnbvyhottlv.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA";
+
+// Shared storage key with index.html so the session persists across pages.
+const sb = window.supabase.createClient(SB_URL, SB_ANON, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'okeQuoteHistoryAuth' }
 });
+
+function getDeviceId() {
+  let id = localStorage.getItem('monteDeviceId');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    localStorage.setItem('monteDeviceId', id);
+  }
+  return id;
+}
+function fmtMoney(n) {
+  return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function fmtMoneyFull(n) {
+  return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function timeAgo(t) {
+  const d = new Date(t); const sec = (Date.now() - d.getTime()) / 1000;
+  if (sec < 60) return 'just now';
+  if (sec < 3600) return Math.floor(sec / 60) + 'm ago';
+  if (sec < 86400) return Math.floor(sec / 3600) + 'h ago';
+  if (sec < 604800) return Math.floor(sec / 86400) + 'd ago';
+  return d.toLocaleDateString('en-CA');
+}
+function shortDate(t) {
+  if (!t) return '—';
+  return new Date(t).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+async function refreshAuthUI() {
+  const { data: { session } } = await sb.auth.getSession();
+  const signedOut = document.getElementById('authSignedOut');
+  const signedIn  = document.getElementById('authSignedIn');
+  const userEmail = document.getElementById('userEmail');
+  const navBtn    = document.getElementById('navAuthBtn');
+  if (session && session.user) {
+    signedOut.style.display = 'none';
+    signedIn.style.display = 'flex';
+    userEmail.textContent = session.user.email || session.user.id;
+    navBtn.textContent = 'Account';
+    // Claim any device-tied quotes
+    try { await sb.rpc('claim_quotes_for_device', { p_device_id: getDeviceId() }); } catch(_) {}
+  } else {
+    signedOut.style.display = 'flex';
+    signedIn.style.display = 'none';
+    navBtn.textContent = 'Sign in';
+  }
+  return session;
+}
+
+// Email + password mode toggle (login vs create account)
+let authMode = 'login'; // or 'signup'
+const $auth = (id) => document.getElementById(id);
+
+function setAuthMode(mode) {
+  authMode = mode;
+  if (mode === 'signup') {
+    $auth('authKicker').textContent = 'Create your account';
+    $auth('authTitle').textContent = 'Save quotes across devices.';
+    $auth('authSub').textContent = 'Just an email and password — no magic link required.';
+    $auth('authSubmitBtn').textContent = 'Create account';
+    $auth('authToggleBtn').textContent = 'I have an account';
+    $auth('authPassword2').style.display = '';
+    $auth('authPassword').autocomplete = 'new-password';
+  } else {
+    $auth('authKicker').textContent = 'Sign in to your account';
+    $auth('authTitle').textContent = 'Welcome back.';
+    $auth('authSub').textContent = 'Email + password. Your saved quotes follow you to every device.';
+    $auth('authSubmitBtn').textContent = 'Sign in';
+    $auth('authToggleBtn').textContent = 'Create account';
+    $auth('authPassword2').style.display = 'none';
+    $auth('authPassword').autocomplete = 'current-password';
+  }
+  $auth('authStatus').textContent = '';
+}
+
+$auth('authToggleBtn').addEventListener('click', () => setAuthMode(authMode === 'login' ? 'signup' : 'login'));
+
+$auth('authSubmitBtn').addEventListener('click', async () => {
+  const email = ($auth('authEmail').value || '').trim();
+  const pw    = $auth('authPassword').value || '';
+  const pw2   = $auth('authPassword2').value || '';
+  const status = $auth('authStatus');
+  if (!email || !email.includes('@')) {
+    status.textContent = 'Enter a valid email.';
+    status.className = 'auth-status err'; return;
+  }
+  if (pw.length < 6) {
+    status.textContent = 'Password must be at least 6 characters.';
+    status.className = 'auth-status err'; return;
+  }
+  if (authMode === 'signup') {
+    if (pw !== pw2) {
+      status.textContent = 'Passwords don\'t match.';
+      status.className = 'auth-status err'; return;
+    }
+    status.textContent = 'Creating your account…';
+    status.className = 'auth-status';
+    const { data, error } = await sb.auth.signUp({
+      email, password: pw,
+      options: { emailRedirectTo: window.location.href }
+    });
+    if (error) {
+      status.textContent = error.message || String(error);
+      status.className = 'auth-status err'; return;
+    }
+    if (data.session) {
+      status.textContent = 'Account created. You\'re in.';
+      status.className = 'auth-status ok';
+    } else {
+      // Email confirmation may be required. Try direct sign-in.
+      const r2 = await sb.auth.signInWithPassword({ email, password: pw });
+      if (r2.error) {
+        status.textContent = 'Account created — check your email to confirm, then sign in.';
+        status.className = 'auth-status ok';
+        setAuthMode('login');
+      } else {
+        status.textContent = 'Account created. Welcome!';
+        status.className = 'auth-status ok';
+      }
+    }
+  } else {
+    status.textContent = 'Signing in…';
+    status.className = 'auth-status';
+    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if (error) {
+      status.textContent = error.message || String(error);
+      status.className = 'auth-status err';
+    } else {
+      status.textContent = 'Signed in.';
+      status.className = 'auth-status ok';
+    }
+  }
+});
+
+$auth('authForgotBtn').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = ($auth('authEmail').value || '').trim();
+  const status = $auth('authStatus');
+  if (!email || !email.includes('@')) {
+    status.textContent = 'Enter your email above first.';
+    status.className = 'auth-status err'; return;
+  }
+  status.textContent = 'Sending password reset link…';
+  status.className = 'auth-status';
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname + '?reset=1'
+  });
+  if (error) {
+    status.textContent = error.message || String(error);
+    status.className = 'auth-status err';
+  } else {
+    status.textContent = 'Reset link sent — check your inbox.';
+    status.className = 'auth-status ok';
+  }
+});
+
+// Handle password reset flow if returning via reset link
+(async function handleReset() {
+  if (!new URLSearchParams(window.location.search).get('reset')) return;
+  setTimeout(async () => {
+    const newPw = prompt('Enter a new password (6+ characters):');
+    if (!newPw || newPw.length < 6) return;
+    const { error } = await sb.auth.updateUser({ password: newPw });
+    if (error) alert('Could not update password: ' + error.message);
+    else alert('Password updated. You can sign in now.');
+    const url = new URL(window.location.href); url.searchParams.delete('reset');
+    window.history.replaceState({}, '', url.pathname);
+  }, 400);
+})();
+
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  await refreshAuthUI();
+  loadQuotes();
+});
+
+document.getElementById('navAuthBtn').addEventListener('click', () => {
+  document.getElementById('authPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ============================================================
+// QUOTES
+// ============================================================
+async function loadQuotes() {
+  const body = document.getElementById('quotesBody');
+  const empty = document.getElementById('emptyState');
+
+  let quotes = [];
+  try {
+    const { data, error } = await sb.rpc('list_my_quotes', { p_device_id: getDeviceId(), p_limit: 200 });
+    if (error) throw error;
+    quotes = data || [];
+  } catch (e) {
+    console.error('list_my_quotes failed', e);
+  }
+
+  // Update stats
+  const statTotal  = document.getElementById('statTotal');
+  const statBooked = document.getElementById('statBooked');
+  const statGmv    = document.getElementById('statGmv');
+  const statLast   = document.getElementById('statLast');
+  const statLastSub= document.getElementById('statLastSub');
+  const quotesCount= document.getElementById('quotesCount');
+
+  statTotal.textContent  = String(quotes.length);
+  const booked = quotes.filter(q => q.status === 'booking_requested');
+  statBooked.textContent = String(booked.length);
+  const gmv = quotes.reduce((s, q) => s + Number(q.total_after_tax || 0), 0);
+  statGmv.textContent    = fmtMoney(gmv);
+  if (quotes[0]) {
+    statLast.textContent = timeAgo(quotes[0].created_at);
+    statLastSub.textContent = quotes[0].origin + (quotes[0].destination ? ' → ' + quotes[0].destination : ' · local');
+  } else {
+    statLast.textContent = '—';
+    statLastSub.textContent = 'No quotes yet';
+  }
+  quotesCount.textContent = quotes.length ? `${quotes.length} total` : '';
+
+  if (!quotes.length) {
+    empty.innerHTML = `
+      <div class="es-icon">⌖</div>
+      <div class="es-title">No quotes yet on this device.</div>
+      <div>Build your first quote — it'll save automatically.</div>
+      <div style="margin-top:18px"><a class="btn btn-primary" href="index.html">+ New Quote</a></div>
+    `;
+    return;
+  }
+
+  // Render rows
+  body.innerHTML = quotes.map(q => `
+    <div class="quotes-row">
+      <span class="q-ref">#${(q.quote_ref || '').replace(/^OKE-/, '')}</span>
+      <span>
+        <div class="q-lane">${escapeHtml(q.origin || '—')} ${q.destination ? '→ ' + escapeHtml(q.destination) : '<span style="color:rgba(255,254,250,0.40)">· local</span>'}</div>
+        <div class="q-lane-sub">${escapeHtml(q.service_name || '')}${q.billable_weight_lbs ? ' · ' + q.billable_weight_lbs + ' lb' : ''}</div>
+      </span>
+      <span class="q-date">${shortDate(q.created_at)}</span>
+      <span><span class="q-status ${q.status || 'draft'}"><span class="dot"></span>${(q.status || 'draft').replace(/_/g, ' ')}</span></span>
+      <span class="q-total">${fmtMoneyFull(q.total_after_tax)}</span>
+      <span style="text-align:right">
+        <a class="q-action" href="quote.html?t=${encodeURIComponent(q.public_token)}" target="_blank" rel="noopener">Open</a>
+      </span>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(async function init() {
+  await refreshAuthUI();
+  loadQuotes();
+  sb.auth.onAuthStateChange((event, session) => {
+    refreshAuthUI();
+    loadQuotes();
+  });
+})();
 </script>
 </body>
 </html>
-

@@ -1,4 +1,4 @@
-# Monte Design Supabase Setup
+# OKE Calculator Supabase Setup
 
 ## Recommended Platform
 

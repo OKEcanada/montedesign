@@ -1,4 +1,4 @@
--- Monte Design / OKE Canada — Supabase schema v2
+-- OKE Canada calculator — Supabase schema v2
 -- Adds: server-side rates, view tracking, expiry, magic-link auth, admin gating.
 -- Idempotent: safe to re-run in Supabase SQL Editor on top of the v1 schema.
 

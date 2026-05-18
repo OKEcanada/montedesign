@@ -3824,12 +3824,13 @@ async function saveQuoteRecord(record) {
   const cfg = getSupabaseConfig();
   if (!cfg) return saveQuoteLocal(record);
   const session = window._monteSession;
+  const bearer = record.user_id && session && session.access_token ? session.access_token : cfg.anonKey;
   try {
     const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at,valid_until`, {
       method: 'POST',
       headers: {
         apikey: cfg.anonKey,
-        Authorization: `Bearer ${session && session.access_token ? session.access_token : cfg.anonKey}`,
+        Authorization: `Bearer ${bearer}`,
         'Content-Type': 'application/json',
         Prefer: 'return=representation'
       },
@@ -3860,7 +3861,9 @@ async function saveCurrentQuote(copyLink, statusOverride) {
   // Attach the per-browser device id so the user can later claim it on login.
   record.device_id = getDeviceId();
   // Attach the logged-in user_id when present.
-  if (monteAuth.user() && monteAuth.user().id) record.user_id = monteAuth.user().id;
+  if (window._monteSession && window._monteSession.access_token && monteAuth.user() && monteAuth.user().id) {
+    record.user_id = monteAuth.user().id;
+  }
   const saved = await saveQuoteRecord(record);
   window._lastSavedQuote = saved;
   window._lastQuoteShareUrl = quoteShareUrl(saved.public_token);

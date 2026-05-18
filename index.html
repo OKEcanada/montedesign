@@ -13,7 +13,7 @@
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // Defensive: unregister any stale service workers from earlier builds (some users
@@ -59,9 +59,9 @@
     --radius-sm: 10px;
     --radius-lg: 26px;
     --transition: 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
-    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    --font-display: "Instrument Serif", "Inter", serif;
-    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-body: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-display: "Geist", "Inter", sans-serif;
+    --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .hidden { display: none !important; }
@@ -1268,6 +1268,17 @@
     background: linear-gradient(135deg, rgba(255,122,69,0.35), rgba(79,209,197,0.18));
     box-shadow: 0 0 0 4px rgba(255,122,69,0.08);
   }
+  .fuel-inline-action.applied {
+    color: #061520;
+    border-color: rgba(79,209,197,0.74);
+    background: linear-gradient(135deg, #64f1df, #ffb380);
+    box-shadow: 0 0 0 4px rgba(79,209,197,0.12), 0 10px 24px rgba(79,209,197,0.18);
+  }
+  .pct-input-wrap.applied {
+    border-color: rgba(79,209,197,0.54);
+    background: rgba(79,209,197,0.12);
+    box-shadow: inset 0 0 0 1px rgba(79,209,197,0.08);
+  }
 
   /* AI uploader card */
   .ai-uploader {
@@ -1675,7 +1686,7 @@
   .r-stages span.on { color: var(--accent-light); background: rgba(255,122,69,0.12); border: 1px solid rgba(255,122,69,0.25); }
   .journey-ops {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     margin-top: 12px;
   }
@@ -1727,8 +1738,31 @@
     font-size: 11.5px;
     line-height: 1.45;
   }
+  .journey-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .journey-mini {
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: 10px;
+    padding: 8px 9px;
+    background: rgba(7,9,26,0.24);
+  }
+  .journey-mini b {
+    display: block;
+    color: var(--paper);
+    font-size: 11.5px;
+    margin-bottom: 3px;
+  }
+  .journey-mini span {
+    display: block;
+    color: rgba(250,248,241,0.56);
+    font-size: 10.5px;
+  }
   @media (max-width: 700px) {
-    .journey-ops { grid-template-columns: 1fr; }
+    .journey-ops, .journey-detail-grid { grid-template-columns: 1fr; }
   }
 
   .r-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
@@ -1801,6 +1835,53 @@
   }
   .compare-advisor b { display: block; color: var(--paper); font-size: 12.5px; margin-bottom: 4px; }
   .compare-advisor em { display: block; font-style: normal; color: rgba(250,248,241,0.55); font-size: 11px; line-height: 1.4; }
+  .market-compare {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(250,248,241,0.10);
+  }
+  .market-compare-head {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+    color: rgba(250,248,241,0.56);
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .market-compare-head small {
+    color: rgba(250,248,241,0.40);
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .market-row {
+    display: grid;
+    grid-template-columns: 98px 1fr 84px;
+    gap: 9px;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .market-row .nm { color: rgba(250,248,241,0.72); font-size: 11px; font-weight: 750; }
+  .market-row .range {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(250,248,241,0.08);
+    overflow: hidden;
+    position: relative;
+  }
+  .market-row .range span {
+    position: absolute; top: 0; bottom: 0;
+    left: var(--l, 0%); width: var(--w, 20%);
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(79,209,197,0.62), rgba(255,122,69,0.75));
+    box-shadow: 0 0 16px rgba(255,122,69,0.28);
+  }
+  .market-row.oke .range span {
+    left: 0; width: var(--w, 20%);
+    background: linear-gradient(90deg, #fff, var(--accent-light));
+  }
+  .market-row .price { color: var(--paper); text-align: right; font-family: var(--font-mono); font-size: 11px; font-weight: 800; }
 
   .r-intel {
     display: grid; gap: 12px;
@@ -2003,6 +2084,119 @@
   .intel-card .mini-action:hover {
     background: rgba(79,209,197,0.18);
     border-color: rgba(79,209,197,0.42);
+  }
+  .intel-card .mini-action.applied {
+    color: #071124;
+    border-color: rgba(79,209,197,0.68);
+    background: linear-gradient(135deg, #63eadc, #ffb380);
+    box-shadow: 0 0 0 4px rgba(79,209,197,0.10);
+  }
+  .intel-card.live-weather,
+  .intel-card.live-fuel {
+    min-height: 146px;
+    border-color: rgba(79,209,197,0.30);
+    background:
+      radial-gradient(360px 220px at 100% 0%, rgba(79,209,197,0.13), transparent 62%),
+      linear-gradient(145deg, rgba(18,24,52,0.94), rgba(20,39,62,0.82));
+    box-shadow: 0 16px 38px rgba(5,9,24,0.22), inset 0 0 0 1px rgba(255,255,255,0.035);
+  }
+  .intel-card.live-fuel {
+    border-color: rgba(255,122,69,0.34);
+    background:
+      radial-gradient(320px 220px at 100% 0%, rgba(255,122,69,0.17), transparent 62%),
+      linear-gradient(145deg, rgba(28,20,42,0.94), rgba(18,35,57,0.82));
+  }
+  .intel-card.live-weather.is-live::after,
+  .intel-card.live-fuel.is-live::after,
+  .intel-card.is-live::before,
+  .intel-card .live-pulse,
+  .wx-streaks,
+  .fuel-spark {
+    content: none !important;
+    display: none !important;
+    animation: none !important;
+  }
+  .intel-live-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .intel-card span.intel-live-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: rgba(250,248,241,0.60);
+  }
+  .intel-live-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 14px;
+    color: var(--cool);
+    background: rgba(79,209,197,0.13);
+    border: 1px solid rgba(79,209,197,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px rgba(79,209,197,0.10);
+  }
+  .intel-live-icon.fuel {
+    color: var(--accent-light);
+    background: rgba(255,122,69,0.14);
+    border-color: rgba(255,122,69,0.32);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px rgba(255,122,69,0.12);
+  }
+  .intel-live-icon svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .intel-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 10px;
+  }
+  .intel-detail {
+    min-width: 0;
+    padding: 8px 9px;
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: 10px;
+    background: rgba(250,248,241,0.055);
+  }
+  .intel-detail small {
+    display: block;
+    color: rgba(250,248,241,0.46);
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .intel-detail strong {
+    display: block;
+    color: var(--paper);
+    font-size: 11.5px;
+    line-height: 1.1;
+  }
+  .intel-detail span {
+    display: block;
+    margin: 4px 0 0;
+    color: rgba(250,248,241,0.54);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .intel-source {
+    margin-top: 8px;
+    color: rgba(250,248,241,0.42);
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  @media (max-width: 520px) {
+    .intel-detail-grid { grid-template-columns: 1fr; }
+    .market-row { grid-template-columns: 88px 1fr 74px; }
   }
   .intel-strip {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
@@ -3011,14 +3205,22 @@
                   <em id="intelActionSub">Summary and contact actions are prepared.</em>
                 </div>
                 <div class="intel-card live-weather" id="weatherCard">
-                  <span>Route weather <span class="live-badge" id="weatherLiveBadge" style="display:none">Live</span></span>
+                  <div class="intel-live-head">
+                    <span class="intel-live-label"><span class="intel-live-icon" id="weatherIcon" aria-hidden="true"></span>Route weather <span class="live-badge" id="weatherLiveBadge" style="display:none">Live</span></span>
+                  </div>
                   <b id="weatherIntel">Checking forecast</b>
                   <em id="weatherIntelSub">Origin and destination weather will appear here.</em>
+                  <div class="intel-detail-grid" id="weatherDetails"></div>
+                  <div class="intel-source" id="weatherSource">Live forecast details appear after lane selection.</div>
                 </div>
                 <div class="intel-card live-fuel" id="fuelCard">
-                  <span>Fuel index <span class="live-badge" id="fuelLiveBadge" style="display:none">Live</span></span>
+                  <div class="intel-live-head">
+                    <span class="intel-live-label"><span class="intel-live-icon fuel" id="fuelIcon" aria-hidden="true"></span>Fuel index <span class="live-badge" id="fuelLiveBadge" style="display:none">Live</span></span>
+                  </div>
                   <b id="fuelIntel">Checking diesel</b>
                   <em id="fuelIntelSub">Uses the latest public diesel index available.</em>
+                  <div class="intel-detail-grid" id="fuelDetails"></div>
+                  <div class="intel-source" id="fuelSource">Live diesel index appears after city selection.</div>
                   <div class="fuel-spark" id="fuelSpark" style="display:none"></div>
                   <button class="mini-action" id="applyFuelBtn" type="button">Apply fuel</button>
                 </div>
@@ -3077,6 +3279,9 @@
                 <button class="journey-step" type="button" data-journey="delivery">
                   <span>03 delivery</span><b>Final mile crew</b><em>Service level, room placement, POD, and closeout.</em>
                 </button>
+                <button class="journey-step" type="button" data-journey="intel">
+                  <span>04 intel</span><b>Risk signals</b><em>Fuel, weather, density, and service fit.</em>
+                </button>
               </div>
               <div class="journey-detail" id="journeyDetail">Click a stage to see what ops should confirm before booking.</div>
               <div class="r-visibility-grid">
@@ -3106,6 +3311,7 @@
                 <span class="hint">tap to switch</span>
               </div>
               <div id="cmpRows"></div>
+              <div class="market-compare" id="marketCompare"></div>
               <div class="compare-advisor" id="cmpAdvisor">
                 <b>Recommendation loading</b>
                 <em>Enter shipment details and we will show the best value path.</em>
@@ -3573,6 +3779,67 @@ function weatherRisk(day) {
   return { level: 0, label: 'Weather clear', note: `${Math.round(day.tMin)} to ${Math.round(day.tMax)}C, ${Math.round(day.precip || 0)}% precip` };
 }
 
+function iconSvg(kind) {
+  const icons = {
+    sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+    cloud: '<svg viewBox="0 0 24 24"><path d="M17.5 19H8a5 5 0 1 1 .9-9.92A6.5 6.5 0 0 1 21 12.5 3.5 3.5 0 0 1 17.5 19Z"/></svg>',
+    rain: '<svg viewBox="0 0 24 24"><path d="M17.5 16H8a5 5 0 1 1 .9-9.92A6.5 6.5 0 0 1 21 9.5 3.5 3.5 0 0 1 17.5 16Z"/><path d="M8 19v2M12 18v2M16 19v2"/></svg>',
+    snow: '<svg viewBox="0 0 24 24"><path d="M17.5 16H8a5 5 0 1 1 .9-9.92A6.5 6.5 0 0 1 21 9.5 3.5 3.5 0 0 1 17.5 16Z"/><path d="M8 20h.01M12 19h.01M16 20h.01"/></svg>',
+    wind: '<svg viewBox="0 0 24 24"><path d="M3 8h12a3 3 0 1 0-3-3"/><path d="M3 12h16"/><path d="M3 16h10a3 3 0 1 1-3 3"/></svg>',
+    fuel: '<svg viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M8 7h4M6 21h12"/><path d="M16 8h2l2 2v8a2 2 0 0 0 4 0v-5l-2-2"/></svg>',
+  };
+  return icons[kind] || icons.cloud;
+}
+
+function weatherIconKind(day, risk) {
+  if (!day) return 'cloud';
+  if ((day.snow || 0) >= 0.5 || (day.tMin || 0) <= -12) return 'snow';
+  if ((day.gust || 0) >= 45) return 'wind';
+  if ((day.precip || 0) >= 45 || (day.code || 0) >= 51) return 'rain';
+  if ((day.code || 0) <= 1 && (!risk || risk.level === 0)) return 'sun';
+  return 'cloud';
+}
+
+function setLiveIcon(id, kind) {
+  const el = $(id);
+  if (el) el.innerHTML = iconSvg(kind);
+}
+
+function weatherDetailHtml(scored) {
+  return (scored || []).filter(x => x && x.data && x.data.day).slice(0, 2).map(x => {
+    const d = x.data.day;
+    const temp = `${Math.round(d.tMin)} to ${Math.round(d.tMax)}C`;
+    const detail = `${Math.round(d.precip || 0)}% precip · ${Number(d.snow || 0).toFixed(1)} cm snow · gust ${Math.round(d.gust || 0)} km/h`;
+    return `<div class="intel-detail"><small>${htmlEsc(x.city)}</small><strong>${htmlEsc(temp)}</strong><span>${htmlEsc(detail)}</span></div>`;
+  }).join('');
+}
+
+function setFuelAppliedUi() {
+  const suggested = Number(window._suggestedFscPct || 0);
+  const applied = Number(state.fscPct || 0);
+  const sameAsLive = suggested > 0 && applied > 0 && Math.abs(applied - suggested) < 0.06;
+  const label = sameAsLive ? `Applied ${applied.toFixed(1)}%`
+    : applied > 0 ? `Fuel ${applied.toFixed(1)}%`
+      : suggested > 0 ? `Apply ${suggested.toFixed(1)}%` : 'Apply fuel';
+  const cardBtn = $('applyFuelBtn');
+  const inlineBtn = $('applyFuelInlineBtn');
+  [cardBtn, inlineBtn].forEach(btn => {
+    if (!btn) return;
+    btn.textContent = label;
+    btn.classList.toggle('applied', sameAsLive);
+    btn.classList.toggle('ready', !applied && suggested > 0);
+    btn.title = suggested > 0 ? `Use live diesel-index fuel surcharge: ${suggested.toFixed(1)}%` : 'Live fuel suggestion is loading';
+  });
+  const wrap = document.querySelector('.pct-input-wrap');
+  if (wrap) wrap.classList.toggle('applied', sameAsLive);
+  const pill = $('intelPillFuel');
+  if (pill) {
+    pill.textContent = applied > 0 ? (sameAsLive ? 'Live fuel applied' : `Fuel ${applied.toFixed(1)}%`) : (suggested > 0 ? `${suggested.toFixed(1)}% suggested` : 'Fuel manual');
+    pill.classList.toggle('ok', applied > 0);
+    pill.classList.toggle('warn', !applied && suggested > 0);
+  }
+}
+
 async function fetchCityWeather(label, pickupDate) {
   const geo = await geocodeCity(label);
   if (!geo) return null;
@@ -3599,6 +3866,11 @@ function scheduleWeatherIntel(q) {
   const title = $("weatherIntel"), sub = $("weatherIntelSub");
   if (title) title.textContent = 'Checking forecast';
   if (sub) sub.textContent = 'Looking at pickup and delivery cities.';
+  setLiveIcon('weatherIcon', 'cloud');
+  const details = $('weatherDetails');
+  const source = $('weatherSource');
+  if (details) details.innerHTML = '';
+  if (source) source.textContent = 'Reading live forecast for the selected pickup date.';
   const cities = q.isLocal ? [state.origin] : [state.origin, state.destination];
   Promise.all(cities.filter(Boolean).map(c => fetchCityWeather(c, pickupDate).catch(() => null)))
     .then(results => {
@@ -3612,16 +3884,18 @@ function scheduleWeatherIntel(q) {
       }
       if (title) title.textContent = `${worst.risk.label}: ${worst.city}`;
       if (sub) sub.textContent = worst.risk.note;
+      setLiveIcon('weatherIcon', weatherIconKind(worst.data && worst.data.day, worst.risk));
+      if (details) details.innerHTML = weatherDetailHtml(scored);
+      if (source) {
+        const day = worst.data && worst.data.day;
+        source.textContent = day && day.date
+          ? `Open-Meteo live forecast for ${day.date}. Use as routing intelligence, not a dispatch guarantee.`
+          : 'Live forecast connected.';
+      }
       // Light up the weather card
       const card = document.getElementById('weatherCard');
       if (card) {
         card.classList.add('is-live');
-        if (!card.querySelector('.live-pulse')) {
-          const dot = document.createElement('span'); dot.className = 'live-pulse'; card.appendChild(dot);
-        }
-        if (!card.querySelector('.wx-streaks')) {
-          const wx = document.createElement('div'); wx.className = 'wx-streaks'; card.appendChild(wx);
-        }
       }
       const wb = document.getElementById('weatherLiveBadge'); if (wb) wb.style.display = 'inline-block';
       updateQuoteAdvisor(q);
@@ -3667,13 +3941,17 @@ function scheduleFuelIntel(q, distKm) {
   // Eager: as soon as we know the origin province, light up the fuel card.
   if (!state.origin && !state.destination) return;
   if (!q) q = { hasLane: !!state.origin };
+  setLiveIcon('fuelIcon', 'fuel');
   const prov = provinceOf(state.origin) || provinceOf(state.destination) || 'ON';
   const key = `${prov}|${Math.round(distKm || 0)}`;
   if (key === LAST_FUEL_KEY) return;
   LAST_FUEL_KEY = key;
   const title = $("fuelIntel"), sub = $("fuelIntelSub");
+  const details = $("fuelDetails"), source = $("fuelSource");
   if (title) title.textContent = 'Checking diesel';
   if (sub) sub.textContent = 'Reading latest Statistics Canada diesel data.';
+  if (details) details.innerHTML = '';
+  if (source) source.textContent = 'Reading normalized Canadian diesel data.';
   fetchDieselIndex(prov)
     .then(idx => {
       const suggested = suggestedFscFromDiesel(idx.cents, distKm, idx.suggestedPct);
@@ -3690,6 +3968,18 @@ function scheduleFuelIntel(q, distKm) {
         }
       }
       const badge = document.getElementById('fuelLiveBadge'); if (badge) badge.style.display = 'inline-block';
+      if (title) title.textContent = `$${(idx.cents / 100).toFixed(2)}/L diesel - ${suggested.toFixed(1)}% FSC`;
+      if (sub) sub.textContent = `${prov} retail diesel, ${idx.refPer} (${srcLbl}). Tap Apply fuel to use ${suggested.toFixed(1)}%.`;
+      if (details) {
+        const national = idx.national && Number(idx.national.pricePerLitre) > 0 ? `$${Number(idx.national.pricePerLitre).toFixed(2)}/L` : 'tracking';
+        details.innerHTML = `
+          <div class="intel-detail"><small>province</small><strong>${htmlEsc(prov)}</strong><span>${htmlEsc(srcLbl)}</span></div>
+          <div class="intel-detail"><small>suggested</small><strong>${suggested.toFixed(1)}%</strong><span>carrier FSC</span></div>
+          <div class="intel-detail"><small>diesel</small><strong>$${(idx.cents / 100).toFixed(2)}/L</strong><span>retail index</span></div>
+          <div class="intel-detail"><small>national</small><strong>${htmlEsc(national)}</strong><span>${htmlEsc(idx.refPer || 'latest')}</span></div>
+        `;
+      }
+      if (source) source.textContent = `Source: ${srcLbl}. Last index date ${idx.refPer || 'latest available'}.`;
       const spark = document.getElementById('fuelSpark'); if (spark) spark.style.display = 'block';
       const pill = $("intelPillFuel");
       if (pill) {
@@ -3703,6 +3993,7 @@ function scheduleFuelIntel(q, distKm) {
         inlineFuel.classList.toggle('ready', !state.fscPct && suggested > 0);
         inlineFuel.title = `Use live diesel-index fuel surcharge: ${suggested.toFixed(1)}%`;
       }
+      setFuelAppliedUi();
       // Highlight intel tab so the user notices a live fuel rate is available.
       const tabBtn = document.querySelector('.r-tab[data-pane="intel"]');
       if (tabBtn && !state.fscPct && suggested > 0 && !tabBtn.classList.contains('active')) {
@@ -3717,6 +4008,7 @@ function scheduleFuelIntel(q, distKm) {
     .catch(() => {
       if (title) title.textContent = 'Fuel source unavailable';
       if (sub) sub.textContent = 'Manual FSC remains available.';
+      if (source) source.textContent = 'Fuel API is unavailable right now; manual FSC still works.';
     });
 }
 
@@ -3763,12 +4055,24 @@ function updateJourneyDetail(key, q) {
   if (!detail || !q) return;
   const svc = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || 'selected service';
   const lane = q.isLocal ? `${state.origin} local delivery` : `${state.origin} to ${state.destination}`;
+  const weather = window._weatherRisk && window._weatherRisk.risk ? `${window._weatherRisk.risk.label} near ${window._weatherRisk.city}` : 'Forecast loading';
+  const fuel = state.fscPct > 0 ? `${Number(state.fscPct).toFixed(1)}% fuel applied` : (window._suggestedFscPct > 0 ? `${window._suggestedFscPct.toFixed(1)}% fuel suggested` : 'Fuel loading');
+  const density = q.cubicFt > 0 ? (q.actualWt / q.cubicFt) : 0;
+  const detailGrid = `
+    <div class="journey-detail-grid">
+      <div class="journey-mini"><b>${htmlEsc(fuel)}</b><span>Confirm tariff before sharing.</span></div>
+      <div class="journey-mini"><b>${htmlEsc(weather)}</b><span>Adjust service or pickup timing if needed.</span></div>
+      <div class="journey-mini"><b>${Math.round(q.billable || 0).toLocaleString('en-CA')} lb billable</b><span>${q.linearWins ? 'Linear-foot rule wins.' : q.dimWins ? 'Dimensional weight wins.' : 'Actual weight controls.'}</span></div>
+      <div class="journey-mini"><b>${density ? density.toFixed(1) : '0.0'} lb/ft3</b><span>${density && density < 6 ? 'Bulky freight - confirm packaged dims.' : 'Density looks workable.'}</span></div>
+    </div>
+  `;
   const base = {
-    pickup: `<strong>Pickup readiness:</strong> confirm dock/curb access, pickup contact, packaging condition, and whether ${Math.round(q.actualWt || 0).toLocaleString('en-CA')} lbs can be staged safely.`,
+    pickup: `<strong>Pickup readiness:</strong> confirm dock/curb access, pickup contact, packaging condition, and whether ${Math.round(q.actualWt || 0).toLocaleString('en-CA')} lbs can be staged safely.${detailGrid}`,
     linehaul: q.isLocal
-      ? `<strong>Local move:</strong> line-haul is bypassed. Ops should focus on crew arrival window, building access, and same-day exception notes.`
-      : `<strong>Line-haul plan:</strong> ${lane} is priced with ${Math.round(q.billable || 0).toLocaleString('en-CA')} lbs billable. Track carrier handoff, terminal scan, and any weather/fuel alerts before dispatch.`,
-    delivery: `<strong>Delivery closeout:</strong> ${svc} drives the crew workflow. Capture POD, photos where useful, room placement notes, and any accessorials before marking booked.`
+      ? `<strong>Local move:</strong> line-haul is bypassed. Ops should focus on crew arrival window, building access, and same-day exception notes.${detailGrid}`
+      : `<strong>Line-haul plan:</strong> ${lane} is priced with ${Math.round(q.billable || 0).toLocaleString('en-CA')} lbs billable. Track carrier handoff, terminal scan, and any weather/fuel alerts before dispatch.${detailGrid}`,
+    delivery: `<strong>Delivery closeout:</strong> ${svc} drives the crew workflow. Capture POD, photos where useful, room placement notes, and any accessorials before marking booked.${detailGrid}`,
+    intel: `<strong>Live risk board:</strong> use the live signals below to decide whether to apply fuel, upgrade service, change pickup date, or add access notes before booking.${detailGrid}`
   };
   detail.innerHTML = base[key] || base.pickup;
 }
@@ -3783,6 +4087,53 @@ function setupJourneyPanel() {
       updateJourneyDetail(btn.dataset.journey, computeQuote());
     });
   });
+}
+
+function marketBenchmarks(q) {
+  const oke = Number(q && q.totalAfterTax || 0);
+  if (!(oke > 0)) return [];
+  const serviceFactor = state.service === 'whiteGlove' ? 1.12 : state.service === 'roomOfChoice' ? 1.07 : state.service === 'threshold' ? 1.03 : 1;
+  const complexity = (q.linearWins ? 0.07 : 0) + (q.dimWins ? 0.04 : 0) + (q.totalPcs > 4 ? 0.04 : 0);
+  const middleShare = q.middleMileSell && q.total ? Math.min(0.75, q.middleMileSell / q.total) : 0.45;
+  const carriers = [
+    { name: 'OKE', low: 1, high: 1, actual: true },
+    { name: 'Day & Ross', low: 1.06 + middleShare * 0.10, high: 1.28 + complexity },
+    { name: 'RXO', low: 1.02, high: 1.34 + serviceFactor * 0.05 + complexity },
+    { name: 'Manitoulin', low: 1.09 + middleShare * 0.06, high: 1.38 + complexity },
+    { name: 'Apps Cargo', low: 0.98 + serviceFactor * 0.04, high: 1.27 + complexity },
+  ];
+  return carriers.map(c => ({
+    ...c,
+    lowPrice: oke * c.low,
+    highPrice: oke * c.high,
+  }));
+}
+
+function renderMarketCompare(q) {
+  const host = $("marketCompare");
+  if (!host) return;
+  const rows = marketBenchmarks(q);
+  if (!rows.length || state.laneMode === 'middle') {
+    host.innerHTML = '';
+    return;
+  }
+  const max = Math.max(...rows.map(r => r.highPrice), 1);
+  host.innerHTML = `
+    <div class="market-compare-head">
+      <span>Market benchmark</span>
+      <small>Estimated range, not live carrier quotes</small>
+    </div>
+    ${rows.map(r => {
+      const left = r.actual ? 0 : Math.max(0, (r.lowPrice / max) * 100);
+      const width = r.actual ? Math.max(8, (r.highPrice / max) * 100) : Math.max(8, ((r.highPrice - r.lowPrice) / max) * 100);
+      const price = r.actual ? fmt(r.lowPrice) : `${moneyShort(r.lowPrice)}-${moneyShort(r.highPrice)}`;
+      return `<div class="market-row${r.actual ? ' oke' : ''}">
+        <span class="nm">${htmlEsc(r.name)}</span>
+        <span class="range"><span style="--l:${left.toFixed(1)}%;--w:${width.toFixed(1)}%;"></span></span>
+        <span class="price">${htmlEsc(price)}</span>
+      </div>`;
+    }).join('')}
+  `;
 }
 
 // ============================================================
@@ -4991,6 +5342,7 @@ function updateIntelligencePanel(q, distKm, etaText, density) {
   setPill('intelPillDims', q.linearWins ? 'Linear ft' : q.dimWins ? 'Dim weight' : 'Dims ok', (q.linearWins || q.dimWins) ? 'warn' : 'ok');
   setPill('intelPillFuel', q.fscAmount > 0 ? 'Fuel added' : 'Fuel manual', q.fscAmount > 0 ? 'ok' : '');
   setPill('intelPillTax', q.tax.rate > 0 ? 'Tax set' : 'Tax optional', q.tax.rate > 0 ? 'ok' : '');
+  setFuelAppliedUi();
 
   const etaConfidence = distKm > 2500 ? 'Long-haul' : distKm > 900 ? 'Steady' : 'High';
   setText('visEta', etaConfidence);
@@ -5463,9 +5815,11 @@ function updateOutput(options = {}) {
 
   // Compare bars (hide entirely in middle-mile-only mode)
   const cmpHost = $("cmpRows");
+  const marketHost = $("marketCompare");
   const cmpTab = document.querySelector('.r-tab[data-pane="compare"]');
   if (state.laneMode === 'middle') {
     if (cmpHost) cmpHost.innerHTML = '<div style="padding:14px;color:rgba(250,248,241,0.55);font-size:12.5px;text-align:center;">Service comparison applies to final-mile delivery only.</div>';
+    if (marketHost) marketHost.innerHTML = '';
     if (cmpTab) cmpTab.style.display = 'none';
   } else if (cmpHost && typeof SERVICE_LEVELS !== 'undefined') {
     if (cmpTab) cmpTab.style.display = '';
@@ -5510,6 +5864,7 @@ function updateOutput(options = {}) {
         updateOutput();
       });
     });
+    renderMarketCompare(q);
   }
 }
 
@@ -6399,9 +6754,11 @@ function setupFsc() {
     const n = Number(cleaned);
     if (Number.isFinite(n) && n >= 0 && n <= 200) {
       state.fscPct = n;
+      setFuelAppliedUi();
       updateOutput();
     } else if (cleaned === "" || cleaned === ".") {
       state.fscPct = 0;
+      setFuelAppliedUi();
       updateOutput();
     }
   });
@@ -6415,6 +6772,7 @@ function setupFsc() {
     if (!Number.isFinite(n) || n <= 0) return;
     state.fscPct = n;
     inp.value = String(n);
+    setFuelAppliedUi();
     updateOutput();
   };
   if (applyFuel) applyFuel.addEventListener('click', applyLiveFuel);

@@ -4501,6 +4501,32 @@ function quoteShareUrl(publicToken) {
   return url.toString();
 }
 
+async function copyTextSafe(text) {
+  const value = String(text || '');
+  if (!value) return false;
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('clipboard_timeout')), 900));
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await Promise.race([navigator.clipboard.writeText(value), timeout]);
+      return true;
+    }
+  } catch (e) {}
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = value;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  } catch (e) {
+    return false;
+  }
+}
+
 function localQuotes() {
   try { return JSON.parse(localStorage.getItem('monteSavedQuotes') || '[]'); }
   catch (e) { return []; }
@@ -4568,7 +4594,7 @@ async function saveCurrentQuote(copyLink, statusOverride) {
   window._lastSavedQuote = saved;
   window._lastQuoteShareUrl = quoteShareUrl(saved.public_token);
   if (copyLink) {
-    try { await navigator.clipboard.writeText(window._lastQuoteShareUrl); } catch (e) {}
+    await copyTextSafe(window._lastQuoteShareUrl);
   }
   notifySlack('quote.saved', {
     quote_ref: saved.quote_ref,
@@ -4962,6 +4988,20 @@ function updateIntelligencePanel(q, distKm, etaText, density) {
   scheduleWeatherIntel(q);
   scheduleFuelIntel(q, distKm);
   updateQuoteAdvisor(q, density, distKm);
+}
+
+function settleTabIndicator() {
+  const tabBar = document.querySelector('.r-tabs');
+  const active = document.querySelector('.r-tab.active');
+  if (!active || !tabBar) return;
+  const br = tabBar.getBoundingClientRect();
+  const tr = active.getBoundingClientRect();
+  const x = tr.left - br.left;
+  const w = tr.width;
+  if (w <= 0) return;
+  tabBar.style.setProperty('--tab-x', x + 'px');
+  tabBar.style.setProperty('--tab-w', w + 'px');
+  tabBar.setAttribute('data-ready', '1');
 }
 
 // ============================================================
@@ -5538,9 +5578,9 @@ function applyLaneMode() {
   $("originLabel").textContent = isLocal ? "City" : "Origin city";
   $("originInput").placeholder = isLocal ? "Pick a city…" : "Start typing…";
   if (isLocal) {
-    // Clear destination since it doesn't apply
-    state.destination = null;
-    $("destInput").value = "";
+    // Final-mile-only hides destination from pricing, but keeps the last lane
+    // intact so switching back to full/middle-mile does not wipe the quote.
+    $("destInput").value = state.destination || "";
     $("destInput").disabled = true;
   } else {
     // Re-enable dest if origin selected (line + middle both need destination)
@@ -5580,8 +5620,8 @@ function applyLaneMode() {
     if (isMiddle) {
       svcGrid.style.display = 'none';
       if (svcLabel) svcLabel.style.display = 'none';
-      // Clear service selection so no final-mile charge sneaks in
-      state.service = null;
+      // Middle-mile pricing ignores service in computeQuote(); keep the
+      // selection so returning to full quote restores the previous service.
     } else {
       svcGrid.style.display = '';
       if (svcLabel) svcLabel.style.display = '';
@@ -5803,7 +5843,7 @@ function setupActions() {
       `Total after tax: ${fmt(q.totalAfterTax)}`,
     ].filter(Boolean).join('\n');
     try {
-      await navigator.clipboard.writeText(text);
+      await copyTextSafe(text);
       copyBtn.classList.add('copied');
       copyBtn.querySelector('span').textContent = 'Copied';
       setTimeout(() => {
@@ -5834,7 +5874,7 @@ function setupActions() {
       if (navigator.share) { await navigator.share({ title: 'OKE Canada Delivery Quote', text: summary }); shared = true; }
     } catch (e) {}
     if (!shared) {
-      try { await navigator.clipboard.writeText(summary); } catch (e) {}
+      await copyTextSafe(summary);
       shareBtn.classList.add('copied');
       if (label) label.textContent = 'Copied link';
       setTimeout(() => {

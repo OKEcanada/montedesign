@@ -36,7 +36,10 @@ function clampNum(v: unknown, fallback: number, min = 1, max = 999) {
 
 function cleanItem(raw: Record<string, unknown>): ParsedItem {
   const name = String(raw.name || raw.itemType || "Furniture item").slice(0, 80);
-  const itemType = String(raw.itemType || raw.name || "Mixed furniture").slice(0, 80);
+  let itemType = String(raw.itemType || raw.name || "Mixed furniture").slice(0, 80);
+  if (/^(furniture|item|object|thing|mixed furniture|unknown)$/i.test(itemType.trim())) {
+    itemType = name;
+  }
   const conf = String(raw.confidence || "medium");
   return {
     name,
@@ -56,11 +59,12 @@ Return ONLY valid JSON in the form {"summary":string,"items":[{name,itemType,qty
 
 RULES:
 1. Be SPECIFIC: "3-seat fabric sofa", "queen mattress", "6-drawer oak dresser", "55-inch flat screen TV". NEVER generic terms like "furniture" or "item".
-2. Estimate PACKAGED shipping dimensions in INCHES and SHIPPING WEIGHT in POUNDS (add ~4 inches per dim for boxing/crating; mattresses use compression-bag dims).
-3. Realistic weights: 3-seat sofa 90-150 lb, queen mattress 70-120 lb, 6-drawer dresser 110-180 lb, 55" TV (boxed) 55-75 lb, washer/dryer 180-250 lb, fridge 200-400 lb, dining table 90-160 lb, dining chair 15-30 lb.
-4. confidence: "high" when clearly identifiable, "medium" when partial/blurry, "low" when guessing.
-5. NEVER invent items. If unclear, return empty items with explanation in summary.
-6. summary: one short line describing what's in the photo.`;
+2. itemType must be a usable quote category, not a broad class. Good itemType values: Sofa, Sectional, Lounge chair, Dining chair, Bed frame, Mattress, Dresser, Cabinet, Dining table, Coffee table, Desk, TV, Appliance, Mirror, Rug, Boxed item, Mixed furniture.
+3. Estimate PACKAGED shipping dimensions in INCHES and SHIPPING WEIGHT in POUNDS (add ~4 inches per dim for boxing/crating; mattresses use compression-bag dims).
+4. Realistic weights: 3-seat sofa 90-150 lb, queen mattress 70-120 lb, 6-drawer dresser 110-180 lb, 55" TV (boxed) 55-75 lb, washer/dryer 180-250 lb, fridge 200-400 lb, dining table 90-160 lb, dining chair 15-30 lb.
+5. confidence: "high" when clearly identifiable, "medium" when partial/blurry, "low" when guessing.
+6. NEVER invent items. If unclear, return empty items with explanation in summary.
+7. summary: one short line describing what's in the photo.`;
 
 function quotaError(detail: string) {
   return /quota|billing|insufficient_quota|exceeded/i.test(detail);

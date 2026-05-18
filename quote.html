@@ -141,11 +141,13 @@ async function sbRpc(name, params, opts) {
 async function notifyCustomer(event, payload) {
   const cfg = sbCfg();
   if (!cfg) return { ok: false, skipped: true };
+  const email = payload && (payload.email || payload.p_contact_email || payload.contact_email);
+  const name = payload && (payload.customer || payload.name || payload.p_contact_name || payload.contact_name);
   try {
     const res = await fetch(`${cfg.url}/functions/v1/notify-customer`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-      body: JSON.stringify({ event, payload })
+      body: JSON.stringify({ event, email, name, payload })
     });
     return { ok: res.ok, status: res.status, text: res.ok ? '' : await res.text().catch(() => '') };
   } catch (e) {

@@ -376,7 +376,11 @@ returns table (
   service_id text,
   service_name text,
   pickup_date date,
+  measurement_mode text,
   total_pcs integer,
+  actual_weight_lbs numeric,
+  cubic_ft numeric,
+  dim_weight_lbs numeric,
   billable_weight_lbs integer,
   middle_mile_sell numeric,
   final_mile_base numeric,
@@ -404,7 +408,8 @@ security definer
 set search_path = public
 as $$
   select q.id, q.quote_ref, q.public_token, q.status, q.lane_mode, q.origin, q.destination,
-         q.service_id, q.service_name, q.pickup_date, q.total_pcs, q.billable_weight_lbs,
+         q.service_id, q.service_name, q.pickup_date, q.measurement_mode, q.total_pcs,
+         q.actual_weight_lbs, q.cubic_ft, q.dim_weight_lbs, q.billable_weight_lbs,
          q.middle_mile_sell, q.final_mile_base, q.extra_piece_charge, q.accessorials_amount,
          q.subtotal, q.fuel_pct, q.fuel_amount, q.tax_id, q.tax_label, q.tax_rate, q.tax_amount,
          q.total_before_tax, q.total_after_tax, q.payload,

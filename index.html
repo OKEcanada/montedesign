@@ -5,11 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="National final mile delivery calculator powered by One Kind Express." />
 <meta name="theme-color" content="#0b0f24" />
+<!-- Aggressive no-cache so Chrome stops serving stale HTML after each deploy -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta name="oke-build" content="2026-05-18-v3" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Defensive: unregister any stale service workers from earlier builds (some users
+  // were stuck on a cached version in Chrome only). Safe no-op if none exist.
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => { try { r.unregister(); } catch(_) {} }));
+    }
+  } catch(_) { /* ignore */ }
+</script>
 <style>
   :root {
     --ink: #0c1024;
@@ -4117,6 +4131,7 @@ function computeQuote() {
   let middleMileSell = 0;
   let rates = null;
   let hasLocation = false;
+  let laneNotPriced = false;
   // Auto-detect same-city as local for full quotes; middle-mile remains dock to dock.
   const sameCity = state.origin && state.destination && state.origin === state.destination;
   const effectiveLocal = state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity);
@@ -4131,6 +4146,11 @@ function computeQuote() {
       if (rates) {
         hasLocation = true;
         middleMileSell = CURRENT_LANE_QUOTE.middleMileSell;
+      } else {
+        // Lane not in rates table OR RPC still in flight — show the quote anyway
+        // with middleMileSell = 0 and a banner telling the user what's happening.
+        hasLocation = true;
+        laneNotPriced = !!CURRENT_LANE_QUOTE === false ? false : true;
       }
     }
   }
@@ -4144,6 +4164,7 @@ function computeQuote() {
   return {
     actualWt: actualWtLbs, cubicFt, dimWt, linearFt, linearWt, billable, dimWins, linearWins,
     rates, hasLane: hasLocation, hasMeasurements: hasPricedItem(), hasService, isLocal: effectiveLocal,
+    laneNotPriced,
     baseFinalMile, middleMileSell, middleMileMarkup: MIDDLE_MILE_TABLE_MARKUP, finalMileMarkup: FINAL_MILE_AGENT_MARKUP,
     totalPcs, extraPieces, extraPieceCharge,
     accAmount, accSelected,
@@ -4949,7 +4970,12 @@ function updateIntelligencePanel(q, distKm, etaText, density) {
 function updateOutput(options = {}) {
   if (!options.skipLaneRefresh) scheduleLaneQuoteRefresh();
   const q = computeQuote();
-  const showResult = q.hasLane && q.hasMeasurements && q.hasService;
+  // PERMISSIVE showResult: show the quote panel whenever the user has filled in
+  // the basics (origin + service + measurements), even if the lane RPC hasn't
+  // resolved yet or the lane isn't in the rates table. The diagnostic banner
+  // below tells them what's still loading or estimated.
+  const hasOriginAndDest = !!state.origin && (state.laneMode === 'local' || !!state.destination || state.laneMode === 'middle');
+  const showResult = hasOriginAndDest && q.hasMeasurements && q.hasService;
   // Eagerly load fuel + weather intel as soon as origin (and destination if applicable)
   // are filled in — don't wait for measurements/service to flip showResult true.
   try { if (state.origin) scheduleFuelIntel(q, 1200); } catch(_) {}
@@ -4973,7 +4999,7 @@ function updateOutput(options = {}) {
     tabs.classList.toggle('tabs-ready', !!q.hasMeasurements);
     if (showResult) requestAnimationFrame(settleTabIndicator);
   }
-  // Detect "loading rates" state — shows a small caption while lane RPC is in-flight
+  // Banner for "lane rates loading" or "lane not in price table" (graceful)
   const loadingRates = showResult && !q.isLocal && !q.middleMileSell &&
     state.origin && (state.destination || state.laneMode === 'middle');
   let banner = document.getElementById('rateLoadingBanner');
@@ -4982,10 +5008,14 @@ function updateOutput(options = {}) {
       banner = document.createElement('div');
       banner.id = 'rateLoadingBanner';
       banner.style.cssText = 'margin:8px 0;padding:9px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(255,122,69,0.10),rgba(79,209,197,0.08));border:1px solid rgba(255,122,69,0.28);color:rgba(255,210,180,0.95);font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;display:flex;align-items:center;gap:9px;';
-      banner.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff7a45;animation:livePulse 1.4s ease-in-out infinite"></span>Loading lane rates...';
       const target = $("resultContent");
       const firstChild = target.firstChild;
       target.insertBefore(banner, firstChild);
+    }
+    if (banner) {
+      banner.innerHTML = q.laneNotPriced
+        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fbbf24;animation:livePulse 1.4s ease-in-out infinite"></span><span>Lane not in OKE rate table — middle-mile excluded. Final-mile + accessorials priced normally. Contact dispatch for custom line-haul rate.</span>'
+        : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff7a45;animation:livePulse 1.4s ease-in-out infinite"></span>Loading lane rates...';
     }
   } else if (banner) {
     banner.remove();

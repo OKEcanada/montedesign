@@ -42,6 +42,9 @@ create index if not exists quotes_user_idx on public.quotes(user_id);
 create index if not exists quotes_valid_until_idx on public.quotes(valid_until);
 create index if not exists quotes_device_idx on public.quotes(device_id);
 
+grant insert on public.quotes to anon, authenticated;
+grant select, update on public.quotes to authenticated;
+
 -- ============================================================
 -- 3. QUOTE VIEWS — every share-link open is a lead signal
 -- ============================================================

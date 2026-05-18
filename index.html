@@ -3825,14 +3825,15 @@ async function saveQuoteRecord(record) {
   if (!cfg) return saveQuoteLocal(record);
   const session = window._monteSession;
   const bearer = record.user_id && session && session.access_token ? session.access_token : cfg.anonKey;
+  const canReturnRow = !!record.user_id;
   try {
-    const res = await fetch(`${cfg.url}/rest/v1/quotes?select=id,quote_ref,public_token,total_after_tax,status,created_at,valid_until`, {
+    const res = await fetch(`${cfg.url}/rest/v1/quotes${canReturnRow ? '?select=id,quote_ref,public_token,total_after_tax,status,created_at,valid_until' : ''}`, {
       method: 'POST',
       headers: {
         apikey: cfg.anonKey,
         Authorization: `Bearer ${bearer}`,
         'Content-Type': 'application/json',
-        Prefer: 'return=representation'
+        Prefer: canReturnRow ? 'return=representation' : 'return=minimal'
       },
       body: JSON.stringify(record)
     });
@@ -3844,6 +3845,11 @@ async function saveQuoteRecord(record) {
         if (existing) return { ...record, ...existing, storage: 'supabase', already_saved: true };
       }
       throw new Error(errText);
+    }
+    if (!canReturnRow) {
+      const rows = await sbRpc('get_quote_by_token', { share_token: record.public_token });
+      const existing = Array.isArray(rows) ? rows[0] : rows;
+      return { ...record, ...(existing || {}), storage: 'supabase' };
     }
     const rows = await res.json();
     return { ...record, ...(rows && rows[0] ? rows[0] : {}), storage: 'supabase' };

@@ -2808,7 +2808,32 @@ function setMonteSession(session) {
   return session;
 }
 
+async function sessionFromUrlHash() {
+  const cfg = sbCfg();
+  if (!cfg || !window.location.hash || !window.location.hash.includes('access_token=')) return null;
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const access_token = hash.get('access_token');
+  if (!access_token) return null;
+  const expiresIn = Number(hash.get('expires_in') || 3600);
+  const session = {
+    access_token,
+    refresh_token: hash.get('refresh_token') || null,
+    token_type: hash.get('token_type') || 'bearer',
+    expires_at: Math.floor(Date.now() / 1000) + expiresIn
+  };
+  try {
+    const res = await fetch(`${cfg.url}/auth/v1/user`, {
+      headers: { apikey: cfg.anonKey, Authorization: `Bearer ${access_token}` }
+    });
+    if (res.ok) session.user = await res.json();
+  } catch (e) {}
+  window.history.replaceState({}, '', window.location.pathname + window.location.search);
+  return setMonteSession(session);
+}
+
 async function initAuthSession() {
+  const hashSession = await sessionFromUrlHash();
+  if (hashSession) return hashSession;
   const client = sbClient();
   if (!client) {
     monteAuth.bootFromStorage();
@@ -3999,13 +4024,28 @@ async function claimPendingQuotes() {
 
 async function sendHistoryMagicLink(email, claimToken) {
   const client = sbClient();
-  if (!client) throw new Error('Supabase Auth is not available yet.');
   const redirectTo = historyRedirectUrl({ claim: claimToken || (window._lastSavedQuote && window._lastSavedQuote.public_token) || window._publicToken || null });
-  const { error } = await client.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: redirectTo }
+  if (client) {
+    const { error } = await client.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo }
+    });
+    if (error) throw error;
+    return;
+  }
+  const cfg = sbCfg();
+  if (!cfg) throw new Error('Supabase Auth is not configured.');
+  const res = await fetch(`${cfg.url}/auth/v1/otp`, {
+    method: 'POST',
+    headers: { apikey: cfg.anonKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      create_user: true,
+      redirect_to: redirectTo,
+      email_redirect_to: redirectTo
+    })
   });
-  if (error) throw error;
+  if (!res.ok) throw new Error(await res.text());
 }
 
 async function refreshHistory() {

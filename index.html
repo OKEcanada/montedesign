@@ -2100,15 +2100,25 @@
   /* Fallback solid pill on the active tab — guarantees a bright orange highlight even
      before JS measures the tab bar (fixes "no orange box on Breakdown initially"). */
   .r-tab.active::before {
-    content: ""; position: absolute; inset: 3px;
-    background: linear-gradient(135deg, #ffb380 0%, #ff7a45 35%, #ff5722 70%, #c64411 100%);
+    content: ""; position: absolute; inset: 2px;
+    background: linear-gradient(135deg, #ffc28a 0%, #ff8c4d 32%, #ff5d28 65%, #d93f12 100%);
     border-radius: 999px;
     box-shadow:
-      0 10px 28px rgba(255,122,69,0.65),
-      0 4px 10px rgba(255,87,34,0.55),
-      inset 0 1px 0 rgba(255,255,255,0.32),
-      inset 0 -1px 0 rgba(0,0,0,0.18);
+      0 14px 30px rgba(255,122,69,0.75),
+      0 5px 12px rgba(255,87,34,0.60),
+      0 0 0 1px rgba(255,180,120,0.45),
+      inset 0 1.5px 0 rgba(255,255,255,0.38),
+      inset 0 -1px 0 rgba(0,0,0,0.20);
     z-index: -1;
+  }
+  /* Glow ring around active tab for extra "notice me" */
+  .r-tab.active::after {
+    content: ""; position: absolute; inset: -4px;
+    border-radius: 999px;
+    background: radial-gradient(120% 110% at 50% 50%, rgba(255,122,69,0.32), transparent 70%);
+    z-index: -2;
+    filter: blur(8px);
+    pointer-events: none;
   }
   /* Pulsing nudge to draw the eye to a tab that has actionable intel */
   @keyframes fscGlow {
@@ -3549,7 +3559,11 @@ async function fetchCityWeather(label, pickupDate) {
 }
 
 function scheduleWeatherIntel(q) {
-  if (!q || !q.hasLane) return;
+  // Load weather as soon as origin (and dest, if not local) are known — don't wait
+  // for the full quote. Lets the Intel card light up even while measurements are empty.
+  if (!q) q = { hasLane: !!state.origin, isLocal: state.laneMode === 'local' };
+  if (!state.origin) return;
+  if (!q.isLocal && !state.destination && state.laneMode !== 'middle') return;
   const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
   const key = [state.origin || '', q.isLocal ? '' : state.destination || '', pickupDate].join('|');
   if (key === LAST_WEATHER_KEY) return;
@@ -3622,7 +3636,9 @@ function suggestedFscFromDiesel(_cents, _distKm, suggestedPct) {
 }
 
 function scheduleFuelIntel(q, distKm) {
-  if (!q || !q.hasLane) return;
+  // Eager: as soon as we know the origin province, light up the fuel card.
+  if (!state.origin && !state.destination) return;
+  if (!q) q = { hasLane: !!state.origin };
   const prov = provinceOf(state.origin) || provinceOf(state.destination) || 'ON';
   const key = `${prov}|${Math.round(distKm || 0)}`;
   if (key === LAST_FUEL_KEY) return;
@@ -4058,7 +4074,19 @@ function computeQuote() {
 
   // Final-mile base — suppressed entirely in middle-mile-only mode
   const middleOnly = state.laneMode === 'middle';
-  const svc = middleOnly ? null : SERVICE_LEVELS.find(s => s.id === state.service);
+  // Robust service lookup: tolerate legacy ids like 'roomOfChoice' (now 'roc')
+  // and any casing mismatch so a stale saved quote can't silently zero the price.
+  const SERVICE_ID_ALIASES = { roomofchoice: 'roc', 'room-of-choice': 'roc', 'room_of_choice': 'roc' };
+  let svc = null;
+  if (!middleOnly && state.service) {
+    const sid = String(state.service);
+    const norm = SERVICE_ID_ALIASES[sid.toLowerCase()] || sid;
+    svc = SERVICE_LEVELS.find(s => s.id === norm) || SERVICE_LEVELS.find(s => s.id.toLowerCase() === sid.toLowerCase());
+    if (svc && state.service !== svc.id) {
+      console.warn('[oke] normalized service id', state.service, '->', svc.id);
+      state.service = svc.id;
+    }
+  }
   const hasService = middleOnly || !!svc;
   // Always fall back to the SERVICE_LEVELS default price even if servicePrices was cleared by a stale snapshot load
   const baseFinalMile = svc ? (Number(state.servicePrices && state.servicePrices[svc.id]) || svc.defaultPrice || 0) : 0;
@@ -4922,6 +4950,10 @@ function updateOutput(options = {}) {
   if (!options.skipLaneRefresh) scheduleLaneQuoteRefresh();
   const q = computeQuote();
   const showResult = q.hasLane && q.hasMeasurements && q.hasService;
+  // Eagerly load fuel + weather intel as soon as origin (and destination if applicable)
+  // are filled in — don't wait for measurements/service to flip showResult true.
+  try { if (state.origin) scheduleFuelIntel(q, 1200); } catch(_) {}
+  try { if (state.origin && (state.destination || state.laneMode === 'local')) scheduleWeatherIntel(q); } catch(_) {}
 
   // Diagnostic: surface why nothing is rendering if user hits the "0 everywhere"
   // state. window.__okeDebug() prints the live state for screenshots/console help.

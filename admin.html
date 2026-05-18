@@ -1,402 +1,299 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="robots" content="noindex" />
-<title>Admin Console · OKE Canada Freight</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>OKE Quotes Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --paper: #fbfaf6; --line: rgba(255,254,250,0.10);
-    --accent: #ff7a45; --accent-deep: #c64411; --accent-light: #ffa572;
-    --cool: #4fd1c5; --bg-deep: #07091a;
-    --positive: #16a34a; --danger: #ef4444;
-    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    --font-display: "Instrument Serif", "Inter", serif;
-    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --ink: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --brand: #ff6a00;
+    --ok: #15803d;
+    --warn: #a16207;
+    --bad: #b91c1c;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg-deep); color: var(--paper); font-family: var(--font-body); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-  body {
-    background:
-      radial-gradient(ellipse 90% 50% at 80% 0%, rgba(255,122,69,0.14), transparent 60%),
-      radial-gradient(ellipse 60% 50% at 10% 100%, rgba(124,58,237,0.16), transparent 60%),
-      linear-gradient(180deg, #05071a 0%, #0a0e28 50%, #07091a 100%);
-    background-attachment: fixed;
-  }
-  /* NAV */
-  .topnav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(18px) saturate(140%); background: rgba(7,9,26,0.65); border-bottom: 1px solid var(--line); }
-  .topnav-inner { max-width: 1440px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 24px; }
-  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--paper); font-weight: 800; font-size: 16px; }
-  .brand-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(155deg, var(--accent), var(--accent-deep)); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: #fff; box-shadow: 0 4px 14px rgba(255,122,69,0.4); }
-  .brand-sub { font-family: var(--font-mono); font-size: 10px; color: rgba(255,254,250,0.55); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
-  .admin-badge { margin-left: 8px; padding: 3px 9px; border-radius: 999px; background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; font-family: var(--font-mono); font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
-  .nav-links { display: flex; gap: 4px; margin-left: auto; align-items: center; }
-  .nav-link { color: rgba(255,254,250,0.65); text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 8px 14px; border-radius: 9px; }
-  .nav-link:hover { color: var(--paper); background: rgba(255,254,250,0.05); }
-  .nav-link.active { color: var(--paper); background: rgba(124,58,237,0.18); border: 1px solid rgba(124,58,237,0.40); }
-  .nav-cta { margin-left: 12px; background: rgba(255,254,250,0.06); color: var(--paper); border: 1px solid rgba(255,254,250,0.14); font-weight: 700; font-size: 13.5px; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
-
-  .page { max-width: 1440px; margin: 0 auto; padding: 32px 20px 80px; }
-  .hero { margin-bottom: 28px; }
-  .hero h1 { font-family: var(--font-display); font-size: clamp(32px, 4vw, 48px); font-weight: 500; line-height: 1.05; margin-bottom: 6px; background: linear-gradient(90deg, #fff 0%, #c4b5fd 50%, #ffd28a 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
-  .hero p { color: rgba(255,254,250,0.65); font-size: 15px; }
-
-  /* GATE */
-  .gate { margin: 40px auto; max-width: 440px; padding: 36px 32px; border-radius: 24px; background: linear-gradient(180deg, rgba(255,254,250,0.06) 0%, rgba(255,254,250,0.02) 100%); border: 1px solid var(--line); backdrop-filter: blur(14px); text-align: center; position: relative; overflow: hidden; }
-  .gate::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from 0deg, rgba(124,58,237,0.0), rgba(124,58,237,0.7), rgba(167,139,250,0.55), rgba(124,58,237,0.0)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ring 14s linear infinite; pointer-events: none; }
-  @keyframes ring { to { transform: rotate(360deg); } }
-  .gate > * { position: relative; z-index: 1; }
-  .gate-icon { width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 20px; background: linear-gradient(135deg, #a78bfa, #7c3aed); display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 32px rgba(124,58,237,0.45); }
-  .gate h2 { font-family: var(--font-display); font-size: 28px; font-weight: 500; margin-bottom: 6px; letter-spacing: -0.01em; }
-  .gate p { color: rgba(255,254,250,0.65); font-size: 14px; margin-bottom: 24px; line-height: 1.55; }
-  .gate-input { width: 100%; background: rgba(255,254,250,0.06); border: 1px solid rgba(255,254,250,0.14); color: var(--paper); font-family: var(--font-body); padding: 13px 16px; border-radius: 12px; font-size: 14.5px; outline: none; margin-bottom: 12px; transition: border-color 220ms ease, box-shadow 220ms ease; }
-  .gate-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(124,58,237,0.22); }
-  .gate-btn { width: 100%; background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; font-weight: 700; font-size: 14.5px; padding: 13px 16px; border-radius: 12px; border: 0; cursor: pointer; box-shadow: 0 10px 26px rgba(124,58,237,0.42); transition: transform 220ms ease, box-shadow 220ms ease; }
-  .gate-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(124,58,237,0.55); }
-  .gate-status { margin-top: 14px; font-family: var(--font-mono); font-size: 11.5px; color: rgba(255,254,250,0.65); min-height: 16px; }
-  .gate-status.ok { color: var(--cool); }
-  .gate-status.err { color: var(--danger); }
-  .gate-hint { margin-top: 18px; font-family: var(--font-mono); font-size: 10px; color: rgba(255,254,250,0.40); letter-spacing: 0.12em; text-transform: uppercase; }
-
-  /* DASHBOARD */
-  .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
-  .stat-card { position: relative; padding: 20px; border-radius: 16px; background: rgba(12,16,36,0.42); border: 1px solid var(--line); overflow: hidden; transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), border-color 280ms ease; }
-  .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,122,69,0.30); }
-  .stat-card::after { content: ""; position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: radial-gradient(circle, rgba(255,122,69,0.20), transparent 70%); pointer-events: none; }
-  .stat-card.cool::after { background: radial-gradient(circle, rgba(79,209,197,0.20), transparent 70%); }
-  .stat-card.green::after { background: radial-gradient(circle, rgba(22,163,74,0.25), transparent 70%); }
-  .stat-card.purple::after { background: radial-gradient(circle, rgba(124,58,237,0.30), transparent 70%); }
-  .stat-label { font-family: var(--font-mono); font-size: 10px; color: rgba(255,254,250,0.50); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
-  .stat-value { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, #fff, #ffd28a); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card.cool .stat-value { background: linear-gradient(135deg, #fff, #b4e1ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card.green .stat-value { background: linear-gradient(135deg, #fff, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card.purple .stat-value { background: linear-gradient(135deg, #fff, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-trend { font-size: 11.5px; margin-top: 4px; color: rgba(255,254,250,0.55); font-family: var(--font-mono); }
-  .stat-trend.up { color: #86efac; }
-  .stat-trend.down { color: var(--danger); }
-
-  .dual-col { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 24px; }
-  .panel { border-radius: 24px; background: rgba(12,16,36,0.42); border: 1px solid var(--line); overflow: hidden; }
-  .panel-head { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-  .panel-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
-  .panel-sub { color: rgba(255,254,250,0.55); font-size: 12.5px; font-family: var(--font-mono); }
-  .panel-body { padding: 6px 0; max-height: 620px; overflow-y: auto; }
-
-  .quotes-row { display: grid; grid-template-columns: 100px 1.5fr 1.2fr 100px 110px 80px; gap: 14px; padding: 14px 20px; align-items: center; border-bottom: 1px solid var(--line); transition: background 200ms ease; }
-  .quotes-row:last-child { border-bottom: 0; }
-  .quotes-row:hover { background: rgba(255,254,250,0.025); }
-  .q-ref { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; color: var(--accent-light); }
-  .q-customer { font-weight: 600; }
-  .q-customer-email { color: rgba(255,254,250,0.50); font-size: 11.5px; font-family: var(--font-mono); margin-top: 2px; }
-  .q-lane { font-size: 13px; }
-  .q-status { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: 10px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; }
-  .q-status .dot { width: 6px; height: 6px; border-radius: 50%; }
-  .q-status.draft { background: rgba(255,254,250,0.06); color: rgba(255,254,250,0.70); }
-  .q-status.draft .dot { background: rgba(255,254,250,0.40); }
-  .q-status.saved { background: rgba(255,122,69,0.16); color: var(--accent-light); }
-  .q-status.saved .dot { background: var(--accent); }
-  .q-status.booking_requested { background: rgba(22,163,74,0.22); color: #86efac; }
-  .q-status.booking_requested .dot { background: var(--positive); animation: pulse 1.4s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.6); opacity: 0.4; } }
-  .q-total { font-weight: 800; font-variant-numeric: tabular-nums; }
-  .q-action { color: var(--cool); text-decoration: none; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 7px; background: rgba(79,209,197,0.10); border: 1px solid rgba(79,209,197,0.30); }
-  .q-action:hover { background: rgba(79,209,197,0.20); color: #fff; }
-
-  .lane-row { padding: 14px 20px; border-bottom: 1px solid var(--line); }
-  .lane-row:last-child { border-bottom: 0; }
-  .lane-head { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline; }
-  .lane-name { font-weight: 600; font-size: 13.5px; }
-  .lane-count { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent-light); }
-  .lane-bar { height: 6px; background: rgba(255,254,250,0.08); border-radius: 3px; overflow: hidden; }
-  .lane-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-deep)); border-radius: 3px; box-shadow: 0 0 8px rgba(255,122,69,0.45); transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1); }
-  .lane-gmv { font-family: var(--font-mono); font-size: 11px; color: rgba(255,254,250,0.55); margin-top: 4px; }
-
-  .rates-panel { margin-top: 24px; }
-  .rates-form { padding: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
-  .form-field label { display: block; font-family: var(--font-mono); font-size: 10px; color: rgba(255,254,250,0.55); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
-  .form-field input { width: 100%; background: rgba(255,254,250,0.06); border: 1px solid rgba(255,254,250,0.14); color: var(--paper); font-family: var(--font-mono); padding: 9px 12px; border-radius: 8px; font-size: 13px; outline: none; }
-  .form-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,122,69,0.22); }
-  .calc-btn { background: linear-gradient(155deg, var(--accent), var(--accent-deep)); color: #fff; font-weight: 700; font-size: 13.5px; padding: 9px 18px; border-radius: 10px; border: 0; cursor: pointer; height: 38px; box-shadow: 0 8px 22px rgba(255,122,69,0.35); }
-
-  .empty-state { text-align: center; padding: 50px 20px; color: rgba(255,254,250,0.50); font-size: 13px; }
-
-  @media (max-width: 960px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .dual-col { grid-template-columns: 1fr; }
-    .quotes-row { grid-template-columns: 1fr 80px 100px; gap: 8px; padding: 10px 14px; font-size: 12.5px; }
-    .quotes-row > :nth-child(1) { grid-column: 1; }
-    .quotes-row > :nth-child(2) { grid-column: 1 / span 3; }
-    .quotes-row > :nth-child(3) { grid-column: 1 / span 3; font-size: 11.5px; }
-    .quotes-row > :nth-child(4) { grid-column: 1; }
-    .quotes-row > :nth-child(5) { grid-column: 2; text-align: right; }
-    .quotes-row > :nth-child(6) { grid-column: 3; text-align: right; }
-    .brand-sub { display: none; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { background: #111827; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  header h1 { margin: 0; font-size: 18px; }
+  header span { color: #cbd5e1; font-size: 13px; }
+  main { max-width: 1260px; margin: 0 auto; padding: 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04); }
+  .login { max-width: 440px; margin: 52px auto; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  input, select { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px 11px; font: inherit; background: white; color: var(--ink); }
+  button, .btn { border: 1px solid transparent; border-radius: 6px; padding: 9px 12px; font-weight: 700; font: inherit; cursor: pointer; background: var(--brand); color: #111827; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  button.secondary, .btn.secondary { background: white; border-color: var(--line); color: var(--ink); }
+  button.danger { background: #fee2e2; color: var(--bad); border-color: #fecaca; }
+  .toolbar { display: grid; grid-template-columns: 150px 150px minmax(220px, 1fr) auto; gap: 10px; align-items: end; }
+  .stats { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 10px; }
+  .stat { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .stat b { display: block; font-size: 22px; }
+  .stat span { color: var(--muted); font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  th { font-size: 12px; color: var(--muted); font-weight: 700; background: #f9fafb; position: sticky; top: 0; z-index: 1; }
+  .table-wrap { max-height: 62vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .muted { color: var(--muted); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: #f9fafb; }
+  .pill.hot { color: var(--warn); border-color: #facc15; background: #fefce8; }
+  .pill.ok { color: var(--ok); border-color: #86efac; background: #f0fdf4; }
+  .pill.bad { color: var(--bad); border-color: #fca5a5; background: #fef2f2; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lanes { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 8px; }
+  .lane-card { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .hidden { display: none !important; }
+  @media (max-width: 860px) {
+    .toolbar, .stats, .lanes { grid-template-columns: 1fr; }
+    header { align-items: flex-start; flex-direction: column; }
   }
 </style>
 </head>
 <body>
-
-<nav class="topnav">
-  <div class="topnav-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">OKE</span>
-      <span>
-        <div>OKE Canada <span class="admin-badge">Admin</span></div>
-        <div class="brand-sub">freight platform</div>
-      </span>
-    </a>
-    <div class="nav-links">
-      <a class="nav-link" href="index.html">Calculator</a>
-      <a class="nav-link" href="dashboard.html">Dashboard</a>
-      <a class="nav-link active" href="admin.html">Admin</a>
-      <button class="nav-cta" id="signOutBtn" type="button" style="display:none">Lock</button>
-    </div>
+<header>
+  <div>
+    <h1>OKE Quotes Admin</h1>
+    <span id="sessionLabel">Not signed in</span>
   </div>
-</nav>
-
-<div class="page">
-
-  <!-- GATE -->
-  <div id="gateWrap">
-    <div class="gate">
-      <div class="gate-icon">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      </div>
-      <h2>Team Console</h2>
-      <p>Enter the team password to access the OKE operations console.</p>
-      <input class="gate-input" id="gatePass" type="password" placeholder="Team password" autocomplete="off" />
-      <button class="gate-btn" id="gateBtn">Unlock</button>
-      <div class="gate-status" id="gateStatus" aria-live="polite"></div>
-      <div class="gate-hint">For OKE Canada team only</div>
-    </div>
+  <div class="actions">
+    <a class="btn secondary" href="./">Calculator</a>
+    <a class="btn secondary" href="dashboard.html">Client dashboard</a>
+    <a class="btn secondary" href="manual.html">Manual</a>
+    <button class="secondary hidden" id="signOutBtn">Sign out</button>
   </div>
+</header>
+<main>
+  <section class="panel login" id="loginPanel">
+    <h2 style="margin-top:0">Team Console</h2>
+    <p class="muted">Enter the team password to access live bookings and rate tools.</p>
+    <label for="passInput">Team password</label>
+    <input id="passInput" type="password" autocomplete="off" placeholder="************">
+    <div style="margin-top:12px"><button id="unlockBtn">Unlock console</button></div>
+    <p class="muted" id="loginMsg"></p>
+  </section>
 
-  <!-- DASHBOARD -->
-  <div id="adminWrap" style="display:none">
-    <div class="hero">
-      <h1>Operations Console.</h1>
-      <p>Live bookings, top lanes, monthly GMV — refreshes every 30 seconds.</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card purple">
-        <div class="stat-label">Total Quotes</div>
-        <div class="stat-value" id="kpiTotal">—</div>
-        <div class="stat-trend" id="kpiTotalSub">All time</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-label">Booking Requests</div>
-        <div class="stat-value" id="kpiBooked">—</div>
-        <div class="stat-trend up" id="kpiBookedSub">Awaiting confirmation</div>
-      </div>
-      <div class="stat-card cool">
-        <div class="stat-label">7-day GMV</div>
-        <div class="stat-value" id="kpiGmv">—</div>
-        <div class="stat-trend" id="kpiGmvSub">vs prev 7</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Unique Customers</div>
-        <div class="stat-value" id="kpiCustomers">—</div>
-        <div class="stat-trend" id="kpiCustomersSub">With contact info</div>
-      </div>
-    </div>
-
-    <div class="dual-col">
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">Live booking feed</div>
-            <div class="panel-sub">Auto-refreshes every 30s</div>
-          </div>
-          <span class="panel-sub" id="recentCount">—</span>
-        </div>
-        <div class="panel-body" id="recentBody">
-          <div class="empty-state">Loading…</div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">Top lanes</div>
-            <div class="panel-sub">Last 30 days</div>
-          </div>
-        </div>
-        <div class="panel-body" id="lanesBody">
-          <div class="empty-state">Loading…</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel rates-panel">
-      <div class="panel-head">
+  <section id="dashPanel" class="hidden">
+    <div class="panel">
+      <div class="toolbar">
         <div>
-          <div class="panel-title">Rate-table calculator</div>
-          <div class="panel-sub">Origin → destination · billable lbs · CWT lookup</div>
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter">
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="shared">Shared</option>
+            <option value="viewed">Viewed</option>
+            <option value="booking_requested">Booking requested</option>
+            <option value="booked">Booked</option>
+            <option value="lost">Lost</option>
+          </select>
         </div>
+        <div>
+          <label for="sinceFilter">Range</label>
+          <select id="sinceFilter">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="">All time</option>
+          </select>
+        </div>
+        <div>
+          <label for="searchInput">Search</label>
+          <input id="searchInput" placeholder="Quote ref, customer, origin, destination">
+        </div>
+        <button id="refreshBtn">Refresh</button>
       </div>
-      <div class="rates-form">
-        <div class="form-field">
-          <label>Origin</label>
-          <input id="testOrigin" placeholder="Toronto, ON" />
-        </div>
-        <div class="form-field">
-          <label>Destination</label>
-          <input id="testDest" placeholder="Calgary, AB" />
-        </div>
-        <div class="form-field">
-          <label>Billable lbs</label>
-          <input id="testLbs" type="number" placeholder="500" />
-        </div>
-        <button class="calc-btn" id="testRateBtn">Calculate</button>
-      </div>
-      <div id="testRateResult" style="padding: 0 20px 20px; color: rgba(255,254,250,0.65); font-family: var(--font-mono); font-size: 13px;"></div>
     </div>
-  </div>
 
-</div>
-
+    <div class="panel stats" id="stats"></div>
+    <div class="panel">
+      <h2 style="margin-top:0">Lane Signals</h2>
+      <div class="lanes" id="laneStats"></div>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Quote</th>
+              <th>Lane</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Customer</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quoteRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
 <script>
-const SB_URL = "https://wwtaadvzonnbvyhottlv.supabase.co";
-const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA";
+const SUPABASE_CONFIG = {
+  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
+};
+const sb = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+const $ = id => document.getElementById(id);
 const TEAM_PASS = 'oke2026';
-
-const sb = window.supabase.createClient(SB_URL, SB_ANON);
-
-function fmtMoney(n) { return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
-function fmtMoneyFull(n) { return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function timeAgo(t) { if (!t) return '—'; const sec = (Date.now() - new Date(t).getTime()) / 1000; if (sec < 60) return 'just now'; if (sec < 3600) return Math.floor(sec/60)+'m ago'; if (sec < 86400) return Math.floor(sec/3600)+'h ago'; return Math.floor(sec/86400)+'d ago'; }
-function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-
-const gateBtn = document.getElementById('gateBtn');
-const gatePass = document.getElementById('gatePass');
-const gateStatus = document.getElementById('gateStatus');
-
+const money = n => "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const dateFmt = v => v ? new Date(v).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" }) : "-";
+function shareUrl(token) { return `https://okecanada.github.io/montedesign/q/${token}`; }
+function sinceIso() {
+  const days = $("sinceFilter").value;
+  if (!days) return null;
+  const d = new Date();
+  d.setDate(d.getDate() - Number(days));
+  return d.toISOString();
+}
+function setUnlocked(unlocked) {
+  $("loginPanel").classList.toggle("hidden", !!unlocked);
+  $("dashPanel").classList.toggle("hidden", !unlocked);
+  $("signOutBtn").classList.toggle("hidden", !unlocked);
+  $("sessionLabel").textContent = unlocked ? "Team console unlocked" : "Not signed in";
+}
 function tryUnlock() {
-  const pwd = gatePass.value || '';
+  const pwd = $("passInput").value || '';
   if (pwd === TEAM_PASS) {
     sessionStorage.setItem('okeAdminAuth', pwd);
-    show(true);
+    $("loginMsg").textContent = '';
+    setUnlocked(true);
+    refresh();
   } else {
-    gateStatus.textContent = 'Wrong password.';
-    gateStatus.className = 'gate-status err';
-    gatePass.value = '';
-    gatePass.focus();
+    $("loginMsg").textContent = "Wrong password.";
+    $("passInput").value = '';
+    $("passInput").focus();
   }
 }
-gateBtn.addEventListener('click', tryUnlock);
-gatePass.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
-
-document.getElementById('signOutBtn').addEventListener('click', () => {
-  sessionStorage.removeItem('okeAdminAuth');
-  show(false);
-});
-
-function show(authed) {
-  document.getElementById('gateWrap').style.display = authed ? 'none' : 'block';
-  document.getElementById('adminWrap').style.display = authed ? 'block' : 'none';
-  document.getElementById('signOutBtn').style.display = authed ? 'inline-flex' : 'none';
-  if (authed) loadDashboard();
+async function loadStats() {
+  const pwd = sessionStorage.getItem('okeAdminAuth') || TEAM_PASS;
+  const { data, error } = await sb.rpc("admin_dashboard_stats_open", { p_secret: pwd });
+  if (error) throw error;
+  if (data && data.error) throw new Error(String(data.error));
+  const sObj = data && data.stats || {};
+  const s = {
+    total_quotes: (Number(sObj.drafts)||0) + (Number(sObj.saved)||0) + (Number(sObj.booking_requested)||0),
+    total_shared: (Number(sObj.saved)||0) + (Number(sObj.booking_requested)||0),
+    total_viewed: Number(sObj.last_7) || 0,
+    total_booked: Number(sObj.booking_requested) || 0,
+    total_value: Number(sObj.gmv_7) || 0,
+    booked_value: Number(sObj.booked_gmv) || 0,
+    _raw: sObj, _recent: data && data.recent || [], _top_lanes: data && data.top_lanes || []
+  };
+  const items = [
+    ["Quotes", s.total_quotes],
+    ["Shared", s.total_shared],
+    ["Active 7d", s.total_viewed],
+    ["Booking req.", s.total_booked],
+    ["GMV (7d)", money(s.total_value)],
+    ["Booked GMV", money(s.booked_value)]
+  ];
+  $("stats").innerHTML = items.map(([label, value]) => `<div class="stat"><b>${value || 0}</b><span>${label}</span></div>`).join("");
+  return s;
 }
-
-async function loadDashboard() {
+/* legacy loadStats removed — replaced by oke2026-gated version above */
+function renderLaneStats(rows) {
+  const lanes = new Map();
+  rows.forEach(q => {
+    const key = `${q.origin || "-"} -> ${q.destination || "Local"}`;
+    const lane = lanes.get(key) || { key, count: 0, booked: 0, lost: 0, viewed: 0, value: 0 };
+    lane.count += 1;
+    lane.booked += q.status === "booked" ? 1 : 0;
+    lane.lost += q.status === "lost" ? 1 : 0;
+    lane.viewed += Number(q.view_count || 0) > 0 ? 1 : 0;
+    lane.value += Number(q.total_after_tax || 0);
+    lanes.set(key, lane);
+  });
+  const top = Array.from(lanes.values()).sort((a, b) => b.count - a.count || b.value - a.value).slice(0, 9);
+  $("laneStats").innerHTML = top.length
+    ? top.map(l => `<div class="lane-card"><b>${esc(l.key)}</b><div class="muted">${l.count} quoted / ${l.viewed} viewed / ${l.booked} booked / ${l.lost} lost</div><div>${money(l.value)}</div></div>`).join("")
+    : `<div class="muted">No lanes in this range yet.</div>`;
+}
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function hotPill(q) {
+  const views = Number(q.view_count || 0);
+  if (views >= 3) return `<span class="pill hot">${views} views</span>`;
+  if (views > 0) return `<span class="pill ok">${views} view${views === 1 ? "" : "s"}</span>`;
+  return `<span class="pill">0 views</span>`;
+}
+async function updateStatus(id, status) {
+  const { error } = await sb.from("quotes").update({ status }).eq("id", id);
+  if (error) alert(error.message);
+  await refresh();
+}
+// Recent quotes are now part of admin_dashboard_stats_open — pulled from the same call.
+let LAST_DATA = null;
+async function loadQuotes() {
+  // Use the data already loaded by loadStats() (cached on LAST_DATA)
+  const rows = (LAST_DATA && LAST_DATA._recent) || [];
+  const status = $("statusFilter").value;
+  const search = ($("searchInput").value || '').trim().toLowerCase();
+  const filtered = rows.filter(q => {
+    if (status && q.status !== status) return false;
+    if (search) {
+      const hay = [q.quote_ref, q.origin, q.destination, q.contact_name, q.contact_email].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+  // Build lane stats from the top_lanes precomputed bucket
+  const top = (LAST_DATA && LAST_DATA._top_lanes) || [];
+  $("laneStats").innerHTML = top.length
+    ? top.map(l => `<div class="lane-card"><b>${esc(l.lane)}</b><div class="muted">${l.n} quoted</div><div>${money(l.gmv)}</div></div>`).join("")
+    : `<div class="muted">No lanes in this range yet.</div>`;
+  $("quoteRows").innerHTML = filtered.length ? filtered.map(q => `
+    <tr>
+      <td><div class="mono">${esc(q.quote_ref)}</div><a href="${shareUrl(q.public_token)}" target="_blank" rel="noopener">open</a></td>
+      <td>${esc(q.origin || "-")}<br><span class="muted">${esc(q.destination || "Local delivery")}</span></td>
+      <td>${money(q.total_after_tax)}</td>
+      <td><span class="pill ${q.status === "booked" || q.status === "booking_requested" ? "ok" : q.status === "lost" ? "bad" : ""}">${esc(q.status)}</span></td>
+      <td><span class="pill">${esc(q.service_name || '')}</span></td>
+      <td>${esc(q.contact_name || "-")}<br><span class="muted">${esc(q.contact_email || "")}</span></td>
+      <td>${dateFmt(q.created_at)}</td>
+      <td><div class="actions">
+        <a class="btn secondary" href="${shareUrl(q.public_token)}" target="_blank" rel="noopener">View</a>
+      </div></td>
+    </tr>
+  `).join("") : `<tr><td colspan="8" class="muted">No quotes match the current filters.</td></tr>`;
+}
+async function refresh() {
+  $("refreshBtn").disabled = true;
   try {
-    const pwd = sessionStorage.getItem('okeAdminAuth') || TEAM_PASS;
-    const { data, error } = await sb.rpc('admin_dashboard_stats_open', { p_secret: pwd });
-    if (error) throw error;
-    if (data && data.error) {
-      document.getElementById('recentBody').innerHTML = `<div class="empty-state">Auth error: ${escapeHtml(data.error)}</div>`;
-      return;
-    }
-    const s = data.stats || {};
-    document.getElementById('kpiTotal').textContent = (Number(s.drafts) + Number(s.saved) + Number(s.booking_requested)) || 0;
-    document.getElementById('kpiTotalSub').textContent = `${s.drafts||0} drafts · ${s.saved||0} saved`;
-    document.getElementById('kpiBooked').textContent = s.booking_requested || 0;
-    document.getElementById('kpiBookedSub').textContent = fmtMoney(s.booked_gmv) + ' booked GMV';
-    document.getElementById('kpiGmv').textContent = fmtMoney(s.gmv_7);
-    const delta = (Number(s.last_7) || 0) - (Number(s.prev_7) || 0);
-    const gmvSub = document.getElementById('kpiGmvSub');
-    gmvSub.textContent = (delta >= 0 ? '+' : '') + delta + ' quotes vs prev 7';
-    gmvSub.className = 'stat-trend ' + (delta >= 0 ? 'up' : 'down');
-    document.getElementById('kpiCustomers').textContent = s.unique_customers || 0;
-    document.getElementById('kpiCustomersSub').textContent = 'With email';
-
-    const recent = data.recent || [];
-    const recentBody = document.getElementById('recentBody');
-    document.getElementById('recentCount').textContent = recent.length + ' shown';
-    if (!recent.length) {
-      recentBody.innerHTML = '<div class="empty-state">No quotes yet. They\'ll appear here in real-time.</div>';
-    } else {
-      recentBody.innerHTML = recent.map(q => `
-        <div class="quotes-row">
-          <span class="q-ref">#${escapeHtml((q.quote_ref || '').replace(/^OKE-/, ''))}</span>
-          <span>
-            <div class="q-customer">${escapeHtml(q.contact_name || '— anonymous')}</div>
-            <div class="q-customer-email">${escapeHtml(q.contact_email || 'no email')}</div>
-          </span>
-          <span class="q-lane">${escapeHtml(q.origin || '—')}${q.destination ? ' → ' + escapeHtml(q.destination) : ' · local'}<br><span class="q-customer-email">${escapeHtml(q.service_name || '')} · ${timeAgo(q.created_at)}</span></span>
-          <span><span class="q-status ${q.status || 'draft'}"><span class="dot"></span>${(q.status || 'draft').replace(/_/g, ' ')}</span></span>
-          <span class="q-total">${fmtMoneyFull(q.total_after_tax)}</span>
-          <span style="text-align:right"><a class="q-action" href="quote.html?t=${encodeURIComponent(q.public_token)}" target="_blank">View</a></span>
-        </div>
-      `).join('');
-    }
-
-    const lanes = data.top_lanes || [];
-    const lanesBody = document.getElementById('lanesBody');
-    if (!lanes.length) {
-      lanesBody.innerHTML = '<div class="empty-state">Not enough data in the last 30 days.</div>';
-    } else {
-      const maxN = Math.max(...lanes.map(l => Number(l.n) || 0), 1);
-      lanesBody.innerHTML = lanes.map(l => `
-        <div class="lane-row">
-          <div class="lane-head">
-            <span class="lane-name">${escapeHtml(l.lane)}</span>
-            <span class="lane-count">${l.n} quote${l.n > 1 ? 's' : ''}</span>
-          </div>
-          <div class="lane-bar"><div class="lane-bar-fill" style="width: ${Math.round(Number(l.n) / maxN * 100)}%"></div></div>
-          <div class="lane-gmv">GMV: ${fmtMoney(l.gmv)}</div>
-        </div>
-      `).join('');
-    }
+    LAST_DATA = await loadStats();
+    await loadQuotes();
   } catch (e) {
-    console.error(e);
-    document.getElementById('recentBody').innerHTML = `<div class="empty-state">Failed to load: ${escapeHtml(e.message || e)}</div>`;
+    $("quoteRows").innerHTML = `<tr><td colspan="8" style="color:var(--bad)">${esc(e.message || e)}</td></tr>`;
+  } finally {
+    $("refreshBtn").disabled = false;
   }
 }
-
-document.getElementById('testRateBtn').addEventListener('click', async () => {
-  const origin = (document.getElementById('testOrigin').value || '').trim();
-  const dest   = (document.getElementById('testDest').value || '').trim();
-  const lbs    = Number(document.getElementById('testLbs').value || 0);
-  const out = document.getElementById('testRateResult');
-  if (!origin || !dest || !lbs) { out.textContent = 'Enter origin, destination and billable lbs.'; return; }
-  out.textContent = 'Looking up…';
-  try {
-    const { data, error } = await sb.rpc('calculate_line_haul', { p_origin: origin, p_destination: dest, p_billable_lbs: lbs });
-    if (error) throw error;
-    const r = Array.isArray(data) ? data[0] : data;
-    if (!r || r.lane_found === false) { out.textContent = '✗ Lane not found in rates table.'; return; }
-    out.innerHTML = `<span style="color:#86efac">✓</span>  Middle-mile sell: <b style="color:#fff">${fmtMoneyFull(r.middle_mile_sell)}</b> · CWT col: <b style="color:#ffd28a">${r.cwt_col}</b> @ <b style="color:#ffd28a">${fmtMoneyFull(r.cwt_rate)}</b>/cwt · min charge: ${fmtMoneyFull(r.min_charge)}`;
-  } catch (e) {
-    out.textContent = '✗ ' + (e.message || e);
-  }
+/* loadStats is defined above (the new oke2026-gated version) */
+async function _legacyStub() {
+  return null;
+};
+document.addEventListener("DOMContentLoaded", async () => {
+  $("unlockBtn").addEventListener("click", tryUnlock);
+  $("passInput").addEventListener("keydown", (e) => { if (e.key === 'Enter') tryUnlock(); });
+  $("signOutBtn").addEventListener("click", () => { sessionStorage.removeItem('okeAdminAuth'); setUnlocked(false); });
+  ["statusFilter", "sinceFilter"].forEach(id => $(id).addEventListener("change", refresh));
+  $("searchInput").addEventListener("input", () => { clearTimeout(window._searchTimer); window._searchTimer = setTimeout(refresh, 250); });
+  $("refreshBtn").addEventListener("click", refresh);
+  // Auto-unlock if previously authed in this session
+  if (sessionStorage.getItem('okeAdminAuth') === TEAM_PASS) { setUnlocked(true); refresh(); }
+  else setUnlocked(false);
+  setInterval(() => { if (!$("dashPanel").classList.contains('hidden')) refresh(); }, 30000);
 });
-
-// Auto-unlock if already authed in this session
-if (sessionStorage.getItem('okeAdminAuth') === TEAM_PASS) {
-  show(true);
-} else {
-  show(false);
-}
-// Refresh every 30s while unlocked
-setInterval(() => {
-  if (document.getElementById('adminWrap').style.display !== 'none') loadDashboard();
-}, 30000);
 </script>
 </body>
 </html>

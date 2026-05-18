@@ -4060,7 +4060,8 @@ function computeQuote() {
   const middleOnly = state.laneMode === 'middle';
   const svc = middleOnly ? null : SERVICE_LEVELS.find(s => s.id === state.service);
   const hasService = middleOnly || !!svc;
-  const baseFinalMile = svc ? state.servicePrices[svc.id] : 0;
+  // Always fall back to the SERVICE_LEVELS default price even if servicePrices was cleared by a stale snapshot load
+  const baseFinalMile = svc ? (Number(state.servicePrices && state.servicePrices[svc.id]) || svc.defaultPrice || 0) : 0;
 
   // Extra pieces (final-mile concept; suppressed in middle-mile-only mode)
   const totalPcs = totalPieceCount();
@@ -4897,12 +4898,40 @@ function updateOutput(options = {}) {
   const q = computeQuote();
   const showResult = q.hasLane && q.hasMeasurements && q.hasService;
 
+  // Diagnostic: surface why nothing is rendering if user hits the "0 everywhere"
+  // state. window.__okeDebug() prints the live state for screenshots/console help.
+  window.__okeDebug = () => ({
+    showResult,
+    hasLane: q.hasLane, hasMeasurements: q.hasMeasurements, hasService: q.hasService,
+    laneMode: state.laneMode, origin: state.origin, destination: state.destination, service: state.service,
+    subtotal: q.subtotal, total: q.totalAfterTax, billable: q.billable,
+    middleMileSell: q.middleMileSell, baseFinalMile: q.baseFinalMile,
+    currentLaneQuote: typeof CURRENT_LANE_QUOTE !== 'undefined' ? CURRENT_LANE_QUOTE : null,
+  });
+
   $("resultEmpty").style.display = showResult ? "none" : "block";
   $("resultContent").style.display = showResult ? "block" : "none";
   const tabs = document.querySelector('.r-tabs');
   if (tabs) {
     tabs.classList.toggle('tabs-ready', !!q.hasMeasurements);
     if (showResult) requestAnimationFrame(settleTabIndicator);
+  }
+  // Detect "loading rates" state — shows a small caption while lane RPC is in-flight
+  const loadingRates = showResult && !q.isLocal && !q.middleMileSell &&
+    state.origin && (state.destination || state.laneMode === 'middle');
+  let banner = document.getElementById('rateLoadingBanner');
+  if (loadingRates) {
+    if (!banner && $("resultContent")) {
+      banner = document.createElement('div');
+      banner.id = 'rateLoadingBanner';
+      banner.style.cssText = 'margin:8px 0;padding:9px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(255,122,69,0.10),rgba(79,209,197,0.08));border:1px solid rgba(255,122,69,0.28);color:rgba(255,210,180,0.95);font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;display:flex;align-items:center;gap:9px;';
+      banner.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff7a45;animation:livePulse 1.4s ease-in-out infinite"></span>Loading lane rates...';
+      const target = $("resultContent");
+      const firstChild = target.firstChild;
+      target.insertBefore(banner, firstChild);
+    }
+  } else if (banner) {
+    banner.remove();
   }
 
   // Update empty-state checklist based on mode
@@ -5033,7 +5062,14 @@ function updateOutput(options = {}) {
   };
   const oP = provOf(state.origin), dP = provOf(state.destination);
   let distKm;
-  if (q.isLocal) {
+  // ---- Real driving distance via OSRM (cached per lane). Falls back to the
+  // province-guess matrix below if the route-distance edge fn isn't reachable.
+  const laneKey = (state.origin || '') + '||' + (state.destination || '');
+  if (!q.isLocal && state.origin && state.destination && !window.__routeCache) window.__routeCache = Object.create(null);
+  const cached = !q.isLocal && window.__routeCache && window.__routeCache[laneKey];
+  if (cached && cached.distance_km) {
+    distKm = cached.distance_km;
+  } else if (q.isLocal) {
     distKm = 35;
   } else if (oP && dP) {
     if (oP === dP) distKm = state.origin === state.destination ? 30 : 280;
@@ -5047,6 +5083,28 @@ function updateOutput(options = {}) {
     }
   } else {
     distKm = 1200;
+  }
+  // Kick off real-distance lookup in the background if not cached yet
+  if (!q.isLocal && state.origin && state.destination && !cached && !window.__routeInflight) {
+    window.__routeInflight = true;
+    const cfg = (typeof sbCfg === 'function') ? sbCfg() : null;
+    if (cfg) {
+      fetch(`${cfg.url}/functions/v1/route-distance`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+        body: JSON.stringify({ origin: state.origin, destination: state.destination })
+      }).then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && data.ok && data.distance_km) {
+            window.__routeCache[laneKey] = data;
+            if (typeof updateOutput === 'function') updateOutput({ skipLaneRefresh: true });
+          }
+        })
+        .catch(() => {})
+        .finally(() => { window.__routeInflight = false; });
+    } else {
+      window.__routeInflight = false;
+    }
   }
   // Transit days from distance + service level
   // Base by distance:

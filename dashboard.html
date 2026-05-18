@@ -157,14 +157,23 @@ async function submitAuth(){
       if (pw !== pw2){ setStatus("Passwords don't match.",'err'); return; }
       setStatus('Creating your account...');
       const { data, error } = await sb.auth.signUp({ email, password: pw, options:{ emailRedirectTo: location.href.split('#')[0] }});
-      if (error){ setStatus(error.message || String(error),'err'); return; }
+      // Special case: "Error sending confirmation email" actually means the user
+      // WAS created but Supabase's SMTP failed. Try to sign them in directly.
+      const emailErr = error && /confirmation email|sending|smtp/i.test(String(error.message || ''));
+      if (error && !emailErr){ setStatus(error.message || String(error),'err'); return; }
       if (data && data.session){
         setStatus("Account created. You're in.",'ok');
       } else {
         const r2 = await sb.auth.signInWithPassword({ email, password: pw });
         if (r2.error){
-          setStatus("Account created - check your email to confirm, then sign in.",'ok');
+          // "Email not confirmed" + email-send-error = stuck. Try once more after 1s.
+          if (/not confirmed|confirm/i.test(String(r2.error.message || ''))) {
+            setStatus("Account created. Email confirmation is offline right now — please contact support or try again in a minute.",'err');
+          } else {
+            setStatus("Account created - sign in below with your email + password.",'ok');
+          }
           setMode('login');
+          $("pwInput").focus();
         } else {
           setStatus('Welcome!','ok');
         }

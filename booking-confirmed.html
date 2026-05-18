@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Booking Confirmed · OKE Canada Freight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fbfaf6; --bg-deep: #07091a; --accent: #ff7a45; --accent-deep: #c64411;
+    --cool: #4fd1c5; --positive: #16a34a; --line: rgba(255,254,250,0.10);
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-display: "Instrument Serif", "Inter", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg-deep); color: var(--paper); font-family: var(--font-body); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  body {
+    background:
+      radial-gradient(ellipse 90% 50% at 80% 0%, rgba(22,163,74,0.16), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 10% 100%, rgba(79,209,197,0.14), transparent 60%),
+      linear-gradient(180deg, #05071a 0%, #0a0e28 50%, #07091a 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    overflow-x: hidden;
+  }
+  /* TOP NAV (matches dashboard / admin) */
+  .topnav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(18px) saturate(140%); background: rgba(7,9,26,0.65); border-bottom: 1px solid var(--line); }
+  .topnav-inner { max-width: 1280px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--paper); font-weight: 800; font-size: 16px; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(155deg, var(--accent), var(--accent-deep)); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: #fff; box-shadow: 0 4px 14px rgba(255,122,69,0.4); }
+  .brand-sub { font-family: var(--font-mono); font-size: 10px; color: rgba(255,254,250,0.55); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
+  .nav-links { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+  .nav-link { color: rgba(255,254,250,0.65); text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 8px 14px; border-radius: 9px; transition: color 220ms ease, background 220ms ease; }
+  .nav-link:hover { color: var(--paper); background: rgba(255,254,250,0.05); }
+
+  .wrap {
+    flex: 1;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 60px 22px 60px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+
+  /* SUCCESS CHECKMARK */
+  .check-wrap {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,163,74,0.35), rgba(22,163,74,0.0) 70%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    position: relative;
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .check-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 20px 50px rgba(22,163,74,0.40), inset 0 2px 0 rgba(255,255,255,0.30);
+  }
+  .check-circle svg { width: 44px; height: 44px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; animation: checkmark 600ms cubic-bezier(0.22,1,0.36,1) 200ms backwards; }
+  @keyframes checkmark {
+    from { stroke-dasharray: 60; stroke-dashoffset: 60; }
+    to   { stroke-dasharray: 60; stroke-dashoffset: 0; }
+  }
+
+  .kicker { font-family: var(--font-mono); font-size: 11px; color: #86efac; letter-spacing: 0.20em; text-transform: uppercase; font-weight: 800; margin-bottom: 10px; }
+  h1 {
+    font-family: var(--font-display); font-size: clamp(40px, 6vw, 64px);
+    font-weight: 500; line-height: 1.0; margin-bottom: 12px;
+    background: linear-gradient(90deg, #fff 0%, #ffd28a 60%, #86efac 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .lede { color: rgba(255,254,250,0.70); font-size: 16px; max-width: 540px; margin-bottom: 36px; line-height: 1.55; }
+
+  /* SUMMARY CARD */
+  .summary {
+    width: 100%;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255,254,250,0.05) 0%, rgba(255,254,250,0.02) 100%);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    padding: 28px;
+    margin-bottom: 24px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary::before {
+    content: ""; position: absolute; inset: -1px;
+    border-radius: inherit; padding: 1px;
+    background: conic-gradient(from 0deg, rgba(22,163,74,0.0), rgba(22,163,74,0.6), rgba(79,209,197,0.5), rgba(22,163,74,0.0));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: ring 14s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes ring { to { transform: rotate(360deg); } }
+  .summary-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .summary-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .summary-row .k { font-family: var(--font-mono); font-size: 10.5px; color: rgba(255,254,250,0.50); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; }
+  .summary-row .v { font-weight: 700; color: var(--paper); font-size: 15px; font-variant-numeric: tabular-nums; text-align: right; }
+  .summary-row.grand { padding-top: 16px; margin-top: 6px; border-top: 1px solid rgba(255,122,69,0.30); }
+  .summary-row.grand .k { color: rgba(255,210,180,0.95); font-size: 11px; }
+  .summary-row.grand .v {
+    font-size: 26px;
+    background: linear-gradient(135deg, #ffd28a, var(--accent), var(--accent-deep));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  /* CTA buttons */
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px;
+    border-radius: 12px; border: 0; cursor: pointer;
+    font-family: var(--font-body); font-size: 14px; font-weight: 700;
+    text-decoration: none;
+    transition: transform 220ms ease, box-shadow 220ms ease;
+  }
+  .btn-primary { background: linear-gradient(155deg, var(--accent), var(--accent-deep)); color: #fff; box-shadow: 0 10px 26px rgba(255,122,69,0.42); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(255,122,69,0.55); }
+  .btn-ghost { background: rgba(255,254,250,0.06); color: var(--paper); border: 1px solid rgba(255,254,250,0.16); }
+  .btn-ghost:hover { background: rgba(255,254,250,0.10); }
+
+  /* Next steps */
+  .steps { margin-top: 50px; width: 100%; text-align: left; }
+  .steps-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 14px; }
+  .step-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+  .step-row:last-child { border-bottom: 0; }
+  .step-num {
+    flex: 0 0 40px;
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(255,122,69,0.12);
+    border: 1px solid rgba(255,122,69,0.30);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 800;
+    color: var(--accent-light);
+  }
+  .step-row b { display: block; font-size: 14px; color: var(--paper); margin-bottom: 2px; }
+  .step-row span { color: rgba(255,254,250,0.65); font-size: 13px; line-height: 1.55; }
+  .step-row a { color: var(--accent-light); text-decoration: none; border-bottom: 1px dashed rgba(255,165,114,0.4); }
+
+  .foot { margin-top: 50px; padding: 22px 0; border-top: 1px solid var(--line); color: rgba(255,254,250,0.45); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; }
+
+  /* CONFETTI */
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+  .confetti span {
+    position: absolute; top: -10px;
+    width: 8px; height: 14px; border-radius: 2px;
+    animation: fall linear forwards;
+    opacity: 0.9;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 36px 16px; }
+    h1 { font-size: 36px; }
+    .summary { padding: 22px 18px; }
+    .summary-row .v { font-size: 13.5px; }
+    .summary-row.grand .v { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">OKE</span>
+      <span>
+        <div>OKE Canada</div>
+        <div class="brand-sub">freight platform</div>
+      </span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">Calculator</a>
+      <a class="nav-link" href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="check-wrap">
+    <div class="check-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+  </div>
+
+  <div class="kicker">Booking received</div>
+  <h1>Thanks — we've got it.</h1>
+  <p class="lede">OKE Canada dispatch has your quote and contact details. We'll reach out shortly to confirm the pickup window. A confirmation email is on its way.</p>
+
+  <div class="summary">
+    <div class="summary-row"><span class="k">Reference</span><span class="v" id="sRef">—</span></div>
+    <div class="summary-row"><span class="k">Lane</span><span class="v" id="sLane">—</span></div>
+    <div class="summary-row"><span class="k">Email confirmation sent to</span><span class="v" id="sEmail">—</span></div>
+    <div class="summary-row grand"><span class="k">Total (after tax)</span><span class="v" id="sTotal">—</span></div>
+  </div>
+
+  <div class="ctas">
+    <a class="btn btn-primary" id="ctaShare" href="#">Open shareable quote</a>
+    <a class="btn btn-ghost" href="dashboard.html">Open dashboard</a>
+    <a class="btn btn-ghost" href="index.html">+ New quote</a>
+  </div>
+
+  <div class="steps">
+    <div class="steps-title">What happens next</div>
+    <div class="step-row">
+      <span class="step-num">01</span>
+      <div><b>Dispatch reviews your booking.</b><span>OKE confirms vehicle availability for your lane and pickup window — usually within 4 business hours.</span></div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">02</span>
+      <div><b>You get a final confirmation.</b><span>We'll email you a confirmed pickup date/time and any prep notes (access, paperwork, packaging).</span></div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">03</span>
+      <div><b>Track your shipment.</b><span>Reopen this quote anytime from your <a href="dashboard.html">dashboard</a>. We post status updates as the freight moves.</span></div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">04</span>
+      <div><b>Need to change something?</b><span>Reply to the confirmation email or call <a href="tel:+18558899900">1-855-889-9900</a>. Booking is not final until OKE confirms pickup.</span></div>
+    </div>
+  </div>
+
+  <div class="foot">© OKE Canada · One Kind Express · onekindexpress.com</div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const ref   = params.get('ref') || '—';
+const total = Number(params.get('total') || 0);
+const lane  = params.get('lane') || '—';
+const email = params.get('email') || '';
+const tok   = params.get('t') || '';
+
+document.getElementById('sRef').textContent = ref;
+document.getElementById('sLane').textContent = lane;
+document.getElementById('sEmail').textContent = email || '—';
+document.getElementById('sTotal').textContent = '$' + total.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const cta = document.getElementById('ctaShare');
+if (tok) cta.href = 'quote.html?t=' + encodeURIComponent(tok);
+else { cta.style.display = 'none'; }
+
+// Confetti
+(function confetti() {
+  const cnt = document.getElementById('confetti');
+  const colors = ['#ff7a45','#c64411','#ffd28a','#4fd1c5','#86efac','#a78bfa','#fff'];
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.background = colors[Math.floor(Math.random() * colors.length)];
+    s.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
+    s.style.animationDelay = Math.random() * 1.2 + 's';
+    s.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+    s.style.width = (5 + Math.random() * 6) + 'px';
+    s.style.height = (10 + Math.random() * 14) + 'px';
+    cnt.appendChild(s);
+  }
+  setTimeout(() => { cnt.remove(); }, 6000);
+})();
+</script>
+</body>
+</html>

@@ -4176,11 +4176,18 @@ function renderPieces() {
         </button>`
       : '';
 
+    const photoHtml = p.photo_thumb
+      ? `<button type="button" class="piece-photo" data-photo="${i}" title="View AI source photo" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,122,69,0.32);overflow:hidden;cursor:zoom-in;background:url('${p.photo_thumb}') center/cover no-repeat;padding:0;flex-shrink:0;box-shadow:0 4px 12px rgba(255,122,69,0.18)"></button>`
+      : '';
+    const aiBadge = p.ai_confidence
+      ? `<span class="ai-conf ${p.ai_confidence}" style="font-size:9.5px;padding:1px 6px;border-radius:999px;margin-left:6px">AI · ${p.ai_confidence}</span>`
+      : '';
     div.innerHTML = `
       <div class="piece-head">
-        <div class="piece-name">
+        <div class="piece-name" style="display:flex;align-items:center;gap:10px">
+          ${photoHtml}
           <span class="piece-num">${i + 1}</span>
-          <span>Item ${i + 1}</span>
+          <span>Item ${i + 1}${aiBadge}</span>
         </div>
         <div class="piece-controls">
           <label class="piece-type">
@@ -4217,6 +4224,16 @@ function renderPieces() {
       state.pieces.splice(idx, 1);
       renderPieces();
       updateOutput();
+    });
+  });
+  // Click an AI piece's thumbnail to open it in the lightbox
+  wrap.querySelectorAll('[data-photo]').forEach(b => {
+    b.addEventListener('click', () => {
+      const idx = Number(b.dataset.photo);
+      const p = state.pieces[idx];
+      if (p && (p.photo_full || p.photo_thumb)) {
+        if (typeof openAiLightbox === 'function') openAiLightbox(p.photo_full || p.photo_thumb);
+      }
     });
   });
 
@@ -6005,6 +6022,39 @@ async function fileToDataUrl(file) {
   });
 }
 
+// Keep the AI session in memory + on state so a saved quote remembers what was identified.
+window.__aiSession = window.__aiSession || { images: [], items: [], summary: '', model: '', lastRun: null };
+
+// Small image thumbnail (used in piece rows + AI gallery)
+async function makeThumb(dataUrl, size = 220) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, size / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(cv.toDataURL('image/jpeg', 0.78));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+// Lightbox for AI gallery
+function openAiLightbox(src) {
+  let bg = document.getElementById('aiLightbox');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'aiLightbox';
+    bg.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,9,26,0.92);display:flex;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;backdrop-filter:blur(8px)';
+    bg.addEventListener('click', () => bg.remove());
+    document.body.appendChild(bg);
+  }
+  bg.innerHTML = `<img src="${src}" alt="" style="max-width:92vw;max-height:92vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6)"><button style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,0.12);color:#fff;font-size:18px;cursor:pointer" aria-label="Close">×</button>`;
+}
+
 function setupAiUpload() {
   const box = document.getElementById('aiUploader');
   const input = document.getElementById('aiUploadInput');
@@ -6024,23 +6074,50 @@ function setupAiUpload() {
     btn && (btn.style.pointerEvents = busy ? 'none' : '');
     btn && (btn.style.opacity = busy ? 0.85 : '');
   }
-  function renderResults(items, summary) {
+  function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function renderResults() {
+    const sess = window.__aiSession;
     results.hidden = false;
     results.innerHTML = '';
-    if (!items.length) {
-      results.innerHTML = '<div style="font-size:11.5px;color:var(--ink-faint)">No shippable items detected. Try a closer photo or include packaging.</div>';
+    // ---- Header: AI run summary ----
+    if (sess.summary || sess.model) {
+      const head = document.createElement('div');
+      head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-muted);margin-bottom:10px;flex-wrap:wrap';
+      head.innerHTML = `
+        <span style="font-style:italic">${escapeHtml(sess.summary || 'AI vision result')}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI vision')} · ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
+      `;
+      results.appendChild(head);
+    }
+    // ---- Image gallery (thumbnails) ----
+    if (sess.images && sess.images.length) {
+      const gal = document.createElement('div');
+      gal.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px';
+      sess.images.forEach((img, gi) => {
+        const t = document.createElement('button');
+        t.type = 'button';
+        t.title = `Source image ${gi + 1}`;
+        t.style.cssText = `width:54px;height:54px;border-radius:8px;border:1px solid var(--line);padding:0;overflow:hidden;cursor:zoom-in;background-image:url('${img.thumb || img.full}');background-size:cover;background-position:center`;
+        t.addEventListener('click', () => openAiLightbox(img.full));
+        gal.appendChild(t);
+      });
+      results.appendChild(gal);
+    }
+    if (!sess.items.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:11.5px;color:var(--ink-faint)';
+      empty.textContent = 'No shippable items detected. Try a closer photo or include packaging.';
+      results.appendChild(empty);
       return;
     }
-    if (summary) {
-      const s = document.createElement('div');
-      s.style.cssText = 'font-size:11px;color:var(--ink-faint);margin-bottom:4px;font-style:italic;';
-      s.textContent = summary;
-      results.appendChild(s);
-    }
-    items.forEach((it, i) => {
+    // ---- Item rows (with thumbnail) ----
+    sess.items.forEach((it, i) => {
       const row = document.createElement('div');
       row.className = 'ai-result-row';
+      const thumbSrc = it.thumb || (sess.images[it.imageIdx] && (sess.images[it.imageIdx].thumb || sess.images[it.imageIdx].full)) || '';
       row.innerHTML = `
+        ${thumbSrc ? `<button type="button" class="ai-row-thumb" data-img="${thumbSrc}" style="width:38px;height:38px;border-radius:8px;border:1px solid var(--line);overflow:hidden;cursor:zoom-in;background:url('${thumbSrc}') center/cover no-repeat;padding:0"></button>` : ''}
         <b>${escapeHtml(it.name)}</b>
         <span class="ai-conf ${it.confidence}">${it.confidence}</span>
         <span>${it.qty}×</span>
@@ -6054,34 +6131,34 @@ function setupAiUpload() {
     actions.className = 'ai-results-actions';
     actions.innerHTML = `<button id="aiAddAll" class="primary" type="button">Add all to quote</button><button id="aiClear" type="button">Clear</button>`;
     results.appendChild(actions);
+    results.querySelectorAll('.ai-row-thumb').forEach(t => t.addEventListener('click', (e) => { e.preventDefault(); openAiLightbox(t.dataset.img); }));
     results.querySelectorAll('.ai-add').forEach(b => b.addEventListener('click', () => {
       const i = +b.dataset.i;
-      addAiItem(items[i]);
+      addAiItem(window.__aiSession.items[i]);
       b.textContent = 'Added';
       b.style.background = '#0f9f78';
       b.disabled = true;
     }));
     document.getElementById('aiAddAll').addEventListener('click', () => {
-      items.forEach(addAiItem);
-      setStatus(`Added ${items.length} item${items.length === 1 ? '' : 's'} to your quote.`, 'ok');
+      window.__aiSession.items.forEach(addAiItem);
+      setStatus(`Added ${window.__aiSession.items.length} item${window.__aiSession.items.length === 1 ? '' : 's'} to your quote.`, 'ok');
     });
     document.getElementById('aiClear').addEventListener('click', () => {
+      window.__aiSession = { images: [], items: [], summary: '', model: '', lastRun: null };
       results.hidden = true; results.innerHTML = ''; setStatus('');
     });
   }
 
-  function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
   function addAiItem(it) {
-    // Switch to dimensions mode (so L/W/H + weight matter) then push a piece
     if (state.mode !== 'dim') {
       state.mode = 'dim';
       const dimBtn = document.querySelector('[data-mode="dim"]');
       if (dimBtn) dimBtn.click();
     }
-    // Ensure inches + lb
     if (state.lenUnit !== 'in') state.lenUnit = 'in';
     if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
+    const sess = window.__aiSession;
+    const imgRef = (typeof it.imageIdx === 'number' && sess.images[it.imageIdx]) ? sess.images[it.imageIdx] : null;
     state.pieces.push({
       itemType: normalizeItemType(it.name),
       qty: it.qty || 1,
@@ -6092,35 +6169,55 @@ function setupAiUpload() {
       cf: null,
       pallets: null,
       itemsPerPallet: null,
-      label: it.name || normalizeItemType(it.name)
+      label: it.name || normalizeItemType(it.name),
+      ai_confidence: it.confidence || 'medium',
+      ai_notes: it.notes || '',
+      photo_thumb: (imgRef && imgRef.thumb) || it.thumb || null,
+      photo_full: (imgRef && imgRef.full) || null,
     });
     try { renderPieces(); } catch(_) {}
     try { updateOutput(); } catch(_) {}
   }
 
   async function handleFiles(fileList) {
-    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/')).slice(0, 6);
+    const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/')).slice(0, 8);
     if (!files.length) { setStatus('Pick at least one image.', 'err'); return; }
     setBusy(true);
-    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with AI vision...`);
+    setStatus(`Reading ${files.length} image${files.length === 1 ? '' : 's'} with GPT-4o vision...`);
     try {
-      const images = await Promise.all(files.map(fileToDataUrl));
+      // Build BOTH full-quality (for API) and small thumb (for UI/storage) per image
+      const prep = await Promise.all(files.map(async (f) => {
+        const full = await fileToDataUrl(f);
+        const thumb = await makeThumb(full, 240);
+        return { full, thumb };
+      }));
       const cfg = sbCfg();
       if (!cfg) throw new Error('Cloud quote service is not configured');
       const res = await fetch(`${cfg.url}/functions/v1/parse-furniture`, {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          apikey: cfg.anonKey,
-          Authorization: `Bearer ${cfg.anonKey}`
-        },
-        body: JSON.stringify({ images })
+        headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+        body: JSON.stringify({ images: prep.map(p => p.full) })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || data.error || ('AI request failed: ' + res.status));
       if (data.error) throw new Error(data.error);
-      renderResults(data.items || [], data.summary || '');
-      setStatus(`Found ${(data.items || []).length} item${(data.items || []).length === 1 ? '' : 's'}. Review confidence and add.`, 'ok');
+      // Tag items with their best-guess image index (default: first image)
+      const items = (data.items || []).map((it, i) => ({
+        ...it,
+        imageIdx: typeof it.imageIdx === 'number' ? it.imageIdx : Math.min(i, prep.length - 1),
+        thumb: prep[Math.min(i, prep.length - 1)]?.thumb || null,
+      }));
+      window.__aiSession = {
+        images: prep,
+        items,
+        summary: data.summary || '',
+        model: data.model || '',
+        lastRun: new Date().toISOString(),
+      };
+      renderResults();
+      const note = data.quota_exceeded ? ' (AI paused: OpenAI quota — see status)'
+        : data.fallback ? ' (AI fallback — review manually)' : '';
+      setStatus(`Found ${items.length} item${items.length === 1 ? '' : 's'}${note}.`, data.fallback ? '' : 'ok');
     } catch (e) {
       setStatus('Could not analyze: ' + (e.message || e), 'err');
     } finally {
@@ -6133,6 +6230,19 @@ function setupAiUpload() {
   ['dragenter','dragover'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.classList.add('is-drag'); }));
   ['dragleave','drop'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.classList.remove('is-drag'); }));
   box.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files); });
+  // Paste from clipboard support
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    const files = [];
+    for (const it of items) {
+      if (it.kind === 'file' && it.type.startsWith('image/')) files.push(it.getAsFile());
+    }
+    if (files.length) {
+      setStatus(`Pasted ${files.length} image${files.length === 1 ? '' : 's'} — analyzing...`);
+      handleFiles(files);
+    }
+  });
 }
 
 function setupFsc() {

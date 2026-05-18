@@ -4302,7 +4302,7 @@ function setupTax() {
 // ============================================================
 async function init() {
   try {
-    if (!sbCfg()) throw new Error('Supabase not configured. Add <script>window.MONTE_SUPABASE = {url, anonKey}</script>.');
+    if (!sbCfg()) throw new Error('Supabase not configured. Add window.MONTE_SUPABASE = { url, anonKey } before the main calculator script.');
     ORIGINS = await loadOrigins();
     if (!ORIGINS.length) throw new Error('No lanes loaded. Did you run supabase-rates-insert.sql?');
 

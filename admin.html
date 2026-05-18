@@ -62,7 +62,12 @@
     <h1>OKE Quotes Admin</h1>
     <span id="sessionLabel">Not signed in</span>
   </div>
-  <button class="secondary hidden" id="signOutBtn">Sign out</button>
+  <div class="actions">
+    <a class="btn secondary" href="./">Calculator</a>
+    <a class="btn secondary" href="dashboard.html">Client dashboard</a>
+    <a class="btn secondary" href="manual.html">Manual</a>
+    <button class="secondary hidden" id="signOutBtn">Sign out</button>
+  </div>
 </header>
 <main>
   <section class="panel login" id="loginPanel">
@@ -141,6 +146,8 @@ const sb = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 const $ = id => document.getElementById(id);
+const PROD_ADMIN_URL = "https://okecanada.github.io/montedesign/admin.html";
+function adminRedirectUrl(){return /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname) ? PROD_ADMIN_URL : window.location.href.split("#")[0];}
 const money = n => "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const dateFmt = v => v ? new Date(v).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" }) : "-";
 function shareUrl(token) { return `https://okecanada.github.io/montedesign/q/${token}`; }
@@ -163,7 +170,7 @@ async function sendMagicLink() {
   $("loginMsg").textContent = "Sending...";
   const { error } = await sb.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.href.split("#")[0] }
+    options: { emailRedirectTo: adminRedirectUrl() }
   });
   $("loginMsg").textContent = error ? error.message : "Check your email for the login link.";
 }

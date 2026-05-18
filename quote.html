@@ -105,7 +105,7 @@
   Quote valid for 14 days unless otherwise noted · OKE Canada · onekindexpress.com
 </footer>
 
-<!-- Supabase credentials. Same shape as on index.html. -->
+<!-- Public browser credentials. Same shape as on index.html. -->
 <script>
   // Public browser config. The anon key is safe to publish; never put the service-role key here.
   window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
@@ -124,7 +124,7 @@ function sbCfg() {
 }
 async function sbRpc(name, params, opts) {
   const cfg = sbCfg();
-  if (!cfg) throw new Error("Supabase not configured");
+  if (!cfg) throw new Error("Quote service not configured");
   const res = await fetch(`${cfg.url}/rest/v1/rpc/${name}`, {
     method: 'POST',
     headers: {
@@ -136,6 +136,21 @@ async function sbRpc(name, params, opts) {
   });
   if (!res.ok) throw new Error(`${name}: ${res.status} ${await res.text()}`);
   return res.json();
+}
+
+async function notifyCustomer(event, payload) {
+  const cfg = sbCfg();
+  if (!cfg) return { ok: false, skipped: true };
+  try {
+    const res = await fetch(`${cfg.url}/functions/v1/notify-customer`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+      body: JSON.stringify({ event, payload })
+    });
+    return { ok: res.ok, status: res.status, text: res.ok ? '' : await res.text().catch(() => '') };
+  } catch (e) {
+    return { ok: false, error: e && e.message || String(e) };
+  }
 }
 
 function tokenFromUrl() {
@@ -253,10 +268,18 @@ async function submitBooking(action) {
       headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
       body: JSON.stringify({ event: action === 'accept' ? 'quote.confirmed' : 'quote.changes_requested', payload: { ...body, quote_ref: LOADED_QUOTE.quote_ref } })
     }).catch(() => {});
+    const emailNotice = await notifyCustomer(action === 'accept' ? 'booking.requested' : 'quote.changes_requested', {
+      ...body,
+      quote_ref: LOADED_QUOTE.quote_ref,
+      origin: LOADED_QUOTE.origin,
+      destination: LOADED_QUOTE.destination,
+      total: LOADED_QUOTE.total_after_tax,
+      share_url: window.location.href
+    });
     status.style.color = 'var(--ok)';
     status.textContent = action === 'accept'
-      ? "Thanks! A dispatcher will reach out within one business day."
-      : "Got it — we'll send you a revised quote shortly.";
+      ? (emailNotice.ok ? "Thanks! A dispatcher will reach out within one business day." : "Saved. One Kind Express has your booking request.")
+      : "Got it - we'll send you a revised quote shortly.";
     $("confirmBtn").disabled = true;
     $("changesBtn").disabled = true;
   } catch (e) {

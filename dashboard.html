@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>OKE Client Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg:#07091a; --panel:#0f142b; --panel2:#151b38; --line:rgba(255,255,255,.10);
+    --text:#f8fafc; --muted:#9ca3af; --soft:#cbd5e1; --brand:#ff6a00; --brand2:#ff8a4c; --cool:#4fd1c5; --ok:#22c55e; --bad:#ef4444;
+    --shadow:0 24px 70px rgba(0,0,0,.34);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:
+    radial-gradient(900px 520px at 78% -10%,rgba(255,106,0,.28),transparent 62%),
+    radial-gradient(720px 520px at 12% 108%,rgba(79,209,197,.18),transparent 58%),
+    linear-gradient(180deg,#07091a,#090d20 54%,#071321);color:var(--text);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px}
+  header{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 28px;border-bottom:1px solid var(--line);background:rgba(7,9,26,.76);backdrop-filter:blur(18px)}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:-.02em}
+  .mark{display:grid;place-items:center;width:42px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 12px 28px rgba(255,106,0,.32)}
+  nav{display:flex;gap:8px;flex-wrap:wrap}
+  a,button{font:inherit}
+  nav a,.ghost{color:var(--text);text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:9px 13px;font-weight:750;cursor:pointer}
+  nav a:hover,.ghost:hover{border-color:rgba(79,209,197,.35);background:rgba(79,209,197,.10)}
+  main{max-width:1220px;margin:0 auto;padding:34px 20px 54px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr);gap:18px;align-items:stretch;margin-bottom:18px}
+  .panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.045));border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .intro{padding:28px}
+  .kicker{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cool)}
+  h1{font-size:clamp(32px,5vw,62px);line-height:.95;margin:10px 0 12px;letter-spacing:-.055em}
+  .lead{color:var(--soft);font-size:16px;max-width:620px;margin:0}
+  .auth{padding:22px;background:rgba(255,255,255,.035)}
+  label{display:block;margin:12px 0 6px;color:var(--muted);font-size:12px;font-weight:750}
+  input{width:100%;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.08);color:var(--text);padding:13px 14px;outline:none}
+  input:focus{border-color:rgba(255,106,0,.55);box-shadow:0 0 0 4px rgba(255,106,0,.10)}
+  .primary{width:100%;margin-top:12px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--brand),#ff4f2e);color:#fff;padding:13px 15px;font-weight:850;cursor:pointer;box-shadow:0 14px 30px rgba(255,106,0,.25)}
+  .google{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#111827;padding:12px 15px;font-weight:850;cursor:pointer}
+  .status{min-height:20px;margin-top:10px;color:var(--muted);font-size:13px}.status.ok{color:var(--ok)}.status.err{color:var(--bad)}
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+  .stat{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.055)}
+  .stat b{display:block;font-size:26px;letter-spacing:-.04em}.stat span{color:var(--muted);font-size:12px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .toolbar h2{margin:0;font-size:18px}.toolbar p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .list{display:grid;gap:10px;padding:16px}
+  .quote{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);padding:14px;position:relative;overflow:hidden}
+  .quote::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(255,106,0,.08),transparent);transform:translateX(-120%);animation:sweep 5s ease-in-out infinite;pointer-events:none}
+  @keyframes sweep{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+  .ref{font:800 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--brand2);letter-spacing:.04em}.lane{font-size:17px;font-weight:850;margin-top:5px}.meta{color:var(--muted);font-size:12px;margin-top:4px}
+  .total{text-align:right;font-size:22px;font-weight:900;color:#fff}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;flex-wrap:wrap}
+  .small{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:750;cursor:pointer;font-size:12px}
+  .empty{padding:34px;text-align:center;color:var(--muted)}
+  .hidden{display:none!important}
+  @media(max-width:860px){header,.hero{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.quote{grid-template-columns:1fr}.total{text-align:left}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="mark">OKE</span><span>Client Dashboard</span></div>
+  <nav>
+    <a href="./">New quote</a>
+    <a href="manual.html">Manual</a>
+    <button class="ghost hidden" id="signOutBtn" type="button">Sign out</button>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <div class="panel intro">
+      <div class="kicker">Passwordless account</div>
+      <h1>Your freight quote history.</h1>
+      <p class="lead">Save quotes, reopen past lanes, share tracked links, and start new requests without creating another password.</p>
+    </div>
+    <div class="panel auth" id="authPanel">
+      <div class="kicker">Sign in or register</div>
+      <label for="emailInput">Work email</label>
+      <input id="emailInput" type="email" autocomplete="email" placeholder="you@company.com">
+      <button class="primary" id="magicBtn" type="button">Send magic link</button>
+      <button class="google" id="googleBtn" type="button">Continue with Google</button>
+      <div class="status" id="authStatus">Magic link creates the account automatically and opens this dashboard.</div>
+    </div>
+  </section>
+
+  <section id="dashPanel" class="hidden">
+    <div class="stats" id="stats"></div>
+    <div class="panel">
+      <div class="toolbar">
+        <div><h2>Saved quotes</h2><p>Pick a quote to reopen it or copy a tracked share link.</p></div>
+        <a class="small" href="./">+ Create new quote</a>
+      </div>
+      <div class="list" id="quoteList"></div>
+    </div>
+  </section>
+</main>
+<footer style="max-width:1220px;margin:-34px auto 34px;padding:0 20px;text-align:right">
+  <a href="admin.html" style="color:rgba(248,250,252,.34);font-size:12px;text-decoration:none">Team login</a>
+</footer>
+<script>
+const SUPABASE_CONFIG = {
+  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
+};
+const sb = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, { auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, storageKey:"okeQuoteHistoryAuth" }});
+const $ = id => document.getElementById(id);
+const PROD_DASHBOARD_URL = "https://okecanada.github.io/montedesign/dashboard.html";
+function dashboardRedirectUrl(){return /^(localhost|127\.0\.0\.1)$/i.test(location.hostname) ? PROD_DASHBOARD_URL : location.href.split("#")[0];}
+const money = n => "$" + Number(n || 0).toLocaleString("en-CA",{minimumFractionDigits:0,maximumFractionDigits:0});
+const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dateFmt = v => v ? new Date(v).toLocaleDateString("en-CA",{month:"short",day:"numeric",year:"numeric"}) : "";
+function shareUrl(token){return `${location.origin}${location.pathname.replace(/dashboard\.html$/,"")}q/${token}`;}
+function setStatus(txt,tone){$("authStatus").textContent=txt;$("authStatus").className="status "+(tone||"");}
+async function rpc(name, params){
+  const { data, error } = await sb.rpc(name, params || {});
+  if (error) throw error;
+  return data;
+}
+async function claimFromUrl(){
+  const url = new URL(location.href);
+  const token = url.searchParams.get("claim");
+  if (token) await rpc("claim_quote_by_token", { p_token: token }).catch(()=>{});
+  url.searchParams.delete("claim");
+  if (token) history.replaceState({}, "", url.pathname + url.search + url.hash);
+}
+async function sendMagic(){
+  const email = $("emailInput").value.trim();
+  if (!email) return setStatus("Enter your email first.","err");
+  setStatus("Sending secure sign-in link...");
+  const { error } = await sb.auth.signInWithOtp({ email, options:{ emailRedirectTo: dashboardRedirectUrl() }});
+  setStatus(error ? error.message : "Check your email. The link opens your dashboard.", error ? "err" : "ok");
+}
+async function google(){
+  const { error } = await sb.auth.signInWithOAuth({ provider:"google", options:{ redirectTo: dashboardRedirectUrl() }});
+  if (error) setStatus(error.message,"err");
+}
+function renderStats(rows){
+  const total = rows.reduce((s,q)=>s+Number(q.total_after_tax||0),0);
+  const viewed = rows.filter(q=>Number(q.view_count||0)>0).length;
+  const booked = rows.filter(q=>["booked","booking_requested"].includes(q.status)).length;
+  $("stats").innerHTML = [
+    ["Saved", rows.length],
+    ["Viewed", viewed],
+    ["Booking signals", booked],
+    ["Quoted value", money(total)]
+  ].map(([a,b])=>`<div class="stat"><b>${esc(b)}</b><span>${esc(a)}</span></div>`).join("");
+}
+function renderQuotes(rows){
+  const list = $("quoteList");
+  if (!rows.length){list.innerHTML='<div class="empty">No saved quotes yet. Create a quote, press Save, then return here.</div>';return;}
+  list.innerHTML = rows.map(q=>{
+    const lane = q.destination ? `${q.origin||"-"} -> ${q.destination}` : `${q.origin||"-"} local`;
+    const url = shareUrl(q.public_token);
+    return `<article class="quote">
+      <div>
+        <div class="ref">${esc(q.quote_ref || "")}</div>
+        <div class="lane">${esc(lane)}</div>
+        <div class="meta">${esc(q.service_name || q.status || "Quote")} · ${dateFmt(q.created_at)} · ${Number(q.view_count||0)} view${Number(q.view_count||0)===1?"":"s"}</div>
+      </div>
+      <div>
+        <div class="total">${money(q.total_after_tax)}</div>
+        <div class="actions">
+          <a class="small" href="${esc(url)}" target="_blank" rel="noopener">Open</a>
+          <a class="small" href="./?quote=${encodeURIComponent(q.public_token)}">Load in calculator</a>
+          <button class="small" type="button" data-copy="${esc(url)}">Copy link</button>
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+  list.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(btn.dataset.copy)}catch{} btn.textContent="Copied"; setTimeout(()=>btn.textContent="Copy link",1300);}));
+}
+async function refresh(){
+  const { data: { session } } = await sb.auth.getSession();
+  $("authPanel").classList.toggle("hidden", !!session);
+  $("dashPanel").classList.toggle("hidden", !session);
+  $("signOutBtn").classList.toggle("hidden", !session);
+  if (!session) return;
+  await claimFromUrl();
+  const { data, error } = await sb.from("quotes").select("id,quote_ref,public_token,status,origin,destination,service_name,total_after_tax,created_at,valid_until,view_count,payload").order("created_at",{ascending:false}).limit(100);
+  if (error){$("quoteList").innerHTML=`<div class="empty">${esc(error.message)}</div>`;return;}
+  renderStats(data||[]);
+  renderQuotes(data||[]);
+}
+document.addEventListener("DOMContentLoaded", async()=>{
+  $("magicBtn").addEventListener("click",sendMagic);
+  $("googleBtn").addEventListener("click",google);
+  $("signOutBtn").addEventListener("click",async()=>{await sb.auth.signOut(); refresh();});
+  await refresh();
+  sb.auth.onAuthStateChange(()=>refresh());
+});
+</script>
+</body>
+</html>

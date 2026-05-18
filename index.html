@@ -2738,7 +2738,7 @@ function scheduleLaneQuoteRefresh() {
       const q = await fetchLaneQuote(state.origin, state.destination, billable);
       if (seq !== _laneRpcSeq) return; // a newer request superseded us
       CURRENT_LANE_QUOTE = q ? { ...q, origin: state.origin, destination: state.destination, billable } : null;
-      if (typeof render === 'function') render();
+      if (typeof updateOutput === 'function') updateOutput({ skipLaneRefresh: true });
     } catch (e) {
       console.warn('lane fetch failed', e);
     }
@@ -3453,8 +3453,8 @@ function updateIntelligencePanel(q, distKm, etaText, density) {
 // ============================================================
 // RENDER OUTPUT
 // ============================================================
-function updateOutput() {
-  scheduleLaneQuoteRefresh();
+function updateOutput(options = {}) {
+  if (!options.skipLaneRefresh) scheduleLaneQuoteRefresh();
   const q = computeQuote();
   const showResult = q.hasLane && q.hasMeasurements && q.hasService;
 

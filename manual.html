@@ -4,38 +4,51 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OKE Calculator Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f6f3ee;--ink:#101426;--muted:#697086;--line:#ded8cf;--paper:#fffdf8;
-    --brand:#ff6a00;--brand2:#ff8a4c;--cool:#0f9f92;--night:#0b1028;--soft:#eef1ee;
-    --shadow:0 24px 70px rgba(17,24,39,.10);
+    --bg:#000;--ink:#fafafa;--muted:#a1a1aa;--line:#27272a;--paper:#09090b;
+    --brand:#ff6a00;--brand2:#ff9b66;--cool:#14b8a6;--night:#050505;--soft:#111113;
+    --shadow:0 22px 70px rgba(0,0,0,.40);
   }
   *{box-sizing:border-box}
   body{margin:0;background:
-    radial-gradient(900px 520px at 88% -12%,rgba(255,106,0,.22),transparent 62%),
-    radial-gradient(720px 520px at 8% 100%,rgba(15,159,146,.14),transparent 58%),
-    var(--bg);color:var(--ink);font:15px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    radial-gradient(900px 520px at 80% -14%,rgba(255,106,0,.14),transparent 58%),
+    radial-gradient(760px 520px at 7% 100%,rgba(20,184,166,.12),transparent 60%),
+    var(--bg);color:var(--ink);font:15px/1.55 Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;background:
-    linear-gradient(rgba(17,24,39,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(17,24,39,.035) 1px,transparent 1px);background-size:36px 36px}
-  header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;background:rgba(246,243,238,.84);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:96px 96px}
+  header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;background:rgba(0,0,0,.74);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:-.02em}
   .mark{display:grid;place-items:center;width:42px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 14px 30px rgba(255,106,0,.25)}
   nav{display:flex;gap:8px;flex-wrap:wrap}
-  nav a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:850;background:rgba(255,255,255,.62)}
-  nav a:hover{border-color:rgba(255,106,0,.38);background:#fff}
+  nav a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:850;background:rgba(255,255,255,.04)}
+  nav a:hover{border-color:rgba(255,106,0,.46);background:rgba(255,255,255,.08)}
   main{position:relative;max-width:1240px;margin:0 auto;padding:42px 20px 72px}
   .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.46fr);gap:18px;align-items:end;margin-bottom:22px}
-  .kicker{font:850 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--brand)}
+  .kicker{font:850 11px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--brand)}
   h1{font-size:clamp(42px,7vw,86px);line-height:.92;margin:10px 0 14px;letter-spacing:-.065em;max-width:880px}
   .lead{font-size:18px;color:var(--muted);max-width:760px;margin:0}
-  .hero-card{border:1px solid var(--line);background:rgba(255,253,248,.76);border-radius:22px;padding:20px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .hero-card{border:1px solid var(--line);background:rgba(9,9,11,.78);border-radius:22px;padding:20px;box-shadow:var(--shadow);overflow:hidden;position:relative}
   .hero-card::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent,rgba(255,106,0,.14),transparent);transform:translateX(-130%);animation:sweep 6s ease-in-out infinite;pointer-events:none}
   @keyframes sweep{0%,50%{transform:translateX(-130%)}85%,100%{transform:translateX(130%)}}
   .hero-card b{display:block;font-size:18px;letter-spacing:-.02em}.hero-card span{display:block;color:var(--muted);margin-top:6px}
+  .ops-scale{position:relative;margin-top:18px;height:86px;border:1px solid var(--line);border-radius:18px;background:
+    linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px),
+    rgba(255,255,255,.025);background-size:28px 28px;overflow:hidden}
+  .ops-scale::before{content:"";position:absolute;left:18px;right:18px;top:41px;height:2px;background:linear-gradient(90deg,var(--brand),rgba(255,255,255,.32),var(--cool));box-shadow:0 0 22px rgba(255,106,0,.32)}
+  .ops-scale::after{content:"";position:absolute;top:28px;left:8%;width:36px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 10px 24px rgba(255,106,0,.34);animation:scaleRun 5.6s cubic-bezier(.65,0,.35,1) infinite}
+  @keyframes scaleRun{0%,7%{left:8%;opacity:.25}16%,84%{opacity:1}92%,100%{left:82%;opacity:.35}}
+  .scale-bars{position:absolute;left:18px;right:18px;bottom:12px;display:grid;grid-template-columns:repeat(20,1fr);gap:4px;align-items:end}
+  .scale-bars i{display:block;height:calc(8px + var(--h)*1px);border-radius:4px 4px 1px 1px;background:rgba(250,250,250,.18);animation:barPulse 2.8s ease-in-out infinite;animation-delay:calc(var(--h)*-40ms)}
+  @keyframes barPulse{0%,100%{opacity:.38;transform:scaleY(.72)}48%{opacity:.9;transform:scaleY(1)}}
   .guide-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);gap:18px;align-items:start}
   .tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  .tool-card{position:relative;min-height:184px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:var(--shadow);padding:18px;text-align:left;cursor:pointer;overflow:hidden;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+  .tool-card{position:relative;min-height:184px;border:1px solid var(--line);border-radius:20px;background:rgba(9,9,11,.86);box-shadow:var(--shadow);padding:18px;text-align:left;cursor:pointer;overflow:hidden;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease;color:var(--ink)}
   .tool-card::before{content:"";position:absolute;inset:0;background:
     radial-gradient(260px 160px at var(--mx,85%) var(--my,0%),rgba(255,106,0,.16),transparent 62%),
     linear-gradient(110deg,transparent,rgba(15,159,146,.07),transparent);opacity:.92;pointer-events:none}
@@ -45,7 +58,7 @@
   .tool-icon{position:relative;display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--night),#1d2658);color:#ff9b66;font-weight:950;box-shadow:0 16px 28px rgba(11,16,40,.20)}
   .tool-card h2{position:relative;font-size:22px;line-height:1.02;letter-spacing:-.04em;margin:18px 0 8px}
   .tool-card p{position:relative;color:var(--muted);margin:0;max-width:310px}
-  .tool-card .mini{position:absolute;right:18px;top:18px;font:850 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.11em;text-transform:uppercase;color:rgba(16,20,38,.44)}
+  .tool-card .mini{position:absolute;right:18px;top:18px;font:850 10px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.11em;text-transform:uppercase;color:rgba(250,250,250,.40)}
   .detail{position:sticky;top:86px;border:1px solid rgba(255,255,255,.13);border-radius:24px;background:
     radial-gradient(520px 320px at 100% 0%,rgba(255,106,0,.22),transparent 60%),
     radial-gradient(480px 320px at 0% 100%,rgba(15,159,146,.16),transparent 60%),
@@ -66,19 +79,19 @@
   .detail-list b{color:#fff}
   .note{margin-top:16px;padding:13px 14px;border-radius:14px;background:rgba(15,159,146,.12);border:1px solid rgba(15,159,146,.28);color:#dffcf8}
   .quick{margin-top:26px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .quick div{border:1px solid var(--line);background:rgba(255,253,248,.75);border-radius:16px;padding:16px}
+  .quick div{border:1px solid var(--line);background:rgba(9,9,11,.72);border-radius:16px;padding:16px}
   .quick b{display:block;font-size:16px;margin-bottom:5px}.quick span{color:var(--muted)}
   .deep-guide{margin-top:26px;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:16px;align-items:start}
-  .manual-panel{border:1px solid var(--line);background:rgba(255,253,248,.82);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+  .manual-panel{border:1px solid var(--line);background:rgba(9,9,11,.80);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
   .manual-panel h2{font-size:28px;line-height:1;margin:8px 0 10px;letter-spacing:-.04em}
   .flow{display:grid;gap:10px;margin-top:16px}
-  .flow-step{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;padding:13px;border:1px solid rgba(17,24,39,.08);border-radius:16px;background:#fffdf8}
+  .flow-step{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;padding:13px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:#050505}
   .flow-num{display:grid;place-items:center;width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--night),#1d2658);color:#ff9b66;font-weight:950}
   .flow-step b{display:block;margin-bottom:3px}.flow-step span{color:var(--muted)}
   .faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
-  .faq-card{padding:14px;border:1px solid rgba(17,24,39,.08);border-radius:16px;background:
+  .faq-card{padding:14px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:
     radial-gradient(180px 120px at 100% 0%,rgba(255,106,0,.10),transparent 60%),
-    #fffdf8}
+    #050505}
   .faq-card b{display:block;margin-bottom:5px;color:var(--ink)}.faq-card span{color:var(--muted)}
   footer{margin-top:34px;text-align:right}
   footer a{color:rgba(16,20,38,.34);font-size:12px;text-decoration:none}
@@ -100,6 +113,14 @@
     <div class="hero-card">
       <b>Start with the calculator.</b>
       <span>Create a quote, then use the tabs to understand price, route, fuel, weather, service level, and booking options.</span>
+      <div class="ops-scale" aria-hidden="true">
+        <div class="scale-bars">
+          <i style="--h:8"></i><i style="--h:18"></i><i style="--h:12"></i><i style="--h:28"></i><i style="--h:20"></i>
+          <i style="--h:34"></i><i style="--h:16"></i><i style="--h:25"></i><i style="--h:30"></i><i style="--h:22"></i>
+          <i style="--h:38"></i><i style="--h:14"></i><i style="--h:26"></i><i style="--h:32"></i><i style="--h:19"></i>
+          <i style="--h:35"></i><i style="--h:24"></i><i style="--h:29"></i><i style="--h:17"></i><i style="--h:33"></i>
+        </div>
+      </div>
     </div>
   </section>
 

@@ -26,40 +26,38 @@
 </script>
 <style>
   :root {
-    /* 2026 Vercel-grade palette — pure black canvas, neon orange + teal accents,
-       matches manual.html / dashboard.html / admin.html for one coherent system. */
-    --ink: #fafafa;
-    --ink-soft: #d4d4d8;
-    --ink-muted: #a1a1aa;
-    --ink-faint: #71717a;
-    --paper: #fafafa;
-    --paper-card: rgba(9, 9, 11, 0.78);
-    --paper-alt: #050505;
-    --line: rgba(255, 255, 255, 0.10);
-    --line-soft: rgba(255, 255, 255, 0.06);
-    --accent: #ff6a00;
+    --ink: #0c1024;
+    --ink-soft: #1e2342;
+    --ink-muted: #6b7191;
+    --ink-faint: #a6abc5;
+    --paper: #fbfaf6;
+    --paper-card: rgba(255, 254, 250, 0.96);
+    --paper-alt: #f1eee3;
+    --line: rgba(12, 16, 36, 0.10);
+    --line-soft: rgba(12, 16, 36, 0.055);
+    --accent: #ff7a45;
     --accent-deep: #c64411;
-    --accent-light: #ff9b66;
-    --accent-soft: rgba(255, 106, 0, 0.16);
-    --accent-glow: rgba(255, 106, 0, 0.22);
-    --cool: #14b8a6;
-    --cool-deep: #0d9488;
-    --cool-soft: rgba(20, 184, 166, 0.16);
-    --positive: #22c55e;
-    --positive-soft: rgba(34, 197, 94, 0.18);
-    --danger: #f87171;
-    --danger-soft: rgba(248, 113, 113, 0.18);
-    --bg-deep: #000000;
-    --bg-mid: #050505;
-    --bg-glow: #0a0a0d;
-    --shadow-card: 0 22px 70px rgba(0, 0, 0, 0.42), 0 12px 28px -8px rgba(0,0,0,0.40), 0 1px 0 rgba(255,255,255,0.04) inset;
-    --shadow-lift: 0 30px 90px rgba(0, 0, 0, 0.55), 0 14px 30px -10px rgba(255, 106, 0, 0.22), 0 1px 0 rgba(255,255,255,0.06) inset;
-    --shadow-soft: 0 8px 24px -6px rgba(0,0,0,0.50), 0 4px 12px -4px rgba(255, 106, 0, 0.18);
-    --accent-secondary: #14b8a6;
-    --accent-secondary-soft: rgba(20, 184, 166, 0.14);
+    --accent-light: #ffa572;
+    --accent-soft: #ffe6d6;
+    --accent-glow: rgba(255, 122, 69, 0.22);
+    --cool: #4fd1c5;
+    --cool-deep: #0e7490;
+    --cool-soft: #d1f4f1;
+    --positive: #16a34a;
+    --positive-soft: #dcfce7;
+    --danger: #ef4444;
+    --danger-soft: #fee2e2;
+    --bg-deep: #07091a;
+    --bg-mid: #0e1230;
+    --bg-glow: #1a2050;
+    --shadow-card: 0 24px 60px -12px rgba(255, 122, 69, 0.14), 0 12px 28px -8px rgba(7, 9, 26, 0.20), 0 1px 0 rgba(255,255,255,0.7) inset;
+    --shadow-lift: 0 30px 80px -10px rgba(255, 122, 69, 0.20), 0 14px 30px -10px rgba(7, 9, 26, 0.30), 0 1px 0 rgba(255,255,255,0.08) inset;
+    --shadow-soft: 0 8px 24px -6px rgba(255, 122, 69, 0.18), 0 4px 12px -4px rgba(7, 9, 26, 0.15);
+    --accent-secondary: #06d6a0;
+    --accent-secondary-soft: rgba(6, 214, 160, 0.14);
     --radius: 14px;
     --radius-sm: 10px;
-    --radius-lg: 22px;
+    --radius-lg: 26px;
     --transition: 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
     --font-body: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     --font-display: "Geist", "Inter", sans-serif;
@@ -69,22 +67,13 @@
   .hidden { display: none !important; }
   html, body {
     background: var(--bg-deep);
-    color: var(--paper);
+    color: var(--ink);
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     min-height: 100vh;
-    letter-spacing: -0.005em;
-  }
-  /* Vercel-style grid overlay — same 96px lattice as manual.html. Subtle, fixed. */
-  body::after {
-    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.18;
-    background:
-      linear-gradient(rgba(255,255,255,0.075) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.075) 1px, transparent 1px);
-    background-size: 96px 96px;
   }
   /* ============================================================
      HERO SCENE - layered logistics atlas
@@ -92,9 +81,9 @@
   .scene {
     position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     background:
-      radial-gradient(ellipse 100% 78% at 74% 12%, rgba(255,106,0,0.16), transparent 56%),
-      radial-gradient(ellipse 80% 70% at 12% 86%, rgba(20,184,166,0.12), transparent 62%),
-      linear-gradient(180deg, #000000 0%, #050505 50%, #000000 100%);
+      radial-gradient(ellipse 100% 78% at 74% 12%, rgba(255,122,69,0.12), transparent 56%),
+      radial-gradient(ellipse 80% 70% at 12% 86%, rgba(79,209,197,0.10), transparent 62%),
+      linear-gradient(180deg, #050717 0%, #0a0e28 48%, #071321 100%);
     isolation: isolate;
     --mx: 80%;
     --my: 12%;
@@ -479,28 +468,28 @@
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(ellipse 78% 40% at 88% -10%, rgba(255,106,0,0.18), transparent 58%),
-      radial-gradient(ellipse 60% 38% at 5% 104%, rgba(20,184,166,0.10), transparent 62%),
-      rgba(9, 9, 11, 0.82);
-    border: 1px solid #27272a;
+      radial-gradient(ellipse 78% 40% at 88% -10%, rgba(255,122,69,0.14), transparent 58%),
+      radial-gradient(ellipse 60% 38% at 5% 104%, rgba(79,209,197,0.10), transparent 62%),
+      linear-gradient(180deg, rgba(255,254,250,0.94), rgba(248,246,238,0.88));
+    border: 1px solid rgba(255,255,255,0.55);
     border-radius: var(--radius-lg);
     padding: 34px;
     box-shadow:
-      0 1px 0 rgba(255,255,255,0.04) inset,
-      0 22px 70px rgba(0, 0, 0, 0.46),
-      0 60px 140px -40px rgba(255, 106, 0, 0.22);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+      0 1px 0 rgba(255,255,255,0.9) inset,
+      0 0 0 1px rgba(255,255,255,0.18),
+      0 30px 90px rgba(7, 9, 26, 0.35),
+      0 60px 140px -40px rgba(255, 122, 69, 0.18);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     transform: translateZ(0);
-    color: var(--paper);
   }
   .card::before {
     content: "";
     position: absolute;
-    left: 0; right: 0; top: 0; height: 2px;
+    left: 0; right: 0; top: 0; height: 4px;
     background: linear-gradient(90deg, transparent 0%, var(--accent) 22%, rgba(255,255,255,0.78) 50%, var(--cool) 78%, transparent 100%);
     background-size: 220% 100%;
-    opacity: 0.85;
+    opacity: 0.7;
     animation: panelEdge 7s ease-in-out infinite;
   }
   .card::after {
@@ -508,9 +497,9 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 92% 0%, rgba(255,106,0,0.14), transparent 24%),
-      radial-gradient(circle at 0% 98%, rgba(20,184,166,0.10), transparent 26%),
-      linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.05) 45%, transparent 54%);
+      radial-gradient(circle at 92% 0%, rgba(255,122,69,0.13), transparent 24%),
+      radial-gradient(circle at 0% 98%, rgba(79,209,197,0.08), transparent 26%),
+      linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.28) 45%, transparent 54%);
     background-size: auto, auto, 220% 100%;
     pointer-events: none;
     opacity: 0.62;
@@ -520,17 +509,17 @@
   @media (max-width: 600px) { .card { padding: 22px; } }
 
   .card-h1 {
-    font-size: clamp(34px, 5.4vw, 64px);
-    font-weight: 900; letter-spacing: -0.06em; margin-bottom: 10px;
-    line-height: 0.92;
-    color: var(--paper);
-    background: linear-gradient(110deg, #ffffff 0%, #ffd28a 55%, var(--accent) 100%);
+    font-size: clamp(30px, 4.4vw, 52px);
+    font-weight: 900; letter-spacing: -0.025em; margin-bottom: 8px;
+    line-height: 1.0;
+    color: var(--ink);
+    background: linear-gradient(110deg, var(--ink) 0%, var(--ink) 55%, var(--accent-deep) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .card-h1 em { font-style: italic; color: var(--accent); font-weight: 800; -webkit-text-fill-color: var(--accent); }
-  .card-sub { font-size: 14px; color: var(--ink-muted); margin-bottom: 24px; max-width: 680px; line-height: 1.55; }
+  .card-h1 em { font-style: italic; color: var(--accent-deep); font-weight: 800; -webkit-text-fill-color: var(--accent-deep); }
+  .card-sub { font-size: 13.5px; color: var(--ink-muted); margin-bottom: 22px; max-width: 650px; }
 
   /* Progress stepper */
   .stepper { margin: 0 0 28px; }

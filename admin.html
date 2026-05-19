@@ -6,6 +6,9 @@
 <meta name="robots" content="noindex">
 <title>OKE Quotes Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f6f7f9;
@@ -54,6 +57,49 @@
     .toolbar, .stats, .lanes { grid-template-columns: 1fr; }
     header { align-items: flex-start; flex-direction: column; }
   }
+  /* 2026 command-center skin shared with the manual */
+  body { background:
+    radial-gradient(900px 520px at 82% -16%, rgba(255,106,0,.16), transparent 58%),
+    radial-gradient(780px 520px at 5% 105%, rgba(20,184,166,.12), transparent 60%),
+    #000; color:#fafafa; font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.22; background:
+    linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size:96px 96px; }
+  header { position:sticky; top:0; z-index:5; background:rgba(0,0,0,.74); border-bottom:1px solid #27272a; backdrop-filter:blur(18px); }
+  header h1 { font-size:20px; letter-spacing:-.04em; }
+  header span, .muted { color:#a1a1aa; }
+  main { position:relative; max-width:1320px; padding-top:34px; }
+  .panel { border-color:#27272a; background:rgba(9,9,11,.78); border-radius:22px; box-shadow:0 22px 70px rgba(0,0,0,.40); }
+  .login { background:
+    radial-gradient(520px 320px at 100% 0%,rgba(255,106,0,.18),transparent 60%),
+    rgba(9,9,11,.86); }
+  .login h2, .admin-hero h2 { font-size:34px; line-height:1; letter-spacing:-.055em; }
+  input, select { border-color:#27272a; background:#050505; color:#fafafa; border-radius:12px; }
+  input:focus, select:focus { outline:none; border-color:rgba(255,106,0,.58); box-shadow:0 0 0 4px rgba(255,106,0,.12); }
+  button, .btn { border-radius:999px; background:#fafafa; color:#050505; font-weight:850; }
+  button:not(.secondary):not(.danger) { background:linear-gradient(135deg,#ff6a00,#ff9b66); color:#fff; box-shadow:0 14px 30px rgba(255,106,0,.22); }
+  button.secondary, .btn.secondary { background:rgba(255,255,255,.04); border-color:#27272a; color:#fafafa; }
+  .admin-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,.44fr); gap:16px; margin-bottom:16px; }
+  .command-card { position:relative; overflow:hidden; border:1px solid #27272a; border-radius:22px; background:rgba(9,9,11,.84); padding:20px; box-shadow:0 22px 70px rgba(0,0,0,.36); }
+  .command-card::after { content:""; position:absolute; inset:0; background:linear-gradient(110deg, transparent, rgba(255,106,0,.12), transparent); transform:translateX(-130%); animation:sweep 7s ease-in-out infinite; pointer-events:none; }
+  @keyframes sweep { 0%,55%{transform:translateX(-130%)} 88%,100%{transform:translateX(130%)} }
+  .kicker { font:850 11px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.16em; text-transform:uppercase; color:#ff6a00; }
+  .signal-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:14px; }
+  .signal { border:1px solid #27272a; border-radius:16px; padding:14px; background:#050505; }
+  .signal b { display:block; font-size:20px; letter-spacing:-.04em; }
+  .signal span { color:#a1a1aa; font-size:12px; }
+  .stats { background:transparent; border:0; padding:0; box-shadow:none; }
+  .stat, .lane-card { background:#050505; border-color:#27272a; border-radius:16px; color:#fafafa; }
+  .stat b { font-size:30px; letter-spacing:-.05em; }
+  table { color:#fafafa; }
+  th { background:#050505; color:#a1a1aa; border-bottom-color:#27272a; }
+  td { border-bottom-color:#27272a; }
+  .table-wrap { border-color:#27272a; border-radius:18px; }
+  .pill { background:rgba(255,255,255,.06); border-color:#27272a; color:#a1a1aa; }
+  .pill.hot { background:rgba(255,106,0,.12); border-color:rgba(255,106,0,.40); color:#ffb38a; }
+  .pill.ok { background:rgba(20,184,166,.12); border-color:rgba(20,184,166,.35); color:#5eead4; }
+  .pill.bad { background:rgba(248,113,113,.12); border-color:rgba(248,113,113,.36); color:#fca5a5; }
+  @media (max-width: 960px) { .admin-hero, .signal-grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -80,6 +126,21 @@
   </section>
 
   <section id="dashPanel" class="hidden">
+    <div class="admin-hero">
+      <div class="command-card admin-hero-copy">
+        <div class="kicker">live command center</div>
+        <h2>Quote pipeline, hot leads, and lane intelligence.</h2>
+        <p class="muted">Track shared quotes, repeat views, booking requests, lane value, and follow-up timing from the same data customers create in the calculator.</p>
+      </div>
+      <div class="command-card">
+        <div class="kicker">system signals</div>
+        <div class="signal-grid" id="opsSignals">
+          <div class="signal"><b>Fuel</b><span>Checking live diesel index</span></div>
+          <div class="signal"><b>Notify</b><span>Slack/email config status</span></div>
+          <div class="signal"><b>Views</b><span>Quote-open timing</span></div>
+        </div>
+      </div>
+    </div>
     <div class="panel">
       <div class="toolbar">
         <div>
@@ -267,11 +328,36 @@ async function loadQuotes() {
     </tr>
   `).join("") : `<tr><td colspan="8" class="muted">No quotes match the current filters.</td></tr>`;
 }
+async function renderOpsSignals() {
+  const host = $("opsSignals");
+  if (!host) return;
+  const recent = (LAST_DATA && LAST_DATA._recent) || [];
+  const hot = recent.filter(q => Number(q.view_count || 0) >= 3).length;
+  const booking = recent.filter(q => q.status === "booking_requested").length;
+  let fuelText = "Live endpoint ready";
+  let fuelVal = "Fuel";
+  try {
+    const res = await fetch(`${SUPABASE_CONFIG.url}/functions/v1/fuel-index`, {
+      headers: { apikey: SUPABASE_CONFIG.anonKey, Authorization: `Bearer ${SUPABASE_CONFIG.anonKey}` }
+    });
+    const idx = res.ok ? await res.json() : null;
+    if (idx && idx.provinces && idx.provinces.ON) {
+      fuelVal = `${Number(idx.provinces.ON.fscPct || 0).toFixed(1)}%`;
+      fuelText = `ON diesel ${idx.source || "live"} · ${idx.asOf ? String(idx.asOf).slice(0,10) : "latest"}`;
+    }
+  } catch (_) {}
+  host.innerHTML = [
+    [`${fuelVal}`, fuelText],
+    [`${hot} hot`, "Quotes opened 3+ times"],
+    [`${booking} booking`, "Requests waiting for ops"],
+  ].map(([a,b]) => `<div class="signal"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("");
+}
 async function refresh() {
   $("refreshBtn").disabled = true;
   try {
     LAST_DATA = await loadStats();
     await loadQuotes();
+    renderOpsSignals();
   } catch (e) {
     $("quoteRows").innerHTML = `<tr><td colspan="8" style="color:var(--bad)">${esc(e.message || e)}</td></tr>`;
   } finally {

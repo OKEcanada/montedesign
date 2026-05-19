@@ -70,7 +70,25 @@
   .small{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:750;cursor:pointer;font-size:12px}
   .empty{padding:34px;text-align:center;color:var(--muted)}
   .hidden{display:none!important}
-  @media(max-width:860px){header,.hero{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats,.benefit-grid,.auth-mini{grid-template-columns:1fr}.quote{grid-template-columns:1fr}.total{text-align:left}}
+  .command-strip{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);gap:12px;margin-bottom:18px}
+  .command-card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);padding:18px;box-shadow:var(--shadow)}
+  .command-card::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(360px 220px at 100% 0%,rgba(255,106,0,.18),transparent 62%),
+    linear-gradient(110deg,transparent,rgba(79,209,197,.08),transparent);pointer-events:none}
+  .command-card::after{content:"";position:absolute;left:18px;right:18px;bottom:14px;height:3px;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--cool));opacity:.68}
+  .command-card h2{position:relative;margin:8px 0 8px;font-size:34px;line-height:1;letter-spacing:-.055em}
+  .command-card p{position:relative;color:var(--muted);max-width:620px;margin:0}
+  .signal-list{position:relative;display:grid;gap:8px;margin-top:12px}
+  .signal-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;background:#050505;padding:10px}
+  .dot{width:9px;height:9px;border-radius:999px;background:var(--cool);box-shadow:0 0 18px rgba(79,209,197,.55)}
+  .signal-row b{font-size:13px}.signal-row span{color:var(--muted);font-size:12px}.signal-row code{font:850 10px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:#ffb38a}
+  .quote{border-radius:18px;background:
+    radial-gradient(280px 180px at 100% 0%,rgba(255,106,0,.10),transparent 62%),
+    #050505}
+  .quote:hover{border-color:rgba(255,106,0,.34);transform:translateY(-1px);transition:transform .18s ease,border-color .18s ease}
+  .small{background:#050505}
+  .small:hover{border-color:rgba(255,106,0,.38)}
+  @media(max-width:860px){header,.hero,.command-strip{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats,.benefit-grid,.auth-mini{grid-template-columns:1fr}.quote{grid-template-columns:1fr}.total{text-align:left}}
 </style>
 </head>
 <body>
@@ -123,6 +141,21 @@
   </section>
 
   <section id="dashPanel" class="hidden">
+    <div class="command-strip">
+      <div class="command-card">
+        <div class="kicker">customer workspace</div>
+        <h2>Saved quotes, tracked links, and reopen-ready lanes.</h2>
+        <p>Your quote history stays available after the browser closes. Open a past quote, copy a customer-safe link, or load the lane back into the calculator.</p>
+      </div>
+      <div class="command-card">
+        <div class="kicker">live tools</div>
+        <div class="signal-list">
+          <div class="signal-row"><span class="dot"></span><b>Google sign-in</b><span>Enabled in Supabase</span><code>AUTH</code></div>
+          <div class="signal-row"><span class="dot"></span><b>Quote history</b><span>Stored in Supabase</span><code>SYNC</code></div>
+          <div class="signal-row"><span class="dot"></span><b>Share links</b><span>Read-only return URLs</span><code>TRACK</code></div>
+        </div>
+      </div>
+    </div>
     <div class="stats" id="stats"></div>
     <div class="panel">
       <div class="toolbar">

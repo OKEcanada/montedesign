@@ -847,8 +847,8 @@
     background: #fff;
   }
   .piece-grid { display: grid; gap: 10px; }
-  .piece-grid.dim { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
-  .piece-grid.cf { grid-template-columns: 1fr 1fr 1fr; }
+  .piece-grid.dim { grid-template-columns: .95fr .95fr 1fr 1fr 1fr 1fr; }
+  .piece-grid.cf { grid-template-columns: .95fr .95fr 1fr 1fr; }
   .piece-grid.pallet { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; }
   @media (max-width: 700px) {
     .piece-head { align-items: flex-start; flex-direction: column; }
@@ -2727,6 +2727,24 @@
     text-align: center;
     background: rgba(255,255,255,0.44);
   }
+  .large-shipment-banner {
+    margin: 10px 0 12px;
+    padding: 12px 13px;
+    border: 1px solid rgba(255,122,69,0.46);
+    border-radius: 14px;
+    background:
+      radial-gradient(220px 120px at 100% 0%, rgba(255,122,69,0.18), transparent 60%),
+      rgba(255,122,69,0.08);
+    color: rgba(250,248,241,0.88);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .large-shipment-banner b {
+    display: block;
+    color: var(--paper);
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
 
   @media (max-width: 520px) {
     .modal { padding: 0; align-items: flex-end; }
@@ -2929,10 +2947,6 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         <span>Dashboard</span>
       </a>
-      <button class="history-btn" id="historyBtn" type="button">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 10 9 10"/><path d="M12 7v6l4 2"/></svg>
-        <span>My quotes</span>
-      </button>
       <a class="history-btn" href="admin.html">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-5"/></svg>
         <span>Admin</span>
@@ -3414,39 +3428,6 @@
         </button>
       </div>
     </div>
-  </div>
-
-  <div class="history-shell" id="historyShell" aria-hidden="true">
-    <div class="history-backdrop" data-history-close></div>
-    <aside class="history-drawer" aria-label="My quote history">
-      <div class="history-head">
-        <div>
-          <div class="history-kicker">Passwordless history</div>
-          <div class="history-title">My Quote History</div>
-          <div class="history-sub" id="historySub">Save quotes to the cloud and reopen them on any device.</div>
-        </div>
-        <button class="history-close" type="button" data-history-close aria-label="Close quote history">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
-        </button>
-      </div>
-      <button class="history-primary alt" id="historyNewBtn" type="button">+ Create New Quote</button>
-      <div class="history-auth" id="historyAuthBox">
-        <div>
-          <label for="historyEmail">Email</label>
-          <input id="historyEmail" type="email" autocomplete="email" placeholder="you@company.com" />
-        </div>
-        <button class="history-primary" id="historyMagicBtn" type="button">Send magic link</button>
-        <div class="history-status" id="historyStatus" aria-live="polite"></div>
-      </div>
-      <div class="history-user hidden" id="historyUserBox">
-        <div>
-          <div class="history-kicker">Signed in</div>
-          <div id="historyUserEmail" class="history-lane"></div>
-        </div>
-        <button class="history-ghost" id="historySignOutBtn" type="button">Sign out</button>
-      </div>
-      <div class="history-list" id="historyList"></div>
-    </aside>
   </div>
 
   <div class="footer-note" id="footerNote" style="display:none;">National Final Mile Calculator - One Kind Express</div>
@@ -4179,9 +4160,9 @@ const TAX_OPTIONS = [
 const ITEM_TYPE_OPTIONS = [
   'Sofa', 'Sectional sofa', 'Loveseat', 'Armchair', 'Dining chair', 'Office chair',
   'Dining table', 'Coffee table', 'Side table', 'Desk', 'TV', 'TV stand',
-  'Queen bed', 'King bed', 'Bed frame', 'Mattress', 'Headboard',
+  'Bedroom set', 'Queen bed', 'King bed', 'Bed frame', 'Mattress', 'Headboard',
   'Dresser', 'Nightstand', 'Cabinet', 'Bookcase', 'Rug', 'Mirror',
-  'Appliance', 'Artwork', 'Box', 'Crate', 'Pallet', 'Mixed furniture'
+  'Appliance', 'Artwork', 'Box', 'Crate', 'Pallet', 'Skid', 'Mixed furniture'
 ];
 
 function normalizeItemType(name) {
@@ -4215,7 +4196,7 @@ const state = {
   mode: 'dim',
   lenUnit: 'in',
   wtUnit: 'lb',
-  pieces: [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
+  pieces: [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
   fscPct: 0,
   taxId: 'none',
     dimFactor: 10,
@@ -4271,13 +4252,15 @@ function scheduleLaneQuoteRefresh() {
     return;
   }
   // billable calc duplicated lightly from computeQuote — we just need a number
-  let actualWtLbs = 0, cubicFt = 0;
+  let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
   for (const p of state.pieces) {
     actualWtLbs += computePieceActualWeight(p);
     cubicFt += computePieceCF(p) * volumetricCount(p);
+    linearFt += computePieceLinearFt(p);
   }
   const dimWt = cubicFt * state.dimFactor;
-  const billable = Math.ceil(Math.max(actualWtLbs, dimWt, 1));
+  const linearWt = linearFt > 10 ? linearFt * 1000 : 0;
+  const billable = Math.ceil(Math.max(actualWtLbs, dimWt, linearWt, 1));
   if (billable <= 1) return;
 
   if (_laneRpcTimer) clearTimeout(_laneRpcTimer);
@@ -4294,21 +4277,34 @@ function scheduleLaneQuoteRefresh() {
   }, 180);
 }
 
-function piecesCount(p) {
-  if (state.mode === 'pallet') {
-    const pal = Number(p.pallets) > 0 ? Number(p.pallets) : 1;
-    const ipp = Number(p.itemsPerPallet) > 0 ? Number(p.itemsPerPallet) : 1;
-    return pal * ipp;
-  }
-  return Number(p.qty) > 0 ? Number(p.qty) : 1;
+function sameItemCount(p) {
+  return Number(p.itemCount) > 0 ? Number(p.itemCount) : (Number(p.qty) > 0 ? Number(p.qty) : 1);
 }
 
-// For volume/weight aggregation: pallets count the pallet unit, not the inner items.
-function volumetricCount(p) {
+function piecesPerItemCount(p) {
+  return Number(p.piecesPerItem) > 0 ? Number(p.piecesPerItem) : 1;
+}
+
+function piecesCount(p) {
   if (state.mode === 'pallet') {
-    return Number(p.pallets) > 0 ? Number(p.pallets) : 1;
+    const sets = sameItemCount(p);
+    const pal = Number(p.pallets) > 0 ? Number(p.pallets) : 1;
+    const ipp = Number(p.itemsPerPallet) > 0 ? Number(p.itemsPerPallet) : 1;
+    return sets * pal * ipp;
   }
-  return Number(p.qty) > 0 ? Number(p.qty) : 1;
+  return sameItemCount(p) * piecesPerItemCount(p);
+}
+
+// For volume/weight aggregation, one row represents one identical item/set.
+// Pieces per item affects handling count, not cube/weight, because the row's
+// dimensions and weight describe the whole item/set being quoted.
+function volumetricCount(p) {
+  const sets = sameItemCount(p);
+  if (state.mode === 'pallet') {
+    const pal = Number(p.pallets) > 0 ? Number(p.pallets) : 1;
+    return sets * pal;
+  }
+  return sets;
 }
 
 function computePieceCF(p) {
@@ -4323,7 +4319,7 @@ function computePieceCF(p) {
 
 function computePieceActualWeight(p) {
   const weight = toLbs(Number(p.weight) || 0);
-  return state.mode === 'pallet' ? weight * volumetricCount(p) : weight;
+  return weight * volumetricCount(p);
 }
 
 function computePieceLinearFt(p) {
@@ -4559,17 +4555,19 @@ function renderPieces() {
     let inputsHtml = "";
     if (state.mode === 'dim') {
       inputsHtml = `<div class="piece-grid dim">
-        <div class="field"><label class="field-label"># Pcs</label><input type="text" inputmode="decimal" data-p="${i}" data-k="qty" value="${p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Total wt (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Same items</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Pieces / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Wt / item (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="H" value="${p.H ?? ""}" placeholder="0" /></div>
       </div>`;
     } else if (state.mode === 'cf') {
       inputsHtml = `<div class="piece-grid cf">
-        <div class="field"><label class="field-label"># Pcs</label><input type="text" inputmode="decimal" data-p="${i}" data-k="qty" value="${p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Total wt (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
-        <div class="field"><label class="field-label">Cubic feet per pc</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Same items</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Pieces / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Wt / item (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Cubic feet / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
       </div>`;
     } else if (state.mode === 'pallet') {
       inputsHtml = `<div class="piece-grid pallet">
@@ -4658,6 +4656,8 @@ function renderPieces() {
 function updatePieceTags() {
   state.pieces.forEach((p, i) => {
     const qty = piecesCount(p);
+    const itemCount = sameItemCount(p);
+    const piecesEach = piecesPerItemCount(p);
     const vc = volumetricCount(p);
     const cfPer = computePieceCF(p);
     const cfTotal = cfPer * vc;
@@ -4675,8 +4675,12 @@ function updatePieceTags() {
     if (state.mode === 'pallet') {
       if (vc > 0) parts.push(`<span class="tag">${vc} pallet${vc>1?'s':''}</span>`);
       if (qty > vc) parts.push(`<span class="tag">${qty} item${qty>1?'s':''} total</span>`);
-    } else if (qty > 1) {
+    } else if (qty > 1 && piecesEach <= 1) {
       parts.push(`<span class="tag">×${qty}</span>`);
+    }
+    if (state.mode !== 'pallet' && piecesEach > 1) {
+      if (itemCount > 1) parts.push(`<span class="tag">${itemCount} same item${itemCount>1?'s':''}</span>`);
+      parts.push(`<span class="tag">${qty} handling pieces</span>`);
     }
     if (linearWins) parts.push(`<span class="tag warn">LINEAR FT APPLIES</span>`);
     else if (dimWins) parts.push(`<span class="tag warn">DIM WT APPLIES</span>`);
@@ -4980,7 +4984,7 @@ function applyQuoteSnapshot(snapshot) {
   state.mode = snapshot.mode || 'dim';
   state.lenUnit = snapshot.lenUnit || 'in';
   state.wtUnit = snapshot.wtUnit || 'lb';
-  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
   state.pieces.forEach(p => { if (p && p.label && !p.itemType) p.itemType = p.label; });
   state.fscPct = Number(snapshot.fscPct) || 0;
   state.taxId = snapshot.taxId || 'none';
@@ -5224,7 +5228,7 @@ function startNewQuote() {
   state.mode = 'dim';
   state.lenUnit = 'in';
   state.wtUnit = 'lb';
-  state.pieces = [{ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  state.pieces = [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
   state.accessorials = {};
   state.service = null;
   state.taxId = 'none';
@@ -5469,15 +5473,16 @@ function updateOutput(options = {}) {
     return;
   }
 
+  const largeLinearQuote = showResult && Number(q.linearFt || 0) > 10;
   const gt = $("grandTotal");
-  const newTotal = fmt(q.totalAfterTax);
+  const newTotal = largeLinearQuote ? 'Custom quote' : fmt(q.totalAfterTax);
   if (gt.textContent !== newTotal) {
     gt.textContent = newTotal;
     gt.classList.remove('bump');
     void gt.offsetWidth;
     gt.classList.add('bump');
   }
-  window.__tweenMoney('#grandTotal2', q.total);
+  if (!largeLinearQuote) window.__tweenMoney('#grandTotal2', q.total);
 
   const svc = SERVICE_LEVELS.find(s => s.id === state.service);
   $("svcPill").textContent = svc ? svc.name : '—';
@@ -5519,23 +5524,46 @@ function updateOutput(options = {}) {
       ? 'Middle mile'
       : (q.isLocal ? 'Final mile' : 'Base delivery');
   }
-  $("baseOut").textContent = fmt(baseTotal);
+  $("baseOut").textContent = largeLinearQuote ? 'Contact OKE' : fmt(baseTotal);
 
   if (q.extraPieces > 0) {
     $("extraPieceRow").style.display = "flex";
-    $("extraPieceOut").textContent = `${q.extraPieces} × ${fmt(state.extraPiece)} = ${fmt(q.extraPieceCharge)}`;
+    $("extraPieceOut").textContent = largeLinearQuote ? 'Included in review' : `${q.extraPieces} × ${fmt(state.extraPiece)} = ${fmt(q.extraPieceCharge)}`;
   } else {
     $("extraPieceRow").style.display = "none";
   }
 
   $("accBreakdownRow").style.display = q.accAmount > 0 ? "flex" : "none";
-  $("accAmountOut").textContent = fmt(q.accAmount);
+  $("accAmountOut").textContent = largeLinearQuote ? 'Reviewed manually' : fmt(q.accAmount);
 
-  $("subtotalOut").textContent = fmt(q.subtotal);
-  $("fscAmountOut").textContent = fmt(q.fscAmount);
+  $("subtotalOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.subtotal);
+  $("fscAmountOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.fscAmount);
   $("taxLabel").textContent = q.tax.rate > 0 ? `Tax amount (${q.tax.rate}%)` : "Tax amount";
-  $("taxAmountOut").textContent = fmt(q.taxAmount);
-  $("totalAfterTaxOut").textContent = fmt(q.totalAfterTax);
+  $("taxAmountOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.taxAmount);
+  $("grandTotal2").textContent = largeLinearQuote ? 'Custom quote' : $("grandTotal2").textContent;
+  $("totalAfterTaxOut").textContent = largeLinearQuote ? 'Contact OKE' : fmt(q.totalAfterTax);
+
+  let largeBanner = document.getElementById('largeShipmentBanner');
+  if (largeLinearQuote) {
+    if (!largeBanner && $("resultContent")) {
+      largeBanner = document.createElement('div');
+      largeBanner.id = 'largeShipmentBanner';
+      largeBanner.className = 'large-shipment-banner';
+      $("resultContent").insertBefore(largeBanner, $("resultContent").firstChild);
+    }
+    if (largeBanner) {
+      largeBanner.innerHTML = `<b>Large shipment review required</b>${(q.linearFt || 0).toFixed(1)} linear feet is above the instant-quote threshold. Send contact details and OKE will review routing, equipment, and line-haul capacity.`;
+    }
+    const gateKey = `${state.origin || ''}|${state.destination || ''}|${(q.linearFt || 0).toFixed(1)}`;
+    if (window._largeLinearPromptKey !== gateKey) {
+      window._largeLinearPromptKey = gateKey;
+      setTimeout(() => {
+        try { if (window.openBookingModal) window.openBookingModal({ largeLinear: true }); } catch (_) {}
+      }, 300);
+    }
+  } else if (largeBanner) {
+    largeBanner.remove();
+  }
 
   // Safety net: if every price is $0 even though showResult is true, surface a clear
   // diagnostic line instead of silently rendering all-zeros. This is the "0 everywhere"
@@ -5733,7 +5761,9 @@ function updateOutput(options = {}) {
   {
     const svcName = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || '';
     const lane = q.isLocal ? state.origin + ' (local)' : state.origin + ' → ' + state.destination;
+    const largeLinearSummary = Number(q.linearFt || 0) > 10;
     const pieceLines = (state.pieces || []).map((p, i) => {
+      const type = (p.itemType || p.label || 'Item').trim();
       if (state.mode === 'pallet') {
         const pal = Number(p.pallets) || 1, ipp = Number(p.itemsPerPallet) || 1;
         const L = Number(p.L)||48, W = Number(p.W)||40, H = Number(p.H)||0;
@@ -5746,13 +5776,27 @@ function updateOutput(options = {}) {
     const itemTypeLines = (state.pieces || [])
       .map((p, i) => (p.itemType || p.label || '').trim() ? `  ${i+1}. Type: ${(p.itemType || p.label || '').trim()}` : null)
       .filter(Boolean);
+    const detailedPieceLines = (state.pieces || []).map((p, i) => {
+      const type = (p.itemType || p.label || 'Item').trim();
+      const itemCount = sameItemCount(p);
+      const piecesEach = piecesPerItemCount(p);
+      if (state.mode === 'pallet') {
+        const pal = Number(p.pallets) || 1, ipp = Number(p.itemsPerPallet) || 1;
+        const L = Number(p.L) || 48, W = Number(p.W) || 40, H = Number(p.H) || 0;
+        return `  ${i+1}. ${type} - ${pal} pallet(s) x ${ipp} item(s)/pallet - ${L}x${W}x${H}" per pallet - ${Number(p.weight)||0} lbs/pallet`;
+      }
+      if (state.mode === 'cf') {
+        return `  ${i+1}. ${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.cf)||0} ft3/item - ${Number(p.weight)||0} lbs/item`;
+      }
+      return `  ${i+1}. ${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" per item - ${Number(p.weight)||0} lbs/item`;
+    });
     const summaryLines = [
       'Reference: ' + window._quoteRef,
       'Lane: ' + lane,
       'Service: ' + svcName,
       'Items: ' + (q.totalPcs || 0) + ' · ' + (q.cubicFt||0).toFixed(2) + ' ft³ · ' + Math.round(q.billable||0) + ' lbs billable',
       'Preferred pickup: ' + (pkEl ? pkEl.value : '—'),
-      'Total: ' + fmt(q.totalAfterTax)
+      'Total: ' + (largeLinearSummary ? 'Custom review required' : fmt(q.totalAfterTax))
     ];
     const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' × ' + a.qty : '') + ' · ' + fmt(a.amount));
     const fullLines = [
@@ -5781,13 +5825,13 @@ function updateOutput(options = {}) {
       '  Billable weight: ' + Math.round(q.billable || 0) + ' lbs' + (q.linearWins ? ' (linear ft wins)' : q.dimWins ? ' (dim wins)' : ''),
       '',
       'ITEMS',
-      ...(itemTypeLines.length ? itemTypeLines : []),
-      ...(pieceLines.length ? pieceLines : ['  (none)']),
+      ...(detailedPieceLines.length ? detailedPieceLines : ['  (none)']),
       '',
       'ACCESSORIALS',
       ...(accLines.length ? accLines : ['  (none)']),
       '',
       'PRICING BREAKDOWN',
+      largeLinearSummary ? '  CUSTOM REVIEW REQUIRED: shipment exceeds 10 linear feet. Do not use instant calculator pricing.' : null,
       '  Middle-mile (line haul): ' + fmt(q.middleMileSell || 0),
       '  Final-mile base: ' + fmt(q.baseFinalMile || 0),
       '  Extra pieces (' + (q.extraPieces || 0) + ' × ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
@@ -5797,7 +5841,7 @@ function updateOutput(options = {}) {
       '  Total before tax: ' + fmt(q.total || 0),
       '  Tax — ' + ((q.tax && q.tax.label) || '—') + ': ' + fmt(q.taxAmount || 0),
       '  ───────────────',
-      '  TOTAL: ' + fmt(q.totalAfterTax || 0),
+      '  TOTAL: ' + (largeLinearSummary ? 'CUSTOM REVIEW REQUIRED' : fmt(q.totalAfterTax || 0)),
       '',
       '— Please reply with your contact name, phone, and pickup/delivery addresses to confirm this booking. —',
       '',
@@ -5813,14 +5857,50 @@ function updateOutput(options = {}) {
     if (mSum) mSum.textContent = summaryText;
   }
 
-  // Compare bars (hide entirely in middle-mile-only mode)
+  // Compare bars
   const cmpHost = $("cmpRows");
   const marketHost = $("marketCompare");
   const cmpTab = document.querySelector('.r-tab[data-pane="compare"]');
   if (state.laneMode === 'middle') {
-    if (cmpHost) cmpHost.innerHTML = '<div style="padding:14px;color:rgba(250,248,241,0.55);font-size:12.5px;text-align:center;">Service comparison applies to final-mile delivery only.</div>';
-    if (marketHost) marketHost.innerHTML = '';
-    if (cmpTab) cmpTab.style.display = 'none';
+    if (cmpTab) cmpTab.style.display = '';
+    const laneQuote = (typeof CURRENT_LANE_QUOTE !== 'undefined' && CURRENT_LANE_QUOTE && CURRENT_LANE_QUOTE.origin === state.origin && CURRENT_LANE_QUOTE.destination === state.destination)
+      ? CURRENT_LANE_QUOTE
+      : null;
+    const middleTotal = Number(q.middleMileSell || (laneQuote && laneQuote.middleMileSell) || 0);
+    const weightCharge = Number((laneQuote && laneQuote.weightCharge) || 0);
+    const minCharge = Number((laneQuote && laneQuote.min) || 0);
+    const marketLow = middleTotal > 0 ? middleTotal * 1.08 : 0;
+    const marketHigh = middleTotal > 0 ? middleTotal * 1.34 : 0;
+    const expedite = middleTotal > 0 ? middleTotal * 1.58 : 0;
+    const rows = [
+      { name: 'OKE middle-mile', price: middleTotal, badge: 'Selected' },
+      { name: `Day & Ross table ${laneQuote && laneQuote.cwtCol ? '(' + laneQuote.cwtCol + ')' : ''}`, price: weightCharge || middleTotal, badge: laneQuote && laneQuote.cwtRate ? `${laneQuote.cwtRate.toFixed(2)}/CWT` : 'rate loading' },
+      { name: 'Minimum charge guard', price: minCharge, badge: 'floor' },
+      { name: 'Typical broker LTL range', range: marketLow && marketHigh ? `${moneyShort(marketLow)}-${moneyShort(marketHigh)}` : 'Loading', price: marketHigh, badge: 'estimate' },
+      { name: 'Expedited / special handling', price: expedite, badge: 'estimate' }
+    ];
+    const max = Math.max(...rows.map(r => Number(r.price || 0)), 1);
+    if (cmpHost) {
+      cmpHost.innerHTML = rows.map((r, idx) => {
+        const value = Number(r.price || 0);
+        const pct = Math.max(8, (value / max) * 100);
+        return `<div class="r-cmp-row${idx === 0 ? ' active' : ''}">
+          <span class="nm">${htmlEsc(r.name)} <span class="cmp-badge ${idx === 0 ? 'save' : 'premium'}">${htmlEsc(r.badge)}</span></span>
+          <span class="bar-wrap"><span class="bar" style="width:${pct}%;"></span></span>
+          <span class="price">${r.range ? htmlEsc(r.range) : (value ? fmt(value) : 'â€”')}</span>
+        </div>`;
+      }).join('');
+    }
+    if (marketHost) {
+      marketHost.innerHTML = `<div class="market-compare-head"><span>Middle-mile benchmark</span><small>Dock-to-dock only; final-mile services are not included.</small></div>`;
+    }
+    const advisor = $("cmpAdvisor");
+    if (advisor) {
+      const rateLine = laneQuote && laneQuote.cwtCol
+        ? `Resolved against the ${laneQuote.cwtCol} column, with Day & Ross x ${(MIDDLE_MILE_TABLE_MARKUP * 100).toFixed(0)}% already baked into the lane table.`
+        : 'Lane rate is still loading from Supabase.';
+      advisor.innerHTML = `<b>Middle-mile comparison only</b><em>${htmlEsc(rateLine)} Competitor ranges here are planning estimates, not live final-mile offers.</em>`;
+    }
   } else if (cmpHost && typeof SERVICE_LEVELS !== 'undefined') {
     if (cmpTab) cmpTab.style.display = '';
     const savedSvc = state.service;
@@ -5917,7 +5997,7 @@ function setupUnits() {
 function setupPieces() {
   $("addPieceBtn").addEventListener('click', () => {
     if (state.pieces.length >= 20) return;
-    state.pieces.push({ itemType: '', weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
+    state.pieces.push({ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
     render();
   });
 }
@@ -6266,20 +6346,9 @@ function setupActions() {
     try {
       const saved = await saveCurrentQuote(true, monteAuth.user() ? 'draft' : 'shared');
       if (!saved) return;
-      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to history' : 'Saved in this browser';
-      openHistoryDrawer();
-      if (monteAuth.user()) {
-        setHistoryStatus('Saved. Your share link was copied, and this quote is in your history.', 'ok');
-        await refreshHistory();
-      } else {
-        setHistoryStatus('Quote saved and return link copied. Enter your email to unlock quote history.', 'ok');
-        const email = $("historyEmail");
-        if (email) setTimeout(() => email.focus(), 120);
-      }
+      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to dashboard' : 'Saved locally';
     } catch (e) {
       if (label) label.textContent = 'Save failed';
-      openHistoryDrawer();
-      setHistoryStatus('Could not save quote: ' + (e.message || e), 'err');
     }
     setTimeout(() => {
       saveBtn.classList.remove('copied');
@@ -6290,15 +6359,27 @@ function setupActions() {
   // Booking modal open/close
   const bookBtnEl = $("bookBtn");
   const bookModal = $("bookModal");
-  function openBookingModal() {
+  function openBookingModal(opts = {}) {
     if (!bookModal) return;
     const q = computeQuote();
     if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
+    const largeLinear = !!opts.largeLinear || Number(q.linearFt || 0) > 10;
+    const label = bookModal.querySelector('.modal-label');
+    const title = $("bookTitle");
+    const sub = bookModal.querySelector('.modal-sub');
+    const submit = $("bookingSubmit");
+    if (label) label.textContent = largeLinear ? 'Custom quote request' : 'Booking request';
+    if (title) title.textContent = largeLinear ? 'Large shipment - send to One Kind Express' : 'Send this quote to One Kind Express';
+    if (sub) sub.textContent = largeLinear
+      ? 'This shipment is over 10 linear feet, so instant pricing is paused. Send contact details and OKE will review equipment, routing, and capacity.'
+      : "Pick how you'd like to send it. We'll prepare the message with your quote details - you confirm before sending.";
+    if (submit) submit.textContent = largeLinear ? 'Request custom quote' : 'Confirm this booking';
     bookModal.classList.add('open');
     bookModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     try { if (typeof launchConfetti === 'function') launchConfetti(); } catch(e) {}
   }
+  window.openBookingModal = openBookingModal;
   function closeBookingModal() {
     if (!bookModal) return;
     bookModal.classList.remove('open');
@@ -6651,32 +6732,34 @@ function setupAiUpload() {
   }
 
   function addAiItem(it) {
-    if (state.mode !== 'dim') {
-      state.mode = 'dim';
-      const dimBtn = document.querySelector('[data-mode="dim"]');
-      if (dimBtn) dimBtn.click();
-    }
+    const itemType = normalizeItemType(it.itemType || it.name);
+    const isPallet = /pallet|skid/i.test(`${it.itemType || ''} ${it.name || ''} ${it.notes || ''} ${it.evidence || ''}`);
+    state.mode = isPallet ? 'pallet' : 'dim';
+    document.querySelectorAll('#modeToggle .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
     if (state.lenUnit !== 'in') state.lenUnit = 'in';
     if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
     const sess = window.__aiSession;
     const srcIdx = typeof it.sourceIndex === 'number' ? it.sourceIndex : it.imageIdx;
     const imgRef = (typeof srcIdx === 'number' && sess.images[srcIdx]) ? sess.images[srcIdx] : null;
-    state.pieces.push({
-      itemType: normalizeItemType(it.itemType || it.name),
-      qty: it.qty || 1,
+    const row = {
+      itemType,
+      itemCount: isPallet ? 1 : (it.qty || 1),
+      piecesPerItem: Number(it.piecesPerItem) > 0 ? Number(it.piecesPerItem) : 1,
+      qty: isPallet ? null : (it.qty || 1),
       weight: it.weightLb || 0,
       L: it.lengthIn || 0,
       W: it.widthIn || 0,
       H: it.heightIn || 0,
       cf: null,
-      pallets: null,
-      itemsPerPallet: null,
+      pallets: isPallet ? (it.qty || 1) : null,
+      itemsPerPallet: isPallet ? (Number(it.itemsPerPallet) || 1) : null,
       label: it.name || normalizeItemType(it.name),
       ai_confidence: it.confidence || 'medium',
       ai_notes: [it.explanation, it.evidence, it.notes].filter(Boolean).join(' | '),
       photo_thumb: (imgRef && imgRef.kind !== 'pdf' && imgRef.thumb) || it.thumb || null,
       photo_full: (imgRef && imgRef.kind !== 'pdf' && imgRef.full) || null,
-    });
+    };
+    state.pieces.push(row);
     try { renderPieces(); } catch(_) {}
     try { updateOutput(); } catch(_) {}
   }
@@ -6793,6 +6876,10 @@ async function init() {
   try {
     if (!sbCfg()) throw new Error('Cloud quote service is not configured.');
     const shouldOpenHistory = !!new URL(window.location.href).searchParams.get('history');
+    if (shouldOpenHistory) {
+      window.location.replace('dashboard.html');
+      return;
+    }
     await initAuthSession();
     ORIGINS = await loadOrigins();
     if (!ORIGINS.length) throw new Error('No rate lanes loaded yet.');
@@ -6859,11 +6946,7 @@ async function init() {
   setupStepper();
     const sharedLoaded = await loadSharedQuoteIfPresent();
     if (!sharedLoaded) render();
-    if (shouldOpenHistory || monteAuth.user()) {
-      renderHistoryAuthState();
-      if (monteAuth.user()) refreshHistory();
-      if (shouldOpenHistory) openHistoryDrawer();
-    }
+    if (monteAuth.user()) renderHistoryAuthState();
   } catch (err) {
     $("loadingView").innerHTML = `<div style="color: var(--danger);">Error: ${err.message}</div>`;
   }

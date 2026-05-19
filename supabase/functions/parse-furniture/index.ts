@@ -12,6 +12,8 @@ type ParsedItem = {
   widthIn: number;
   heightIn: number;
   weightLb: number;
+  piecesPerItem?: number;
+  itemsPerPallet?: number;
   confidence: "high" | "medium" | "low";
   notes?: string;
   evidence?: string;
@@ -71,6 +73,8 @@ function cleanItem(raw: Record<string, unknown>): ParsedItem {
     widthIn: clampNum(raw.widthIn, 24, 1, 180),
     heightIn: clampNum(raw.heightIn, 24, 1, 180),
     weightLb: clampNum(raw.weightLb, 75, 1, 3000),
+    piecesPerItem: clampNum(raw.piecesPerItem, 1, 1, 99),
+    itemsPerPallet: clampNum(raw.itemsPerPallet, 1, 1, 99),
     confidence: ((["high", "medium", "low"].includes(conf) ? conf : "medium")) as ParsedItem["confidence"],
     notes: String(raw.notes || "estimated from upload").slice(0, 180),
     evidence: String(raw.evidence || "").slice(0, 220),
@@ -81,7 +85,7 @@ function cleanItem(raw: Record<string, unknown>): ParsedItem {
 
 const SYSTEM_PROMPT = `You are a SHIPPING DIMENSIONS expert for OKE Canada Freight final-mile delivery.
 Return ONLY valid JSON in this form:
-{"assistantMessage":string,"summary":string,"items":[{name,itemType,qty,lengthIn,widthIn,heightIn,weightLb,confidence,notes,evidence,explanation,sourceIndex}, ...]}.
+{"assistantMessage":string,"summary":string,"items":[{name,itemType,qty,piecesPerItem,itemsPerPallet,lengthIn,widthIn,heightIn,weightLb,confidence,notes,evidence,explanation,sourceIndex}, ...]}.
 Identify EVERY visible or listed shippable item from photos, screenshots, product labels, invoices, packing lists, and PDF order documents.
 
 RULES:
@@ -89,14 +93,17 @@ RULES:
 2. itemType must be a usable quote category, not a broad class. Good itemType values: Sofa, Sectional, Lounge chair, Dining chair, Bed frame, Mattress, Dresser, Cabinet, Dining table, Coffee table, Desk, TV, Appliance, Mirror, Rug, Boxed item, Mixed furniture.
 3. If actual dimensions, weight, quantity, SKU text, carton labels, or order-line details are visible, use that exact information and mention it in evidence.
 4. If actual info is missing, estimate PACKAGED shipping dimensions in INCHES and SHIPPING WEIGHT in POUNDS. Add about 4 inches per dimension for boxing/crating when the item appears unpackaged. Mattresses can use compression-bag dimensions.
-5. Group identical items into one row with qty > 1. Separate different products into separate rows. Examples: two identical dining chairs -> one Dining chair row qty 2; sofa + TV + two chairs -> three rows.
-6. Realistic weights: 3-seat sofa 90-150 lb, queen mattress 70-120 lb, 6-drawer dresser 110-180 lb, 55" TV boxed 55-75 lb, washer/dryer 180-250 lb, fridge 200-400 lb, dining table 90-160 lb, dining chair 15-30 lb.
-7. explanation must be a short customer-friendly reason for the dimensions/weight, e.g. "Used visible order label 84 x 38 x 36 in; added packaging allowance" or "Estimated packaged sofa at a normal 3-seat range because no label was visible."
-8. evidence must quote or summarize the visible clue used, e.g. label text, SKU/order line, visible object, or "visual estimate only".
-9. sourceIndex is the zero-based uploaded file index where the item came from.
-10. confidence: "high" when clearly identifiable or label data is visible, "medium" when partial/blurry, "low" when guessing.
-11. NEVER invent items. If unclear, return empty items with explanation in summary.
-12. assistantMessage: one warm sentence explaining what you found and what you added to the quote.`;
+5. qty means identical quoted units, not handling pieces. Example: five identical TVs -> one TV row qty 5, piecesPerItem 1.
+6. piecesPerItem means handling pieces inside one identical unit/set. Example: one bedroom set made of bed frame, dresser, mirror, two nightstands -> qty 1, piecesPerItem 5. Two identical bedroom sets -> qty 2, piecesPerItem 5.
+7. For pallets/skids, itemType should include "Pallet" or "Skid"; qty means pallet count unless the document says otherwise, and itemsPerPallet should capture the visible/order-line item count per pallet.
+8. Group identical items into one row with qty > 1. Separate different products into separate rows. Examples: two identical dining chairs -> one Dining chair row qty 2; sofa + TV + two chairs -> three rows.
+9. Realistic weights: 3-seat sofa 90-150 lb, queen mattress 70-120 lb, 6-drawer dresser 110-180 lb, 55" TV boxed 55-75 lb, washer/dryer 180-250 lb, fridge 200-400 lb, dining table 90-160 lb, dining chair 15-30 lb.
+10. explanation must be a short customer-friendly reason for the dimensions/weight, e.g. "Used visible order label 84 x 38 x 36 in; added packaging allowance" or "Estimated packaged sofa at a normal 3-seat range because no label was visible."
+11. evidence must quote or summarize the visible clue used, e.g. label text, SKU/order line, visible object, or "visual estimate only".
+12. sourceIndex is the zero-based uploaded file index where the item came from.
+13. confidence: "high" when clearly identifiable or label data is visible, "medium" when partial/blurry, "low" when guessing.
+14. NEVER invent items. If unclear, return empty items with explanation in summary.
+15. assistantMessage: one warm sentence explaining what you found and what you added to the quote.`;
 
 function quotaError(detail: string) {
   return /quota|billing|insufficient_quota|exceeded/i.test(detail);

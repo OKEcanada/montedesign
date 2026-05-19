@@ -6,6 +6,9 @@
 <meta name="robots" content="noindex">
 <title>OKE Client Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#07091a; --panel:#0f142b; --panel2:#151b38; --line:rgba(255,255,255,.10);
@@ -16,7 +19,7 @@
   body{margin:0;min-height:100vh;background:
     radial-gradient(900px 520px at 78% -10%,rgba(255,106,0,.28),transparent 62%),
     radial-gradient(720px 520px at 12% 108%,rgba(79,209,197,.18),transparent 58%),
-    linear-gradient(180deg,#07091a,#090d20 54%,#071321);color:var(--text);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    linear-gradient(180deg,#07091a,#090d20 54%,#071321);color:var(--text);font:14px/1.5 Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;background:
     linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
     linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px}
@@ -34,6 +37,11 @@
   .kicker{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cool)}
   h1{font-size:clamp(32px,5vw,62px);line-height:.95;margin:10px 0 12px;letter-spacing:-.055em}
   .lead{color:var(--soft);font-size:16px;max-width:620px;margin:0}
+  .benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:24px}
+  .benefit{border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.20);padding:14px;position:relative;overflow:hidden}
+  .benefit::after{content:"";position:absolute;inset:auto 12px 10px 12px;height:2px;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--cool));opacity:.65}
+  .benefit small{display:block;font:850 10px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--brand2);margin-bottom:9px}
+  .benefit b{display:block;font-size:14px;margin-bottom:4px}.benefit span{color:var(--muted);font-size:12px}
   .auth{padding:22px;background:rgba(255,255,255,.035)}
   label{display:block;margin:12px 0 6px;color:var(--muted);font-size:12px;font-weight:750}
   input{width:100%;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.08);color:var(--text);padding:13px 14px;outline:none}
@@ -41,6 +49,10 @@
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
   .primary{flex:1 1 auto;border:0;border-radius:12px;background:linear-gradient(135deg,var(--brand),#ff4f2e);color:#fff;padding:13px 15px;font-weight:850;cursor:pointer;box-shadow:0 14px 30px rgba(255,106,0,.25)}
   .ghost.toggle{padding:13px 15px;border-radius:12px}
+  .oauth{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#09090b;padding:12px 14px;font-weight:850;cursor:pointer;margin-top:12px}
+  .auth-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+  .auth-mini div{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.045);padding:10px}
+  .auth-mini b{display:block;font-size:12px}.auth-mini span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
   .link{color:var(--brand2);text-decoration:none;font-weight:700;border-bottom:1px dashed rgba(255,138,76,.45);padding-bottom:1px;font-size:12.5px}
   .link:hover{color:#fff}
   .status{min-height:20px;margin-top:10px;color:var(--muted);font-size:13px}.status.ok{color:var(--ok)}.status.err{color:var(--bad)}
@@ -58,7 +70,7 @@
   .small{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:999px;padding:7px 10px;text-decoration:none;font-weight:750;cursor:pointer;font-size:12px}
   .empty{padding:34px;text-align:center;color:var(--muted)}
   .hidden{display:none!important}
-  @media(max-width:860px){header,.hero{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.quote{grid-template-columns:1fr}.total{text-align:left}}
+  @media(max-width:860px){header,.hero{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}.stats,.benefit-grid,.auth-mini{grid-template-columns:1fr}.quote{grid-template-columns:1fr}.total{text-align:left}}
 </style>
 </head>
 <body>
@@ -75,6 +87,11 @@
     <div class="panel intro">
       <div class="kicker">Email + password account</div>
       <h1>Your freight quote history.</h1>
+      <div class="benefit-grid">
+        <div class="benefit"><small>01</small><b>Reopen quotes</b><span>Load past lanes back into the calculator without rebuilding them.</span></div>
+        <div class="benefit"><small>02</small><b>Share tracked links</b><span>Send a customer-safe read-only quote link from any saved quote.</span></div>
+        <div class="benefit"><small>03</small><b>Continue booking</b><span>Pick up where the customer left off when they are ready.</span></div>
+      </div>
       <p class="lead">Save quotes, reopen past lanes, share tracked links, and start new requests. Sign in with a normal email and password — your saved quotes follow you across every device.</p>
     </div>
     <div class="panel auth" id="authPanel">
@@ -91,11 +108,17 @@
         <button class="primary" id="submitBtn" type="button">Sign in</button>
         <button class="ghost toggle" id="toggleBtn" type="button">Create account</button>
       </div>
+      <button class="oauth" id="googleBtn" type="button">Continue with Google</button>
       <div class="row" style="margin-top:8px;justify-content:space-between">
         <a href="#" id="forgotBtn" class="link">Forgot password?</a>
         <span style="color:rgba(248,250,252,.40);font:800 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase">Secure account</span>
       </div>
       <div class="status" id="authStatus">Use email + password to save quotes and access them on any device.</div>
+      <div class="auth-mini">
+        <div><b>No portal setup</b><span>Create once, then quote history appears here.</span></div>
+        <div><b>Private history</b><span>Only signed-in users see their own saved quotes.</span></div>
+        <div><b>Quote links</b><span>Share links stay read-only for customers.</span></div>
+      </div>
     </div>
   </section>
 
@@ -201,6 +224,17 @@ async function forgotPassword(e){
   else setStatus('Reset link sent - check your inbox.','ok');
 }
 
+async function signInGoogle(){
+  setStatus('Opening Google sign-in...');
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.href.split('#')[0] }
+  });
+  if (error) {
+    setStatus('Google sign-in needs the Google provider enabled in Supabase Auth. Email + password works now.', 'err');
+  }
+}
+
 async function rpc(name, params){
   const { data, error } = await sb.rpc(name, params || {});
   if (error) throw error;
@@ -279,6 +313,7 @@ document.addEventListener("DOMContentLoaded", async()=>{
   $("submitBtn").addEventListener("click", submitAuth);
   $("toggleBtn").addEventListener("click", () => setMode(mode === 'login' ? 'signup' : 'login'));
   $("forgotBtn").addEventListener("click", forgotPassword);
+  $("googleBtn").addEventListener("click", signInGoogle);
   $("pwInput").addEventListener("keydown", (e) => { if (e.key === 'Enter') submitAuth(); });
   $("pw2Input").addEventListener("keydown", (e) => { if (e.key === 'Enter') submitAuth(); });
   $("signOutBtn").addEventListener("click", async()=>{await sb.auth.signOut(); refresh();});

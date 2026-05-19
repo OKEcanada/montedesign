@@ -174,7 +174,9 @@
       <div class="faq-grid">
         <div class="faq-card"><b>Does AI change the price by itself?</b><span>No. AI fills editable item rows. Pricing still comes from the lane, service level, weight, cube, pieces, fuel, accessorials, and tax.</span></div>
         <div class="faq-card"><b>Can I upload a PDF order?</b><span>Yes. Use a PDF invoice, quote sheet, packing list, or product order. If dimensions or quantities are printed there, AI should prefer them.</span></div>
-        <div class="faq-card"><b>What if multiple identical chairs appear?</b><span>Identical items should be grouped into one row with multiple pieces. Different items stay separated so handling is clear.</span></div>
+        <div class="faq-card"><b>What if multiple identical chairs appear?</b><span>Identical items should be grouped into one row using Same items. Different products stay separated so handling is clear.</span></div>
+        <div class="faq-card"><b>Same items or pieces per item?</b><span>Use Same items for repeated identical units, like 5 TVs. Use Pieces / item for a set with several handling pieces, like one bedroom set with 5 pieces.</span></div>
+        <div class="faq-card"><b>What if freight is over 10 linear feet?</b><span>The calculator pauses instant pricing and sends the shipment to OKE for a custom review because equipment, carrier capacity, and lane rules need confirmation.</span></div>
         <div class="faq-card"><b>Why does the AI explain itself?</b><span>The explanation tells you whether it used visible label data, an order line, or a visual freight estimate, so you know what to trust.</span></div>
         <div class="faq-card"><b>What should I verify before booking?</b><span>Origin, destination, service level, total pieces, dimensions, weight, pickup date, access notes, and contact details.</span></div>
         <div class="faq-card"><b>What does the share link do?</b><span>It opens the quote read-only so the customer can return, review, and confirm booking without rebuilding the calculator.</span></div>
@@ -258,7 +260,7 @@ const guides = {
     chips: ["magic link", "history", "reopen", "claim"],
     list: [
       ["Save", "Save stores the quote and copies a return link when possible."],
-      ["Sign in", "Magic link or Google sign-in opens the client dashboard without another password."],
+      ["Sign in", "Email account sign-in opens the client dashboard and keeps quote history available on any device."],
       ["Reopen", "Past quotes can be opened as read-only links or loaded back into the calculator."],
       ["Claim", "Anonymous browser quotes can be linked to the account after sign-in."]
     ],

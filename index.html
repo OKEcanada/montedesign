@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -419,6 +419,12 @@
   }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   .topbar-tools { display: flex; align-items: center; gap: 8px; }
+  .topbar-tools .history-btn.primary-link {
+    border-color: rgba(255,122,69,0.55);
+    background: linear-gradient(135deg, rgba(255,122,69,0.32), rgba(20,184,166,0.14));
+    color: #fff;
+    box-shadow: 0 14px 30px rgba(255,122,69,0.18);
+  }
   .history-btn {
     border: 1px solid rgba(250,248,241,0.18);
     background: rgba(250,248,241,0.075);
@@ -446,6 +452,42 @@
     background: rgba(79,209,197,0.13);
     transform: translateY(-1px);
   }
+  .platform-launchpad {
+    width: 100%; max-width: 1240px;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px; margin: 0 0 18px;
+  }
+  .platform-tile {
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(250,248,241,0.13);
+    border-radius: 18px;
+    background: rgba(5,7,23,0.78);
+    color: var(--paper); text-decoration: none;
+    padding: 16px 16px 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.26);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  }
+  .platform-tile::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(260px 160px at 100% 0%, rgba(255,122,69,0.18), transparent 62%);
+    pointer-events: none;
+  }
+  .platform-tile::after {
+    content: ""; position: absolute; left: 16px; right: 16px; bottom: 12px; height: 3px;
+    border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--cool));
+    opacity: .78;
+  }
+  .platform-tile:hover { transform: translateY(-2px); border-color: rgba(255,122,69,0.48); background: rgba(8,12,34,0.92); }
+  .platform-tile small {
+    position: relative; display: block; margin-bottom: 12px;
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent-light);
+  }
+  .platform-tile b { position: relative; display: block; font-size: 17px; letter-spacing: -.03em; margin-bottom: 5px; }
+  .platform-tile span { position: relative; display: block; color: rgba(250,248,241,0.58); font-size: 12px; line-height: 1.35; }
+  .platform-tile.live small { color: var(--cool); }
+  @media (max-width: 980px) { .platform-launchpad { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 620px) { .platform-launchpad { grid-template-columns: 1fr; } }
   .icon-btn {
     width: 38px; height: 38px;
     border: 1px solid var(--line);
@@ -735,7 +777,7 @@
     box-shadow: 0 0 0 4px rgba(255,122,69,0.20);
   }
   .svc-card.active .svc-dot::after {
-    content: "✓";
+    content: "âœ“";
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 9px; font-weight: 800; line-height: 1;
@@ -1133,7 +1175,7 @@
     background: var(--cool); border-color: var(--cool);
   }
   .r-checklist li.done .rc-mark::after {
-    content: "✓"; color: #07091a; font-size: 11px; font-weight: 800; line-height: 1;
+    content: "âœ“"; color: #07091a; font-size: 11px; font-weight: 800; line-height: 1;
     animation: none;
   }
   .r-checklist li.done {
@@ -1374,7 +1416,7 @@
     background: var(--accent); color: #fff; border-color: var(--accent);
   }
 
-  /* Tabular numerics everywhere a price/weight is shown — prevents jitter on tween */
+  /* Tabular numerics everywhere a price/weight is shown â€” prevents jitter on tween */
   #grandTotal2, #stickyTotal, #subtotalOut, #totalAfterTaxOut, #taxAmountOut,
   #fscAmountOut, #baseOut, #accAmountOut, #extraPieceOut,
   #actualWtOut, #cubicFtOut, #dimWtOut, #billableOut {
@@ -1939,7 +1981,7 @@
     overflow: hidden;
     isolation: isolate;
   }
-  /* "Live" intel cards (fuel/weather) — animated gradient frame + pulsing dot */
+  /* "Live" intel cards (fuel/weather) â€” animated gradient frame + pulsing dot */
   .intel-card.is-live {
     border-color: rgba(255,122,69,0.45);
     background:
@@ -2276,7 +2318,7 @@
     0%, 100% { transform: translateY(0); }
     45% { transform: translateY(-2px); }
   }
-  /* Sliding indicator behind the active tab — driven by JS via --tab-x/--tab-w/--tab-ready */
+  /* Sliding indicator behind the active tab â€” driven by JS via --tab-x/--tab-w/--tab-ready */
   .r-tabs::before {
     content: ""; position: absolute; top: 5px; bottom: 5px;
     left: 0; transform: translateX(var(--tab-x, 0px));
@@ -2319,7 +2361,7 @@
     color: #fff;
     text-shadow: 0 1px 2px rgba(0,0,0,0.30), 0 0 14px rgba(255,255,255,0.18);
   }
-  /* Fallback solid pill on the active tab — guarantees a bright orange highlight even
+  /* Fallback solid pill on the active tab â€” guarantees a bright orange highlight even
      before JS measures the tab bar (fixes "no orange box on Breakdown initially"). */
   .r-tab.active::before {
     content: ""; position: absolute; inset: 2px;
@@ -2947,6 +2989,18 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         <span>Dashboard</span>
       </a>
+      <a class="history-btn primary-link" href="tools.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-3-3 2.4-2.4z"/></svg>
+        <span>Tools</span>
+      </a>
+      <a class="history-btn" href="coverage.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg>
+        <span>Coverage</span>
+      </a>
+      <a class="history-btn" href="status.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg>
+        <span>Status</span>
+      </a>
       <a class="history-btn" href="admin.html">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-5"/></svg>
         <span>Admin</span>
@@ -2959,9 +3013,15 @@
     </div>
   </header>
 
-  <div id="loadingView" class="loader">Loading rate data…</div>
+  <div id="loadingView" class="loader">Loading rate dataâ€¦</div>
 
   <div id="mainView" class="grid" style="display: none;">
+    <section class="platform-launchpad" aria-label="OKE freight platform tools">
+      <a class="platform-tile live" href="tools.html"><small>live workbench</small><b>Freight tools</b><span>Postal, route, weather, fuel, carbon, holidays, lane suggestions, and AI item capture.</span></a>
+      <a class="platform-tile" href="coverage.html"><small>network</small><b>Coverage map</b><span>Browse priced origins, destinations, provinces, and quote-ready lanes.</span></a>
+      <a class="platform-tile" href="dashboard.html"><small>customer</small><b>Quote history</b><span>Sign in, reopen saved quotes, copy tracked links, and continue booking.</span></a>
+      <a class="platform-tile" href="status.html"><small>system</small><b>Live status</b><span>Check rate table, fuel, weather, route, postal, AI, and API health.</span></a>
+    </section>
     <main class="card">
       <h1 class="card-h1">National Final Mile Delivery Calculator</h1>
       <div class="card-sub">Powered by One Kind Express for national final-mile delivery quotes</div>
@@ -2987,7 +3047,7 @@
       <div class="lane-row" id="laneRow">
         <div class="field autocomplete">
           <label class="field-label" id="originLabel">Origin city</label>
-          <input type="text" id="originInput" class="mono" placeholder="Start typing…" autocomplete="off" />
+          <input type="text" id="originInput" class="mono" placeholder="Start typingâ€¦" autocomplete="off" />
           <div class="autocomplete-list" id="originList"></div>
         </div>
         <div class="lane-arrow" id="laneArrow">
@@ -3035,7 +3095,7 @@
       </div>
 
       <div class="section-label" style="margin-top: 6px;">
-        Items · <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included · $25 each beyond</span>
+        Items Â· <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included Â· $25 each beyond</span>
       </div>
       <div class="pieces" id="piecesWrap"></div>
       <datalist id="itemTypeOptions"></datalist>
@@ -3059,7 +3119,7 @@
           </div>
           <div class="ai-uploader-text">
             <b>Identify items from a photo or PDF</b>
-            <em>Drop product photos, labels, order screenshots, or PDFs — AI reads them and explains the editable item rows it adds.</em>
+            <em>Drop product photos, labels, order screenshots, or PDFs â€” AI reads them and explains the editable item rows it adds.</em>
           </div>
           <label class="ai-uploader-btn" for="aiUploadInput">
             <span class="ai-spin" hidden></span>
@@ -3091,7 +3151,7 @@
     <aside>
       <div class="result-card">
         <div id="resultEmpty" class="r-empty">
-          <div class="r-empty-icon">→</div>
+          <div class="r-empty-icon">â†’</div>
           <div class="r-empty-title">A few quick details first.</div>
           <div class="r-empty-sub">Fill these in and your live quote will appear here.</div>
           <ul class="r-checklist" id="rChecklist">
@@ -3102,23 +3162,23 @@
           </ul>
         </div>
         <div id="resultContent" style="display:none;">
-          <div class="r-label">Your live quote · <span id="quoteRef" style="color:rgba(250,248,241,0.40);font-family:var(--font-mono);">#—</span></div>
+          <div class="r-label">Your live quote Â· <span id="quoteRef" style="color:rgba(250,248,241,0.40);font-family:var(--font-mono);">#â€”</span></div>
           <div class="r-total" id="grandTotal">$0.00</div>
-          <div class="r-total-sub">Lane: <em id="laneLabel">—</em></div>
+          <div class="r-total-sub">Lane: <em id="laneLabel">â€”</em></div>
 
           <div class="r-chips">
             <div class="r-chip fast">
               <span class="label"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ETA</span>
-              <span class="val" id="etaOut">—</span>
+              <span class="val" id="etaOut">â€”</span>
             </div>
-            <div class="r-chip eco" id="co2Chip" title="Estimated CO₂e emissions for this shipment, based on billable weight and route distance. About a third lower than the trucking-industry baseline for similar loads.">
+            <div class="r-chip eco" id="co2Chip" title="Estimated COâ‚‚e emissions for this shipment, based on billable weight and route distance. About a third lower than the trucking-industry baseline for similar loads.">
               <span class="label"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 4 13a7 7 0 0 1 13.94-1"/><path d="M17 8V3l3 3"/></svg> Est. emissions</span>
-              <span class="val" id="co2Out">—</span>
+              <span class="val" id="co2Out">â€”</span>
               <span class="aw-sub" id="co2Sub" style="font-family:var(--font-body);font-size:9.5px;color:rgba(250,248,241,0.45);letter-spacing:0.02em;margin-top:1px;">vs avg trucking</span>
             </div>
             <div class="r-chip">
               <span class="label"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Volume</span>
-              <span class="val" id="volOut">—</span>
+              <span class="val" id="volOut">â€”</span>
             </div>
           </div>
 
@@ -3132,30 +3192,30 @@
           <div class="r-pickup">
             <label for="pickupDate">Preferred pickup</label>
             <input type="date" id="pickupDate" />
-            <span id="deliveryEta">—</span>
+            <span id="deliveryEta">â€”</span>
           </div>
 
           <div class="r-density">
             <div class="r-density-head">
-              <span>Density · <em id="densityVal">— lb/ft³</em></span>
-              <span id="densityBadge" class="dens-badge">—</span>
+              <span>Density Â· <em id="densityVal">â€” lb/ftÂ³</em></span>
+              <span id="densityBadge" class="dens-badge">â€”</span>
             </div>
             <div class="r-density-bar"><div class="r-density-fill" id="densityFill" style="width: 0%;"></div></div>
-            <div class="r-density-scale"><span>Light · dim weight</span><span>Dense</span></div>
+            <div class="r-density-scale"><span>Light Â· dim weight</span><span>Dense</span></div>
           </div>
 
           <div class="r-pane active" id="pane-breakdown">
 
           <div class="lane-info" id="laneInfo" style="display: none;">
             <div class="lane">
-              <span id="originOut">—</span><span class="arrow">→</span><span id="destOut">—</span>
-              <span class="svc-pill" id="svcPill">—</span>
+              <span id="originOut">â€”</span><span class="arrow">â†’</span><span id="destOut">â€”</span>
+              <span class="svc-pill" id="svcPill">â€”</span>
             </div>
           </div>
 
           <div class="r-box">
             <div class="r-row"><span class="l">Actual weight</span><span class="v" id="actualWtOut">0 lbs</span></div>
-            <div class="r-row"><span class="l">Cubic feet</span><span class="v" id="cubicFtOut">0.00 ft³</span></div>
+            <div class="r-row"><span class="l">Cubic feet</span><span class="v" id="cubicFtOut">0.00 ftÂ³</span></div>
             <div class="r-row"><span class="l">Dim weight</span><span class="v" id="dimWtOut">0 lbs</span></div>
             <div class="r-row win"><span class="l">Billable weight</span><span class="v" id="billableOut">0 lbs</span></div>
             <div class="dim-callout" id="dimCallout"><strong>Dimensional weight applies.</strong> Bulky low-density freight billed by volume.</div>
@@ -3257,7 +3317,7 @@
             <div class="r-journey">
               <div class="r-journey-head">
                 <span>Shipment journey</span>
-                <span class="est" id="etaPill">— transit days</span>
+                <span class="est" id="etaPill">â€” transit days</span>
               </div>
               <div class="r-route" id="rRoute">
                 <div class="r-route-line"></div>
@@ -3386,7 +3446,7 @@
       </button>
       <div class="modal-label">Booking request</div>
       <h2 class="modal-title" id="bookTitle">Send this quote to One Kind Express</h2>
-      <p class="modal-sub">Pick how you'd like to send it. We'll prepare the message with your quote details — you confirm before sending.</p>
+      <p class="modal-sub">Pick how you'd like to send it. We'll prepare the message with your quote details â€” you confirm before sending.</p>
 
       <div class="modal-summary" id="modalSummary"></div>
 
@@ -3450,7 +3510,7 @@ window.MONTE_CONFIG = window.MONTE_CONFIG || {
 
 <script>
 // ============================================================
-// SUPABASE — RATES + QUOTES live server-side
+// SUPABASE â€” RATES + QUOTES live server-side
 // ============================================================
 //
 // Rates have moved off the HTML for two reasons:
@@ -3475,7 +3535,7 @@ const MONTE_CONFIG = window.MONTE_CONFIG || {
 };
 
 // ============================================================
-// monteAuth — minimal session bootstrap (magic-link UX lives on my-quotes.html)
+// monteAuth â€” minimal session bootstrap (magic-link UX lives on my-quotes.html)
 // ============================================================
 const monteAuth = {
   bootFromStorage() {
@@ -3790,7 +3850,7 @@ function weatherDetailHtml(scored) {
   return (scored || []).filter(x => x && x.data && x.data.day).slice(0, 2).map(x => {
     const d = x.data.day;
     const temp = `${Math.round(d.tMin)} to ${Math.round(d.tMax)}C`;
-    const detail = `${Math.round(d.precip || 0)}% precip · ${Number(d.snow || 0).toFixed(1)} cm snow · gust ${Math.round(d.gust || 0)} km/h`;
+    const detail = `${Math.round(d.precip || 0)}% precip Â· ${Number(d.snow || 0).toFixed(1)} cm snow Â· gust ${Math.round(d.gust || 0)} km/h`;
     return `<div class="intel-detail"><small>${htmlEsc(x.city)}</small><strong>${htmlEsc(temp)}</strong><span>${htmlEsc(detail)}</span></div>`;
   }).join('');
 }
@@ -3835,7 +3895,7 @@ async function fetchCityWeather(label, pickupDate) {
 }
 
 function scheduleWeatherIntel(q) {
-  // Load weather as soon as origin (and dest, if not local) are known — don't wait
+  // Load weather as soon as origin (and dest, if not local) are known â€” don't wait
   // for the full quote. Lets the Intel card light up even while measurements are empty.
   if (!q) q = { hasLane: !!state.origin, isLocal: state.laneMode === 'local' };
   if (!state.origin) return;
@@ -3938,8 +3998,8 @@ function scheduleFuelIntel(q, distKm) {
       const suggested = suggestedFscFromDiesel(idx.cents, distKm, idx.suggestedPct);
       window._suggestedFscPct = suggested;
       const srcLbl = idx.source === 'nrcan' ? 'NRCan live' : 'NRCan baseline';
-      if (title) title.textContent = `$${(idx.cents / 100).toFixed(2)}/L diesel — ${suggested.toFixed(1)}% FSC`;
-      if (sub) sub.textContent = `${prov} retail diesel, ${idx.refPer} (${srcLbl}). Tap “Apply fuel” to use ${suggested.toFixed(1)}%.`;
+      if (title) title.textContent = `$${(idx.cents / 100).toFixed(2)}/L diesel â€” ${suggested.toFixed(1)}% FSC`;
+      if (sub) sub.textContent = `${prov} retail diesel, ${idx.refPer} (${srcLbl}). Tap â€œApply fuelâ€ to use ${suggested.toFixed(1)}%.`;
       // Light up the fuel card
       const card = document.getElementById('fuelCard');
       if (card) {
@@ -4191,7 +4251,7 @@ function loadAccPrices() {
 const state = {
   origin: null,
   destination: null,
-  laneMode: 'line',  // 'line' (origin → destination), 'local' (final mile only, single city), 'middle' (middle mile only, no final delivery)
+  laneMode: 'line',  // 'line' (origin â†’ destination), 'local' (final mile only, single city), 'middle' (middle mile only, no final delivery)
   service: null,
   mode: 'dim',
   lenUnit: 'in',
@@ -4216,7 +4276,7 @@ for (const s of SERVICE_LEVELS) {
 const $ = id => document.getElementById(id);
 const fmt = n => "$" + n.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtW = n => Math.round(n).toLocaleString("en-CA") + " lbs";
-const fmtCF = n => n.toFixed(2) + " ft³";
+const fmtCF = n => n.toFixed(2) + " ftÂ³";
 const cmToIn = v => v / 2.54;
 const kgToLb = v => v / 0.45359237;
 const toInches = v => state.lenUnit === 'cm' ? cmToIn(v) : v;
@@ -4251,7 +4311,7 @@ function scheduleLaneQuoteRefresh() {
     CURRENT_LANE_QUOTE = null;
     return;
   }
-  // billable calc duplicated lightly from computeQuote — we just need a number
+  // billable calc duplicated lightly from computeQuote â€” we just need a number
   let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
   for (const p of state.pieces) {
     actualWtLbs += computePieceActualWeight(p);
@@ -4447,7 +4507,7 @@ function computeQuote() {
   const dimWins = dimWt > actualWtLbs && dimWt > 0;
   const linearWins = linearWt >= actualWtLbs && linearWt >= dimWt && linearWt > 0;
 
-  // Final-mile base — suppressed entirely in middle-mile-only mode
+  // Final-mile base â€” suppressed entirely in middle-mile-only mode
   const middleOnly = state.laneMode === 'middle';
   // Robust service lookup: tolerate legacy ids like 'roomOfChoice' (now 'roc')
   // and any casing mismatch so a stale saved quote can't silently zero the price.
@@ -4508,7 +4568,7 @@ function computeQuote() {
         hasLocation = true;
         middleMileSell = CURRENT_LANE_QUOTE.middleMileSell;
       } else {
-        // Lane not in rates table OR RPC still in flight — show the quote anyway
+        // Lane not in rates table OR RPC still in flight â€” show the quote anyway
         // with middleMileSell = 0 and a banner telling the user what's happening.
         hasLocation = true;
         laneNotPriced = !!CURRENT_LANE_QUOTE === false ? false : true;
@@ -4592,7 +4652,7 @@ function renderPieces() {
       ? `<button type="button" class="piece-photo" data-photo="${i}" title="View AI source photo" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,122,69,0.32);overflow:hidden;cursor:zoom-in;background:url('${p.photo_thumb}') center/cover no-repeat;padding:0;flex-shrink:0;box-shadow:0 4px 12px rgba(255,122,69,0.18)"></button>`
       : '';
     const aiBadge = p.ai_confidence
-      ? `<span class="ai-conf ${p.ai_confidence}" style="font-size:9.5px;padding:1px 6px;border-radius:999px;margin-left:6px">AI · ${p.ai_confidence}</span>`
+      ? `<span class="ai-conf ${p.ai_confidence}" style="font-size:9.5px;padding:1px 6px;border-radius:999px;margin-left:6px">AI Â· ${p.ai_confidence}</span>`
       : '';
     div.innerHTML = `
       <div class="piece-head">
@@ -4670,13 +4730,13 @@ function updatePieceTags() {
     const meta = document.querySelector(`[data-meta="${i}"]`);
     if (!meta) return;
     const parts = [];
-    if (cfTotal > 0) parts.push(`<span class="tag">${cfTotal.toFixed(2)} ft³ total</span>`);
+    if (cfTotal > 0) parts.push(`<span class="tag">${cfTotal.toFixed(2)} ftÂ³ total</span>`);
     if (linearFt > 0) parts.push(`<span class="tag">${linearFt.toFixed(1)} linear ft</span>`);
     if (state.mode === 'pallet') {
       if (vc > 0) parts.push(`<span class="tag">${vc} pallet${vc>1?'s':''}</span>`);
       if (qty > vc) parts.push(`<span class="tag">${qty} item${qty>1?'s':''} total</span>`);
     } else if (qty > 1 && piecesEach <= 1) {
-      parts.push(`<span class="tag">×${qty}</span>`);
+      parts.push(`<span class="tag">Ã—${qty}</span>`);
     }
     if (state.mode !== 'pallet' && piecesEach > 1) {
       if (itemCount > 1) parts.push(`<span class="tag">${itemCount} same item${itemCount>1?'s':''}</span>`);
@@ -5191,7 +5251,7 @@ function renderHistoryList(rows) {
   }
   list.innerHTML = rows.map((q, i) => {
     const lane = q.destination ? `${q.origin || '-'} -> ${q.destination}` : `${q.origin || '-'} local`;
-    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join(' · ');
+    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join(' Â· ');
     return `<button class="history-item" type="button" data-history-idx="${i}">
       <span class="history-item-top"><span class="history-ref">${htmlEsc(q.quote_ref || '')}</span><span class="history-total">${htmlEsc(moneyShort(q.total_after_tax))}</span></span>
       <span class="history-lane">${htmlEsc(lane)}</span>
@@ -5387,7 +5447,7 @@ function updateOutput(options = {}) {
   const hasOriginAndDest = !!state.origin && (state.laneMode === 'local' || !!state.destination || state.laneMode === 'middle');
   const showResult = hasOriginAndDest && q.hasMeasurements && q.hasService;
   // Eagerly load fuel + weather intel as soon as origin (and destination if applicable)
-  // are filled in — don't wait for measurements/service to flip showResult true.
+  // are filled in â€” don't wait for measurements/service to flip showResult true.
   try { if (state.origin) scheduleFuelIntel(q, 1200); } catch(_) {}
   try { if (state.origin && (state.destination || state.laneMode === 'local')) scheduleWeatherIntel(q); } catch(_) {}
 
@@ -5424,7 +5484,7 @@ function updateOutput(options = {}) {
     }
     if (banner) {
       banner.innerHTML = q.laneNotPriced
-        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fbbf24;animation:livePulse 1.4s ease-in-out infinite"></span><span>Lane not in OKE rate table — middle-mile excluded. Final-mile + accessorials priced normally. Contact dispatch for custom line-haul rate.</span>'
+        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fbbf24;animation:livePulse 1.4s ease-in-out infinite"></span><span>Lane not in OKE rate table â€” middle-mile excluded. Final-mile + accessorials priced normally. Contact dispatch for custom line-haul rate.</span>'
         : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff7a45;animation:livePulse 1.4s ease-in-out infinite"></span>Loading lane rates...';
     }
   } else if (banner) {
@@ -5443,7 +5503,7 @@ function updateOutput(options = {}) {
     const subEl = document.querySelector('#resultEmpty .r-empty-sub');
     if (subEl) {
       subEl.textContent = (originDone && destDone && serviceDone && !itemsDone)
-        ? "One more step — add an item below."
+        ? "One more step â€” add an item below."
         : "Fill these in and your live quote will appear here.";
     }
 
@@ -5485,16 +5545,16 @@ function updateOutput(options = {}) {
   if (!largeLinearQuote) window.__tweenMoney('#grandTotal2', q.total);
 
   const svc = SERVICE_LEVELS.find(s => s.id === state.service);
-  $("svcPill").textContent = svc ? svc.name : '—';
+  $("svcPill").textContent = svc ? svc.name : 'â€”';
 
   if (q.isLocal) {
-    $("laneLabel").textContent = `${state.origin} · local delivery`;
+    $("laneLabel").textContent = `${state.origin} Â· local delivery`;
     $("laneInfo").style.display = "block";
     $("originOut").textContent = state.origin;
     $("destOut").textContent = "local";
   } else {
-    const middleSuffix = state.laneMode === 'middle' ? ' · middle mile only' : '';
-    $("laneLabel").textContent = `${state.origin} → ${state.destination}${middleSuffix}`;
+    const middleSuffix = state.laneMode === 'middle' ? ' Â· middle mile only' : '';
+    $("laneLabel").textContent = `${state.origin} â†’ ${state.destination}${middleSuffix}`;
     $("laneInfo").style.display = "block";
     $("originOut").textContent = state.origin;
     $("destOut").textContent = state.destination;
@@ -5528,7 +5588,7 @@ function updateOutput(options = {}) {
 
   if (q.extraPieces > 0) {
     $("extraPieceRow").style.display = "flex";
-    $("extraPieceOut").textContent = largeLinearQuote ? 'Included in review' : `${q.extraPieces} × ${fmt(state.extraPiece)} = ${fmt(q.extraPieceCharge)}`;
+    $("extraPieceOut").textContent = largeLinearQuote ? 'Included in review' : `${q.extraPieces} Ã— ${fmt(state.extraPiece)} = ${fmt(q.extraPieceCharge)}`;
   } else {
     $("extraPieceRow").style.display = "none";
   }
@@ -5567,7 +5627,7 @@ function updateOutput(options = {}) {
 
   // Safety net: if every price is $0 even though showResult is true, surface a clear
   // diagnostic line instead of silently rendering all-zeros. This is the "0 everywhere"
-  // protection — tells the user exactly what's still loading or missing.
+  // protection â€” tells the user exactly what's still loading or missing.
   try {
     if (q.subtotal === 0 && showResult) {
       const reasons = [];
@@ -5575,7 +5635,7 @@ function updateOutput(options = {}) {
       if (!state.destination && state.laneMode !== 'local') reasons.push('destination city');
       if (!state.service && state.laneMode !== 'middle') reasons.push('service level');
       if (!q.hasMeasurements) reasons.push('item weight + dimensions');
-      if (!q.isLocal && !q.middleMileSell && state.laneMode !== 'local') reasons.push('lane rates (loading…)');
+      if (!q.isLocal && !q.middleMileSell && state.laneMode !== 'local') reasons.push('lane rates (loadingâ€¦)');
       const wrap = $("totalAfterTaxOut").closest('.b-row');
       let diag = document.getElementById('calcDiag');
       if (!diag && wrap) {
@@ -5671,20 +5731,20 @@ function updateOutput(options = {}) {
     roomOfChoice: 1, whiteGlove: 1
   }[state.service] || 0;
   baseDayMax += svcOffset;
-  const etaText = baseDayMin === baseDayMax ? `${baseDayMin} day${baseDayMin>1?'s':''}` : `${baseDayMin}–${baseDayMax} days`;
+  const etaText = baseDayMin === baseDayMax ? `${baseDayMin} day${baseDayMin>1?'s':''}` : `${baseDayMin}â€“${baseDayMax} days`;
 
   const etaEl = $("etaOut"), co2El = $("co2Out"), volEl = $("volOut"), etaPill = $("etaPill"), co2Sub = $("co2Sub");
   if (etaEl) etaEl.textContent = etaText;
   if (etaPill) etaPill.textContent = etaText + ' transit';
 
-  // CO₂: ~0.062 kg CO2e per tonne-km consolidated trucking. We assume OKE optimizes routing, ~33% lower than industry avg (~0.092 kg/t-km).
+  // COâ‚‚: ~0.062 kg CO2e per tonne-km consolidated trucking. We assume OKE optimizes routing, ~33% lower than industry avg (~0.092 kg/t-km).
   const tonnes = (q.billable * 0.000454);
   const co2kg  = Math.max(0.4, tonnes * distKm * 0.062);
   const avgKg  = Math.max(0.4, tonnes * distKm * 0.092);
   const savedKg = Math.max(0, avgKg - co2kg);
   if (co2El) co2El.textContent = co2kg < 10 ? co2kg.toFixed(1) + ' kg' : Math.round(co2kg) + ' kg';
   if (co2Sub) co2Sub.textContent = savedKg >= 1 ? `~${Math.round(savedKg)} kg less than avg` : 'efficient routing';
-  if (volEl) volEl.textContent = (q.cubicFt || 0).toFixed(1) + ' ft³';
+  if (volEl) volEl.textContent = (q.cubicFt || 0).toFixed(1) + ' ftÂ³';
 
   // Journey labels + local mode handling
   const isMiddleOnly = state.laneMode === 'middle';
@@ -5723,23 +5783,23 @@ function updateOutput(options = {}) {
   const qrEl = $("quoteRef");
   if (qrEl) qrEl.textContent = '#' + window._quoteRef;
 
-  // Density meter — uses lb/ft³
+  // Density meter â€” uses lb/ftÂ³
   const density = q.cubicFt > 0 ? q.actualWt / q.cubicFt : 0;
   const densEl = $("densityVal"), densFill = $("densityFill"), densBadge = $("densityBadge");
-  if (densEl) densEl.textContent = density > 0 ? density.toFixed(1) + ' lb/ft³' : '— lb/ft³';
-  // 0–30 lb/ft³ scale; clamp visually
+  if (densEl) densEl.textContent = density > 0 ? density.toFixed(1) + ' lb/ftÂ³' : 'â€” lb/ftÂ³';
+  // 0â€“30 lb/ftÂ³ scale; clamp visually
   const pct = Math.min(100, (density / 30) * 100);
   if (densFill) densFill.style.width = pct + '%';
   if (densBadge) {
     densBadge.classList.remove('low','mid','high');
-    if (density === 0) { densBadge.textContent = '—'; }
+    if (density === 0) { densBadge.textContent = 'â€”'; }
     else if (density < 6) { densBadge.textContent = 'Bulky'; densBadge.classList.add('low'); }
     else if (density < 15) { densBadge.textContent = 'Balanced'; densBadge.classList.add('mid'); }
     else { densBadge.textContent = 'Dense'; densBadge.classList.add('high'); }
   }
   updateIntelligencePanel(q, distKm, etaText, density);
 
-  // Pickup date → delivery ETA window
+  // Pickup date â†’ delivery ETA window
   const pkEl = $("pickupDate"), dEtaEl = $("deliveryEta");
   if (pkEl) {
     if (!pkEl.value) {
@@ -5753,25 +5813,25 @@ function updateOutput(options = {}) {
       const eMin = new Date(start.getTime() + baseDayMin * 86400000);
       const eMax = new Date(start.getTime() + baseDayMax * 86400000);
       const fmtD = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-      dEtaEl.textContent = 'Delivery · ' + fmtD(eMin) + (baseDayMin !== baseDayMax ? ' – ' + fmtD(eMax) : '');
+      dEtaEl.textContent = 'Delivery Â· ' + fmtD(eMin) + (baseDayMin !== baseDayMax ? ' â€“ ' + fmtD(eMax) : '');
     }
   }
 
   // Build booking summary and prime modal action links
   {
     const svcName = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || '';
-    const lane = q.isLocal ? state.origin + ' (local)' : state.origin + ' → ' + state.destination;
+    const lane = q.isLocal ? state.origin + ' (local)' : state.origin + ' â†’ ' + state.destination;
     const largeLinearSummary = Number(q.linearFt || 0) > 10;
     const pieceLines = (state.pieces || []).map((p, i) => {
       const type = (p.itemType || p.label || 'Item').trim();
       if (state.mode === 'pallet') {
         const pal = Number(p.pallets) || 1, ipp = Number(p.itemsPerPallet) || 1;
         const L = Number(p.L)||48, W = Number(p.W)||40, H = Number(p.H)||0;
-        return `  ${i+1}. ${pal} pallet(s) × ${ipp} item(s) · ${L}×${W}×${H}" · ${Number(p.weight)||0} lbs/pallet`;
+        return `  ${i+1}. ${pal} pallet(s) Ã— ${ipp} item(s) Â· ${L}Ã—${W}Ã—${H}" Â· ${Number(p.weight)||0} lbs/pallet`;
       } else if (state.mode === 'cf') {
-        return `  ${i+1}. Qty ${Number(p.qty)||1} · ${Number(p.cf)||0} ft³ each · ${Number(p.weight)||0} lbs total`;
+        return `  ${i+1}. Qty ${Number(p.qty)||1} Â· ${Number(p.cf)||0} ftÂ³ each Â· ${Number(p.weight)||0} lbs total`;
       }
-      return `  ${i+1}. Qty ${Number(p.qty)||1} · ${Number(p.L)||0}×${Number(p.W)||0}×${Number(p.H)||0}" · ${Number(p.weight)||0} lbs total`;
+      return `  ${i+1}. Qty ${Number(p.qty)||1} Â· ${Number(p.L)||0}Ã—${Number(p.W)||0}Ã—${Number(p.H)||0}" Â· ${Number(p.weight)||0} lbs total`;
     });
     const itemTypeLines = (state.pieces || [])
       .map((p, i) => (p.itemType || p.label || '').trim() ? `  ${i+1}. Type: ${(p.itemType || p.label || '').trim()}` : null)
@@ -5794,11 +5854,11 @@ function updateOutput(options = {}) {
       'Reference: ' + window._quoteRef,
       'Lane: ' + lane,
       'Service: ' + svcName,
-      'Items: ' + (q.totalPcs || 0) + ' · ' + (q.cubicFt||0).toFixed(2) + ' ft³ · ' + Math.round(q.billable||0) + ' lbs billable',
-      'Preferred pickup: ' + (pkEl ? pkEl.value : '—'),
+      'Items: ' + (q.totalPcs || 0) + ' Â· ' + (q.cubicFt||0).toFixed(2) + ' ftÂ³ Â· ' + Math.round(q.billable||0) + ' lbs billable',
+      'Preferred pickup: ' + (pkEl ? pkEl.value : 'â€”'),
       'Total: ' + (largeLinearSummary ? 'Custom review required' : fmt(q.totalAfterTax))
     ];
-    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' × ' + a.qty : '') + ' · ' + fmt(a.amount));
+    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' Ã— ' + a.qty : '') + ' Â· ' + fmt(a.amount));
     const fullLines = [
       '=== Booking Request ===',
       'Quote ID: ' + window._quoteRef,
@@ -5814,11 +5874,11 @@ function updateOutput(options = {}) {
       '  ' + (pkEl && pkEl.value ? pkEl.value : 'Not specified'),
       '',
       'SHIPMENT DETAILS',
-      '  Measurement mode: ' + (state.mode === 'pallet' ? 'Pallets' : state.mode === 'cf' ? 'Cubic feet' : 'Dimensions (L×W×H)'),
+      '  Measurement mode: ' + (state.mode === 'pallet' ? 'Pallets' : state.mode === 'cf' ? 'Cubic feet' : 'Dimensions (LÃ—WÃ—H)'),
       '  Length unit: ' + (state.lenUnit || 'in').toUpperCase(),
       '  Weight unit: ' + (state.wtUnit || 'lb').toUpperCase(),
       '  Total pieces: ' + (q.totalPcs || 0),
-      '  Cubic feet: ' + (q.cubicFt || 0).toFixed(2) + ' ft³',
+      '  Cubic feet: ' + (q.cubicFt || 0).toFixed(2) + ' ftÂ³',
       '  Actual weight: ' + Math.round(q.actualWt || 0) + ' lbs',
       '  Dimensional weight: ' + Math.round(q.dimWt || 0) + ' lbs',
       q.linearWt > 0 ? '  Linear feet: ' + (q.linearFt || 0).toFixed(1) + ' ft (' + Math.round(q.linearWt || 0) + ' lbs)' : null,
@@ -5834,16 +5894,16 @@ function updateOutput(options = {}) {
       largeLinearSummary ? '  CUSTOM REVIEW REQUIRED: shipment exceeds 10 linear feet. Do not use instant calculator pricing.' : null,
       '  Middle-mile (line haul): ' + fmt(q.middleMileSell || 0),
       '  Final-mile base: ' + fmt(q.baseFinalMile || 0),
-      '  Extra pieces (' + (q.extraPieces || 0) + ' × ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
+      '  Extra pieces (' + (q.extraPieces || 0) + ' Ã— ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
       '  Accessorials total: ' + fmt(q.accAmount || 0),
       '  Subtotal: ' + fmt(q.subtotal || 0),
       '  Fuel surcharge (' + (state.fscPct || 0) + '%): ' + fmt(q.fscAmount || 0),
       '  Total before tax: ' + fmt(q.total || 0),
-      '  Tax — ' + ((q.tax && q.tax.label) || '—') + ': ' + fmt(q.taxAmount || 0),
-      '  ───────────────',
+      '  Tax â€” ' + ((q.tax && q.tax.label) || 'â€”') + ': ' + fmt(q.taxAmount || 0),
+      '  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
       '  TOTAL: ' + (largeLinearSummary ? 'CUSTOM REVIEW REQUIRED' : fmt(q.totalAfterTax || 0)),
       '',
-      '— Please reply with your contact name, phone, and pickup/delivery addresses to confirm this booking. —',
+      'â€” Please reply with your contact name, phone, and pickup/delivery addresses to confirm this booking. â€”',
       '',
       'Generated by the OKE Canada Final Mile Calculator.'
     ];
@@ -5851,7 +5911,7 @@ function updateOutput(options = {}) {
     const fullText = fullLines.filter(Boolean).join('\r\n');
     window._bookingSummary = summaryText;
     window._bookingEmailBody = fullText;
-    const subj = 'Booking request ' + window._quoteRef + ' · ' + lane;
+    const subj = 'Booking request ' + window._quoteRef + ' Â· ' + lane;
     const mEmail = $("mEmail"), mSum = $("modalSummary");
     if (mEmail) mEmail.href = 'mailto:info@onekindexpress.com?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(fullText);
     if (mSum) mSum.textContent = summaryText;
@@ -5887,7 +5947,7 @@ function updateOutput(options = {}) {
         return `<div class="r-cmp-row${idx === 0 ? ' active' : ''}">
           <span class="nm">${htmlEsc(r.name)} <span class="cmp-badge ${idx === 0 ? 'save' : 'premium'}">${htmlEsc(r.badge)}</span></span>
           <span class="bar-wrap"><span class="bar" style="width:${pct}%;"></span></span>
-          <span class="price">${r.range ? htmlEsc(r.range) : (value ? fmt(value) : 'â€”')}</span>
+          <span class="price">${r.range ? htmlEsc(r.range) : (value ? fmt(value) : 'Ã¢â‚¬â€')}</span>
         </div>`;
       }).join('');
     }
@@ -6025,7 +6085,7 @@ function applyLaneMode() {
   const isMiddle = state.laneMode === 'middle';
   $("laneRow").classList.toggle('local', isLocal);
   $("originLabel").textContent = isLocal ? "City" : "Origin city";
-  $("originInput").placeholder = isLocal ? "Pick a city…" : "Start typing…";
+  $("originInput").placeholder = isLocal ? "Pick a cityâ€¦" : "Start typingâ€¦";
   if (isLocal) {
     // Final-mile-only hides destination from pricing, but keeps the last lane
     // intact so switching back to full/middle-mile does not wipe the quote.
@@ -6036,7 +6096,7 @@ function applyLaneMode() {
     if (state.origin) {
       if (DEST_CACHE[state.origin]) {
         $("destInput").disabled = false;
-        $("destInput").placeholder = "Start typing destination…";
+        $("destInput").placeholder = "Start typing destinationâ€¦";
       } else {
         $("destInput").disabled = true;
         $("destInput").placeholder = "Loading destinations...";
@@ -6044,7 +6104,7 @@ function applyLaneMode() {
           .then(() => {
             if (state.laneMode !== 'local' && state.origin) {
               $("destInput").disabled = false;
-              $("destInput").placeholder = "Start typing destination…";
+              $("destInput").placeholder = "Start typing destinationâ€¦";
               if (document.activeElement === $("destInput")) {
                 $("destInput").dispatchEvent(new Event('input', { bubbles: true }));
               }
@@ -6205,7 +6265,7 @@ function setupSceneMesh() {
 
 // Replaced the old MutationObserver-driven tween with a deterministic
 // API: render() calls window.__tweenMoney(selector, value). No observer,
-// no microtask re-entry, no race conditions — the final canonical value
+// no microtask re-entry, no race conditions â€” the final canonical value
 // is always written exactly once at end of animation.
 window.__tweenStates = window.__tweenStates || Object.create(null);
 window.__tweenMoney = function (sel, target) {
@@ -6246,7 +6306,7 @@ window.__tweenMoney = function (sel, target) {
   };
   st.raf = requestAnimationFrame(tick);
 };
-function setupNumberTween() { /* deprecated — use window.__tweenMoney(sel, value) */ }
+function setupNumberTween() { /* deprecated â€” use window.__tweenMoney(sel, value) */ }
 
 function setupIntelGlow() {
   document.querySelectorAll('.intel-card').forEach(card => {
@@ -6315,9 +6375,9 @@ function setupActions() {
       return;
     }
     const svc = SERVICE_LEVELS.find(s => s.id === state.service);
-    const lane = q.isLocal ? `${state.origin} local` : `${state.origin} → ${state.destination}`;
+    const lane = q.isLocal ? `${state.origin} local` : `${state.origin} â†’ ${state.destination}`;
     const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
-    const summary = `OKE Canada quote · ${lane} · ${svc ? svc.name : ''} · ${fmt(q.totalAfterTax)}${link}`;
+    const summary = `OKE Canada quote Â· ${lane} Â· ${svc ? svc.name : ''} Â· ${fmt(q.totalAfterTax)}${link}`;
     let shared = false;
     try {
       if (navigator.share) { await navigator.share({ title: 'OKE Canada Delivery Quote', text: summary }); shared = true; }
@@ -6454,7 +6514,7 @@ function setupActions() {
     }
   });
 
-  // Force email/tel to escape the Wix iframe — target="_top" alone is unreliable.
+  // Force email/tel to escape the Wix iframe â€” target="_top" alone is unreliable.
   function escapeIframe(href) {
     try { window.top.location.href = href; return; } catch (e) {}
     try { window.parent.location.href = href; return; } catch (e) {}
@@ -6619,7 +6679,7 @@ function openAiLightbox(src) {
     bg.addEventListener('click', () => bg.remove());
     document.body.appendChild(bg);
   }
-  bg.innerHTML = `<img src="${src}" alt="" style="max-width:92vw;max-height:92vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6)"><button style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,0.12);color:#fff;font-size:18px;cursor:pointer" aria-label="Close">×</button>`;
+  bg.innerHTML = `<img src="${src}" alt="" style="max-width:92vw;max-height:92vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.6)"><button style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,0.12);color:#fff;font-size:18px;cursor:pointer" aria-label="Close">Ã—</button>`;
 }
 
 function setupAiUpload() {
@@ -6659,7 +6719,7 @@ function setupAiUpload() {
       head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-muted);margin-bottom:10px;flex-wrap:wrap';
       head.innerHTML = `
         <span style="font-style:italic">${escapeHtml(sess.summary || 'AI vision result')}</span>
-        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI document reader')} · ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI document reader')} Â· ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
       `;
       results.appendChild(head);
     }
@@ -6798,8 +6858,8 @@ function setupAiUpload() {
         lastRun: new Date().toISOString(),
       };
       renderResults();
-      const note = data.quota_exceeded ? ' (AI paused: OpenAI quota — see status)'
-        : data.fallback ? ' (AI fallback — review manually)' : '';
+      const note = data.quota_exceeded ? ' (AI paused: OpenAI quota â€” see status)'
+        : data.fallback ? ' (AI fallback â€” review manually)' : '';
       setStatus(`Found ${items.length} quote row${items.length === 1 ? '' : 's'}${note}.`, data.fallback ? '' : 'ok');
     } catch (e) {
       setStatus('Could not analyze: ' + (e.message || e), 'err');
@@ -6822,7 +6882,7 @@ function setupAiUpload() {
       if (it.kind === 'file' && it.type.startsWith('image/')) files.push(it.getAsFile());
     }
     if (files.length) {
-      setStatus(`Pasted ${files.length} image${files.length === 1 ? '' : 's'} — analyzing...`);
+      setStatus(`Pasted ${files.length} image${files.length === 1 ? '' : 's'} â€” analyzing...`);
       handleFiles(files);
     }
   });
@@ -6900,7 +6960,7 @@ async function init() {
           const destInput = $("destInput");
           destInput.value = "";
           destInput.disabled = true;
-          $("destInput").placeholder = "Start typing destination…";
+          $("destInput").placeholder = "Start typing destinationâ€¦";
           destInput.placeholder = "Loading destinations...";
           fetchDestinations(label)
             .then(() => {
@@ -6955,3 +7015,4 @@ init();
 </script>
 </body>
 </html>
+

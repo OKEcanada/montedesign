@@ -66,7 +66,10 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .hidden { display: none !important; }
   html, body {
-    background: var(--bg-deep);
+    background:
+      radial-gradient(900px 520px at 80% -14%, rgba(255,106,0,0.16), transparent 58%),
+      radial-gradient(760px 520px at 7% 100%, rgba(20,184,166,0.12), transparent 60%),
+      #000;
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 15px;
@@ -81,9 +84,12 @@
   .scene {
     position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     background:
-      radial-gradient(ellipse 100% 78% at 74% 12%, rgba(255,122,69,0.12), transparent 56%),
-      radial-gradient(ellipse 80% 70% at 12% 86%, rgba(79,209,197,0.10), transparent 62%),
-      linear-gradient(180deg, #050717 0%, #0a0e28 48%, #071321 100%);
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 100% 78% at 74% 12%, rgba(255,122,69,0.14), transparent 56%),
+      radial-gradient(ellipse 80% 70% at 12% 86%, rgba(20,184,166,0.12), transparent 62%),
+      #000;
+    background-size: 96px 96px, 96px 96px, auto, auto, auto;
     isolation: isolate;
     --mx: 80%;
     --my: 12%;
@@ -514,7 +520,7 @@
       radial-gradient(ellipse 60% 38% at 5% 104%, rgba(79,209,197,0.10), transparent 62%),
       linear-gradient(180deg, rgba(255,254,250,0.94), rgba(248,246,238,0.88));
     border: 1px solid rgba(255,255,255,0.55);
-    border-radius: var(--radius-lg);
+    border-radius: 28px;
     padding: 34px;
     box-shadow:
       0 1px 0 rgba(255,255,255,0.9) inset,
@@ -524,6 +530,12 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     transform: translateZ(0);
+  }
+  .field input, .field select, .field textarea {
+    box-shadow: 0 1px 0 rgba(255,255,255,0.65) inset, 0 14px 38px rgba(7,9,26,0.04);
+  }
+  .svc-card, .item-card, .accessorials-wrap {
+    border-radius: 18px;
   }
   .card::before {
     content: "";

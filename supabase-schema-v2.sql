@@ -22,6 +22,8 @@ create table if not exists public.lane_rates (
 );
 
 create index if not exists lane_rates_origin_idx on public.lane_rates(origin);
+create index if not exists lane_rates_origin_upper_idx on public.lane_rates(upper(trim(origin)));
+create index if not exists lane_rates_lane_upper_idx on public.lane_rates(upper(trim(origin)), upper(trim(destination)));
 
 alter table public.lane_rates enable row level security;
 -- intentionally NO select/insert/update/delete policies for anon or authenticated.
@@ -189,7 +191,7 @@ security definer
 set search_path = public
 as $$
   select destination from public.lane_rates
-  where origin = p_origin
+  where upper(trim(origin)) = upper(trim(p_origin))
   order by destination;
 $$;
 revoke all on function public.list_destinations(text) from public;
@@ -224,7 +226,8 @@ declare
   best_col text; best_rate numeric; best_charge numeric;
 begin
   select * into r from public.lane_rates
-   where origin = p_origin and destination = p_destination;
+   where upper(trim(origin)) = upper(trim(p_origin))
+     and upper(trim(destination)) = upper(trim(p_destination));
   if not found then
     lane_found := false;
     return next;

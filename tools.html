@@ -188,9 +188,10 @@ const TOOLS = {
         if (r.data && r.data.ok) {
           $("rStats").style.display = "grid";
           $("rKm").textContent = r.data.distance_km.toLocaleString("en-CA");
-          const h = Math.floor(r.data.duration_min / 60), m = r.data.duration_min % 60;
-          $("rH").textContent = (h ? h + "h " : "") + m + "m";
-          $("rMode").textContent = r.data.mode;
+          const mins = Number(r.data.duration_min || (Number(r.data.duration_hours || 0) * 60));
+          const h = Math.floor(mins / 60), m = Math.round(mins % 60);
+          $("rH").textContent = mins ? ((h ? h + "h " : "") + m + "m") : "—";
+          $("rMode").textContent = r.data.mode || r.data.source || "route";
         }
       };
     }
@@ -224,8 +225,11 @@ const TOOLS = {
         const city = $("wCity").value.trim(), date = $("wDate").value;
         if (!city) return;
         $("wOut").classList.remove("empty"); $("wOut").textContent = "Loading…";
-        const r = await callEdge("weather", { city, pickup_date: date });
-        $("wOut").textContent = fmt(r.data);
+        const res = await fetch(`${SB_URL}/functions/v1/weather?origin=${encodeURIComponent(city)}&pickup_date=${encodeURIComponent(date || "")}`, {
+          headers: { apikey: SB_ANON, Authorization: `Bearer ${SB_ANON}` }
+        });
+        const data = await res.json().catch(() => ({}));
+        $("wOut").textContent = fmt(data);
       };
     }
   },

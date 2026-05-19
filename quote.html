@@ -217,7 +217,7 @@ function tokenFromUrl() {
   const u = new URL(window.location.href);
   const m = u.pathname.match(/\/q\/([A-Za-z0-9-_]+)/);
   if (m) return m[1];
-  return u.searchParams.get('quote') || u.searchParams.get('token');
+  return u.searchParams.get('quote') || u.searchParams.get('token') || u.searchParams.get('t');
 }
 
 let LOADED_QUOTE = null;
@@ -369,6 +369,16 @@ async function submitBooking(action) {
       : "Got it - we'll send you a revised quote shortly.";
     $("confirmBtn").disabled = true;
     $("changesBtn").disabled = true;
+    if (action === 'accept') {
+      const params = new URLSearchParams({
+        ref: LOADED_QUOTE.quote_ref || '',
+        lane: [LOADED_QUOTE.origin, LOADED_QUOTE.destination].filter(Boolean).join(' -> '),
+        email: body.p_contact_email || '',
+        total: String(Number(LOADED_QUOTE.total_after_tax || 0)),
+        t: String(LOADED_QUOTE.public_token || body.p_token || '')
+      });
+      setTimeout(() => { window.location.href = `booking-confirmed.html?${params.toString()}`; }, 350);
+    }
   } catch (e) {
     btn.disabled = false;
     status.style.color = 'var(--danger)';

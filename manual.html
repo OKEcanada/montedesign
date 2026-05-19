@@ -93,9 +93,19 @@
     radial-gradient(180px 120px at 100% 0%,rgba(255,106,0,.10),transparent 60%),
     #050505}
   .faq-card b{display:block;margin-bottom:5px;color:var(--ink)}.faq-card span{color:var(--muted)}
+  .playbooks{margin-top:26px;border:1px solid var(--line);border-radius:24px;background:rgba(9,9,11,.80);box-shadow:var(--shadow);padding:20px;overflow:hidden;position:relative}
+  .playbooks::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(520px 320px at 100% 0%,rgba(255,106,0,.14),transparent 60%),
+    radial-gradient(480px 320px at 0 100%,rgba(20,184,166,.12),transparent 62%);pointer-events:none}
+  .playbooks h2{position:relative;font-size:34px;line-height:1;margin:8px 0 10px;letter-spacing:-.055em}
+  .playbook-grid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+  .playbook{border:1px solid rgba(255,255,255,.10);border-radius:18px;background:#050505;padding:16px;min-height:190px;display:flex;flex-direction:column;gap:10px}
+  .playbook small{font:850 10px/1 "Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--brand2)}
+  .playbook b{font-size:18px;line-height:1.08;letter-spacing:-.035em}.playbook span{color:var(--muted)}
+  .playbook ul{margin:0;padding-left:18px;color:#d4d4d8}.playbook li{margin:5px 0}
   footer{margin-top:34px;text-align:right}
   footer a{color:rgba(16,20,38,.34);font-size:12px;text-decoration:none}
-  @media(max-width:980px){.hero,.guide-layout,.deep-guide{grid-template-columns:1fr}.detail{position:relative;top:0}.tool-grid{grid-template-columns:1fr}.quick,.faq-grid{grid-template-columns:1fr}}
+  @media(max-width:980px){.hero,.guide-layout,.deep-guide{grid-template-columns:1fr}.detail{position:relative;top:0}.tool-grid{grid-template-columns:1fr}.quick,.faq-grid,.playbook-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -134,6 +144,10 @@
       <button class="tool-card" data-tool="history" type="button"><span class="mini">return</span><span class="tool-icon">06</span><h2>Save and quote history</h2><p>Save quotes, return later from the client dashboard, and reopen past lanes from any device.</p></button>
       <button class="tool-card" data-tool="booking" type="button"><span class="mini">request</span><span class="tool-icon">07</span><h2>Booking request</h2><p>Send the quote with contact details, notes, pickup preference, and quote reference already included.</p></button>
       <button class="tool-card" data-tool="share" type="button"><span class="mini">tracked</span><span class="tool-icon">08</span><h2>Shareable quote link</h2><p>Copy a read-only quote link customers can open later without screenshots or stale PDFs.</p></button>
+      <button class="tool-card" data-tool="quantity" type="button"><span class="mini">math</span><span class="tool-icon">09</span><h2>Same items and pieces</h2><p>Use repeated items and pieces per item correctly so sets, pallets, and multiples price cleanly.</p></button>
+      <button class="tool-card" data-tool="large" type="button"><span class="mini">review</span><span class="tool-icon">10</span><h2>Large shipment review</h2><p>Freight over 10 linear feet goes to custom review instead of showing an instant public rate.</p></button>
+      <button class="tool-card" data-tool="ops" type="button"><span class="mini">team</span><span class="tool-icon">11</span><h2>Admin command center</h2><p>Ops can watch booking requests, hot quote views, lane signals, fuel status, and follow-up timing.</p></button>
+      <button class="tool-card" data-tool="api" type="button"><span class="mini">stack</span><span class="tool-icon">12</span><h2>Live APIs and alerts</h2><p>Fuel, weather, route distance, Slack, and customer email tools turn the calculator into a live workflow.</p></button>
     </div>
 
     <aside class="detail" id="detail">
@@ -181,6 +195,20 @@
         <div class="faq-card"><b>What should I verify before booking?</b><span>Origin, destination, service level, total pieces, dimensions, weight, pickup date, access notes, and contact details.</span></div>
         <div class="faq-card"><b>What does the share link do?</b><span>It opens the quote read-only so the customer can return, review, and confirm booking without rebuilding the calculator.</span></div>
       </div>
+    </div>
+  </section>
+
+  <section class="playbooks">
+    <div class="kicker">advanced playbooks</div>
+    <h2>How to use it like a sales and ops system.</h2>
+    <p class="lead" style="font-size:15px;position:relative">These are the practical workflows that make the calculator more than a price page: faster quoting, better follow-up, cleaner booking handoff, and fewer rate surprises.</p>
+    <div class="playbook-grid">
+      <div class="playbook"><small>prospect quote</small><b>When a buyer sends only photos</b><span>Use AI capture to draft rows, then verify dimensions, weights, and service fit.</span><ul><li>Separate different products.</li><li>Group identical units as Same items.</li><li>Use Pieces / item for furniture sets.</li></ul></div>
+      <div class="playbook"><small>repeat customer</small><b>When a client comes back later</b><span>Send them to the Client Dashboard so they can reopen saved lanes or start a new quote from their account.</span><ul><li>Google or email sign-in.</li><li>Quote history stored in Supabase.</li><li>Share links stay read-only.</li></ul></div>
+      <div class="playbook"><small>sales timing</small><b>When a quote is being reviewed</b><span>Use admin quote views and hot-lead signals to know when the customer is active.</span><ul><li>Multiple opens mean follow-up timing.</li><li>Booking requests are separated from drafts.</li><li>Lane value appears in the console.</li></ul></div>
+      <div class="playbook"><small>rate safety</small><b>When the shipment is oversized</b><span>Over 10 linear feet becomes a custom-review request so OKE does not expose a weak or capacity-sensitive rate.</span><ul><li>Customer sees contact path.</li><li>Ops receives the context.</li><li>Quote data is still useful.</li></ul></div>
+      <div class="playbook"><small>route risk</small><b>When weather or fuel changes</b><span>Intel surfaces live context so the customer sees that the quote is tied to real logistics conditions.</span><ul><li>Weather informs service level.</li><li>Fuel can be applied from Breakdown.</li><li>Journey keeps the route explainable.</li></ul></div>
+      <div class="playbook"><small>booking handoff</small><b>When the customer says yes</b><span>Booking sends structured contact, lane, item, service, pickup, notes, and quote-reference data.</span><ul><li>Customer confirmation page.</li><li>Slack/email hooks are ready.</li><li>Admin sees the request.</li></ul></div>
     </div>
   </section>
 

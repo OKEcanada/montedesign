@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-18-v3" />
+<meta name="oke-build" content="2026-05-29-stable-bg" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +100,22 @@
     --scene-x-hard: 0px;
     --scene-y-hard: 0px;
     contain: paint;
+  }
+  .scene, .scene * {
+    pointer-events: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .scene-radar,
+  .scene-sweep,
+  .scene-scan,
+  .scene-route {
+    display: none !important;
+  }
+  .scene animate,
+  .scene animateMotion,
+  .scene animateTransform {
+    display: none !important;
   }
   .scene::before {
     content: "";
@@ -1709,17 +1725,20 @@
     box-shadow: 0 0 10px rgba(255,165,114,0.8); opacity: 0.65;
   }
   .r-route-truck {
-    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    position: absolute; top: 50%; left: 4%; transform: translate(-50%, -50%);
     width: 36px; height: 22px; z-index: 3;
     animation: truckGo 6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
     filter: drop-shadow(0 4px 8px rgba(255,122,69,0.55));
+    opacity: 1;
+    will-change: left, opacity;
   }
   .r-route-truck::after { content: ""; }
   @keyframes truckGo {
-    0%, 6% { left: 4%; opacity: 0; }
-    14% { opacity: 1; }
-    86% { opacity: 1; }
-    94%, 100% { left: 96%; opacity: 0; }
+    0% { left: 4%; opacity: 0.55; }
+    8% { left: 4%; opacity: 1; }
+    50% { left: 50%; opacity: 1; }
+    92% { left: 96%; opacity: 1; }
+    100% { left: 96%; opacity: 0.55; }
   }
   .r-route-labels {
     display: flex; justify-content: space-between;
@@ -2825,10 +2844,21 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
+    .scene,
+    .scene *,
+    .r-route::before,
+    .r-route-line::after,
+    .card::before,
+    .card::after,
+    .result-card::before,
+    .r-pane.active,
+    .modal.open,
+    .modal-card {
+      animation: none !important;
       transition-duration: 0.01ms !important;
+    }
+    .r-route-truck {
+      animation: truckGo 6s cubic-bezier(0.65, 0, 0.35, 1) infinite !important;
     }
   }
 

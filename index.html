@@ -474,42 +474,6 @@
     background: rgba(79,209,197,0.13);
     transform: translateY(-1px);
   }
-  .platform-launchpad {
-    width: 100%; max-width: 1240px;
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px; margin: 0 0 18px;
-  }
-  .platform-tile {
-    position: relative; overflow: hidden;
-    border: 1px solid rgba(250,248,241,0.13);
-    border-radius: 18px;
-    background: rgba(5,7,23,0.78);
-    color: var(--paper); text-decoration: none;
-    padding: 16px 16px 18px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.26);
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
-  }
-  .platform-tile::before {
-    content: ""; position: absolute; inset: 0;
-    background: radial-gradient(260px 160px at 100% 0%, rgba(255,122,69,0.18), transparent 62%);
-    pointer-events: none;
-  }
-  .platform-tile::after {
-    content: ""; position: absolute; left: 16px; right: 16px; bottom: 12px; height: 3px;
-    border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--cool));
-    opacity: .78;
-  }
-  .platform-tile:hover { transform: translateY(-2px); border-color: rgba(255,122,69,0.48); background: rgba(8,12,34,0.92); }
-  .platform-tile small {
-    position: relative; display: block; margin-bottom: 12px;
-    font-family: var(--font-mono); font-size: 9.5px; font-weight: 800;
-    letter-spacing: .14em; text-transform: uppercase; color: var(--accent-light);
-  }
-  .platform-tile b { position: relative; display: block; font-size: 17px; letter-spacing: -.03em; margin-bottom: 5px; }
-  .platform-tile span { position: relative; display: block; color: rgba(250,248,241,0.58); font-size: 12px; line-height: 1.35; }
-  .platform-tile.live small { color: var(--cool); }
-  @media (max-width: 980px) { .platform-launchpad { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 620px) { .platform-launchpad { grid-template-columns: 1fr; } }
   .icon-btn {
     width: 38px; height: 38px;
     border: 1px solid var(--line);
@@ -2878,7 +2842,6 @@
     overflow-x: hidden !important;
   }
   .scene,
-  .platform-launchpad,
   .confetti-canvas,
   .mobile-cta,
   .history-shell {

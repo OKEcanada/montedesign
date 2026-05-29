@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-29-stable-bg" />
+<meta name="oke-build" content="2026-05-29-calculator-only-fast" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2870,153 +2870,99 @@
     .grid { grid-template-columns: 1fr 1fr !important; }
     .result-card, .card { box-shadow: none; }
   }
+
+
+  /* Calculator-only performance build: keep the embed light inside Wix iframes. */
+  html, body {
+    background: #f3f0e7 !important;
+    overflow-x: hidden !important;
+  }
+  .scene,
+  .platform-launchpad,
+  .confetti-canvas,
+  .mobile-cta,
+  .history-shell {
+    display: none !important;
+  }
+  .page {
+    padding: 22px 18px 48px !important;
+    min-height: auto !important;
+  }
+  .topbar {
+    margin-bottom: 14px !important;
+    border-radius: 14px !important;
+    background: #0b1024 !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+  .topbar-tools { margin-left: auto !important; }
+  .grid { gap: 16px !important; }
+  .card,
+  .result-card,
+  .modal-card,
+  .history-drawer,
+  .platform-tile,
+  .mobile-cta,
+  .r-tabs,
+  .r-chip,
+  .intel-card,
+  .vis-card,
+  .piece,
+  .svc-card,
+  .accessorials-toggle,
+  .accessorials-content,
+  .r-journey,
+  .r-compare,
+  .r-pickup,
+  .r-density {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .result-card {
+    position: static !important;
+    top: auto !important;
+    align-self: start !important;
+    contain: layout paint !important;
+  }
+  .card, .result-card {
+    border: 1px solid rgba(12,16,36,0.12) !important;
+  }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+    text-shadow: none !important;
+  }
+  .card::before,
+  .card::after,
+  .result-card::before,
+  .result-card::after,
+  .r-route::before,
+  .r-route-line::after,
+  .r-book::before,
+  .add-piece-btn::before,
+  .intel-card::after,
+  .r-tab::before,
+  .r-tab::after {
+    display: none !important;
+  }
+  .r-route-truck {
+    animation: truckGo 5s linear infinite !important;
+    filter: none !important;
+    will-change: left !important;
+  }
+  @media (max-width: 960px) {
+    .page { padding: 14px 10px 32px !important; }
+    .grid { grid-template-columns: 1fr !important; }
+  }
+
 </style>
 </head>
 <body>
-
-<!-- Background illustration: minimal logistics scene -->
-<div class="scene" aria-hidden="true">
-  <div class="scene-mesh"></div>
-  <div class="scene-depth"></div>
-  <div class="scene-grid"></div>
-  <div class="scene-aurora"></div>
-  <div class="scene-topography"></div>
-  <div class="scene-orbits"></div>
-  <div class="scene-particles"></div>
-  <div class="scene-radar"></div>
-  <div class="scene-sweep"></div>
-  <div class="scene-scan"></div>
-  <div class="scene-grain"></div>
-  <svg class="scene-route" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="hRouteGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0"/>
-        <stop offset="25%" stop-color="#ff7a45" stop-opacity="0.55"/>
-        <stop offset="75%" stop-color="#06d6a0" stop-opacity="0.55"/>
-        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="hSignalGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0.05"/>
-        <stop offset="44%" stop-color="#ff7a45" stop-opacity="0.28"/>
-        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0.16"/>
-      </linearGradient>
-      <linearGradient id="hAirGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="45%" stop-color="#ffffff" stop-opacity="0.22"/>
-        <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="hPanelGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
-        <stop offset="48%" stop-color="#ff7a45" stop-opacity="0.08"/>
-        <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0.06"/>
-      </linearGradient>
-      <linearGradient id="hGlassGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
-      </linearGradient>
-      <pattern id="hMicroGrid" width="80" height="80" patternUnits="userSpaceOnUse">
-        <path d="M80 0H0V80" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="0.8"/>
-        <path d="M20 0V80M40 0V80M60 0V80M0 20H80M0 40H80M0 60H80" fill="none" stroke="#4fd1c5" stroke-opacity="0.035" stroke-width="0.6"/>
-      </pattern>
-      <radialGradient id="hNodeWarm" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ff7a45" stop-opacity="0.9"/>
-        <stop offset="55%" stop-color="#ff7a45" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="#ff7a45" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="hNodeCool" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#06d6a0" stop-opacity="0.9"/>
-        <stop offset="55%" stop-color="#06d6a0" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="#06d6a0" stop-opacity="0"/>
-      </radialGradient>
-      <symbol id="hTruck" viewBox="-22 -12 44 24">
-        <rect x="-20" y="-9" width="22" height="14" rx="2.5" fill="#ff7a45"/>
-        <rect x="2" y="-5" width="9" height="10" rx="1.5" fill="#fff" fill-opacity="0.94"/>
-        <rect x="3.5" y="-3.5" width="6" height="5" fill="#0c1024" fill-opacity="0.85"/>
-        <circle cx="-13" cy="7" r="3" fill="#0c1024"/>
-        <circle cx="-13" cy="7" r="1.4" fill="#ff7a45"/>
-        <circle cx="6" cy="7" r="3" fill="#0c1024"/>
-        <circle cx="6" cy="7" r="1.4" fill="#ff7a45"/>
-      </symbol>
-    </defs>
-    <rect class="h-grid-surface" x="-80" y="-80" width="1760" height="1060" fill="url(#hMicroGrid)"/>
-    <g class="h-land" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-      <path d="M80 198 C240 146, 360 232, 520 196 S822 98, 1066 162 1380 114, 1540 174"/>
-      <path d="M-20 692 C198 610, 410 690, 590 620 S860 500, 1040 552 1272 708, 1640 596"/>
-      <path d="M218 808 C412 736, 572 842, 760 768 S1048 640, 1240 704 1462 806, 1680 728"/>
-      <path d="M92 360 C276 302, 484 398, 660 342 S910 220, 1126 292 1346 410, 1560 354"/>
-    </g>
-    <g class="h-air-lanes" fill="none" stroke="url(#hAirGrad)" stroke-width="1" stroke-linecap="round" opacity="0.78">
-      <path d="M40 126 C330 74, 600 148, 816 102 S1260 36, 1582 94"/>
-      <path d="M-40 276 C258 214, 520 286, 748 238 S1198 156, 1640 250"/>
-      <path d="M28 842 C356 764, 672 858, 960 780 S1302 684, 1608 728"/>
-    </g>
-    <g class="h-secondary-routes" fill="none" stroke-linecap="round" stroke-width="1.35">
-      <path d="M-120 438 C180 310, 438 410, 706 338 S1110 196, 1710 234" stroke="url(#hSignalGrad)" opacity="0.72"/>
-      <path d="M-80 710 C192 612, 428 626, 696 548 S1128 418, 1680 520" stroke="#4fd1c5" stroke-opacity="0.20"/>
-      <path d="M126 96 C310 276, 444 300, 642 462 S982 714, 1386 806" stroke="#ff7a45" stroke-opacity="0.22"/>
-    </g>
-    <g class="h-glass-panels" fill="url(#hPanelGrad)" stroke="#ffffff" stroke-opacity="0.10">
-      <path d="M94 184h176l42 44-34 92H104L68 254z" opacity="0.22"/>
-      <path d="M1050 118h210l58 54-44 108h-206l-52-70z" opacity="0.19"/>
-      <path d="M1280 668h198l50 46-38 92h-198l-42-60z" opacity="0.18"/>
-    </g>
-    <g class="h-sites" fill="url(#hGlassGrad)" stroke="#ffffff" stroke-opacity="0.14">
-      <g class="h-site" transform="translate(305 314) rotate(-8)">
-        <rect x="-54" y="-28" width="108" height="56" rx="6"/>
-        <path d="M-42 -12H42M-42 4H42M-42 20H18" stroke="#ff7a45" stroke-opacity="0.22" stroke-width="2"/>
-      </g>
-      <g class="h-site" transform="translate(900 250) rotate(6)">
-        <rect x="-66" y="-34" width="132" height="68" rx="7"/>
-        <path d="M-50 -14H50M-50 4H50M-50 22H12" stroke="#4fd1c5" stroke-opacity="0.22" stroke-width="2"/>
-      </g>
-      <g class="h-site" transform="translate(1226 610) rotate(-5)">
-        <rect x="-58" y="-30" width="116" height="60" rx="7"/>
-        <path d="M-44 -10H44M-44 8H44M-44 24H8" stroke="#ff7a45" stroke-opacity="0.20" stroke-width="2"/>
-      </g>
-    </g>
-    <g class="h-micro-nodes" fill="#ffffff">
-      <g class="h-micro-node"><circle cx="258" cy="248" r="3" fill="#ff7a45"/><circle cx="258" cy="248" r="12" fill="#ff7a45" opacity="0.08"/></g>
-      <g class="h-micro-node"><circle cx="462" cy="416" r="2.5" fill="#4fd1c5"/><circle cx="462" cy="416" r="10" fill="#4fd1c5" opacity="0.08"/></g>
-      <g class="h-micro-node"><circle cx="724" cy="336" r="2.5" fill="#ffffff"/><circle cx="724" cy="336" r="10" fill="#ffffff" opacity="0.06"/></g>
-      <g class="h-micro-node"><circle cx="982" cy="458" r="3" fill="#ff7a45"/><circle cx="982" cy="458" r="12" fill="#ff7a45" opacity="0.08"/></g>
-      <g class="h-micro-node"><circle cx="1138" cy="420" r="2.5" fill="#4fd1c5"/><circle cx="1138" cy="420" r="10" fill="#4fd1c5" opacity="0.08"/></g>
-      <g class="h-micro-node"><circle cx="1346" cy="394" r="3" fill="#ffffff"/><circle cx="1346" cy="394" r="11" fill="#ffffff" opacity="0.06"/></g>
-    </g>
-    <path d="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320" fill="none" stroke="#ff7a45" stroke-width="18" stroke-linecap="round" opacity="0.08"/>
-    <path id="hRoutePath" d="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320" fill="none" stroke="url(#hRouteGrad)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0 8 220 8" opacity="0.95">
-      <animate attributeName="stroke-dashoffset" from="0" to="-460" dur="16s" repeatCount="indefinite"/>
-    </path>
-    <g class="h-node h-node-a">
-      <circle cx="180" cy="540" r="54" fill="url(#hNodeWarm)"/>
-      <circle cx="180" cy="540" r="7" fill="#ff7a45"/>
-      <circle cx="180" cy="540" r="3" fill="#fff"/>
-    </g>
-    <g class="h-node h-node-b">
-      <circle cx="1500" cy="320" r="56" fill="url(#hNodeCool)"/>
-      <circle cx="1500" cy="320" r="7" fill="#06d6a0"/>
-      <circle cx="1500" cy="320" r="3" fill="#fff"/>
-    </g>
-    <g class="h-packet" opacity="0.9">
-      <circle r="4.5" fill="#ff7a45"/>
-      <circle r="12" fill="#ff7a45" opacity="0.10"/>
-      <animateMotion dur="7.5s" repeatCount="indefinite" path="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320"/>
-    </g>
-    <g class="h-packet cool" opacity="0.82">
-      <circle r="3.6" fill="#4fd1c5"/>
-      <circle r="10" fill="#4fd1c5" opacity="0.12"/>
-      <animateMotion dur="10.5s" begin="-3s" repeatCount="indefinite" path="M-80 710 C192 612, 428 626, 696 548 S1128 418, 1680 520"/>
-    </g>
-    <g class="h-packet cool" opacity="0.68">
-      <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#ffffff" fill-opacity="0.86"/>
-      <animateMotion dur="13s" begin="-6s" repeatCount="indefinite" path="M-120 438 C180 310, 438 410, 706 338 S1110 196, 1710 234"/>
-    </g>
-    <g class="h-truck">
-      <use href="#hTruck" width="56" height="30" x="-28" y="-15">
-        <animateMotion dur="24s" repeatCount="indefinite" rotate="auto" path="M-80 580 C 260 360, 620 720, 980 460 S 1420 220, 1720 320"/>
-      </use>
-    </g>
-  </svg>
-</div>
 
 <div class="page">
   <header class="topbar">
@@ -3027,43 +2973,13 @@
       </div>
     </div>
     <div class="topbar-tools">
-      <a class="history-btn" href="dashboard.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        <span>Dashboard</span>
-      </a>
-      <a class="history-btn primary-link" href="tools.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-3-3 2.4-2.4z"/></svg>
-        <span>Tools</span>
-      </a>
-      <a class="history-btn" href="coverage.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg>
-        <span>Coverage</span>
-      </a>
-      <a class="history-btn" href="status.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg>
-        <span>Status</span>
-      </a>
-      <a class="history-btn" href="admin.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-5"/></svg>
-        <span>Admin</span>
-      </a>
-      <a class="history-btn" href="manual.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
-        <span>Manual</span>
-      </a>
       <div class="topbar-badge">Powered by One Kind Express</div>
     </div>
   </header>
 
   <div id="loadingView" class="loader">Loading rate data...</div>
-    <section class="platform-launchpad" aria-label="OKE freight platform tools">
-      <a class="platform-tile live" href="tools.html"><small>live workbench</small><b>Freight tools</b><span>Postal, route, weather, fuel, carbon, holidays, lane suggestions, and AI item capture.</span></a>
-      <a class="platform-tile" href="coverage.html"><small>network</small><b>Coverage map</b><span>Browse priced origins, destinations, provinces, and quote-ready lanes.</span></a>
-      <a class="platform-tile" href="dashboard.html"><small>customer</small><b>Quote history</b><span>Sign in, reopen saved quotes, copy tracked links, and continue booking.</span></a>
-      <a class="platform-tile" href="status.html"><small>system</small><b>Live status</b><span>Check rate table, fuel, weather, route, postal, AI, and API health.</span></a>
-    </section>
 
-  <div id="mainView" class="grid" style="display: none;">
+<div id="mainView" class="grid" style="display: none;">
 
     <main class="card">
       <h1 class="card-h1">National Final Mile Delivery Calculator</h1>
@@ -3138,7 +3054,7 @@
       </div>
 
       <div class="section-label" style="margin-top: 6px;">
-        Items  ?  <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included  ?  $25 each beyond</span>
+        Items - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included - $25 each beyond</span>
       </div>
       <div class="pieces" id="piecesWrap"></div>
       <datalist id="itemTypeOptions"></datalist>
@@ -3205,7 +3121,7 @@
           </ul>
         </div>
         <div id="resultContent" style="display:none;">
-          <div class="r-label">Your live quote  ?  <span id="quoteRef" style="color:rgba(250,248,241,0.40);font-family:var(--font-mono);">#-</span></div>
+          <div class="r-label">Your live quote - <span id="quoteRef" style="color:rgba(250,248,241,0.40);font-family:var(--font-mono);">#-</span></div>
           <div class="r-total" id="grandTotal">$0.00</div>
           <div class="r-total-sub">Lane: <em id="laneLabel">-</em></div>
 
@@ -3240,11 +3156,11 @@
 
           <div class="r-density">
             <div class="r-density-head">
-              <span>Density  ?  <em id="densityVal">- lb/ft3</em></span>
+              <span>Density - <em id="densityVal">- lb/ft3</em></span>
               <span id="densityBadge" class="dens-badge">-</span>
             </div>
             <div class="r-density-bar"><div class="r-density-fill" id="densityFill" style="width: 0%;"></div></div>
-            <div class="r-density-scale"><span>Light  ?  dim weight</span><span>Dense</span></div>
+            <div class="r-density-scale"><span>Light - dim weight</span><span>Dense</span></div>
           </div>
 
           <div class="r-pane active" id="pane-breakdown">
@@ -3578,7 +3494,7 @@ const MONTE_CONFIG = window.MONTE_CONFIG || {
 };
 
 // ============================================================
-// monteAuth - minimal session bootstrap (magic-link UX lives on my-quotes.html)
+// monteAuth - minimal session bootstrap (magic-link UX is disabled in the calculator-only build)
 // ============================================================
 const monteAuth = {
   bootFromStorage() {
@@ -3893,7 +3809,7 @@ function weatherDetailHtml(scored) {
   return (scored || []).filter(x => x && x.data && x.data.day).slice(0, 2).map(x => {
     const d = x.data.day;
     const temp = `${Math.round(d.tMin)} to ${Math.round(d.tMax)}C`;
-    const detail = `${Math.round(d.precip || 0)}% precip  ?  ${Number(d.snow || 0).toFixed(1)} cm snow  ?  gust ${Math.round(d.gust || 0)} km/h`;
+    const detail = `${Math.round(d.precip || 0)}% precip - ${Number(d.snow || 0).toFixed(1)} cm snow - gust ${Math.round(d.gust || 0)} km/h`;
     return `<div class="intel-detail"><small>${htmlEsc(x.city)}</small><strong>${htmlEsc(temp)}</strong><span>${htmlEsc(detail)}</span></div>`;
   }).join('');
 }
@@ -4695,7 +4611,7 @@ function renderPieces() {
       ? `<button type="button" class="piece-photo" data-photo="${i}" title="View AI source photo" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,122,69,0.32);overflow:hidden;cursor:zoom-in;background:url('${p.photo_thumb}') center/cover no-repeat;padding:0;flex-shrink:0;box-shadow:0 4px 12px rgba(255,122,69,0.18)"></button>`
       : '';
     const aiBadge = p.ai_confidence
-      ? `<span class="ai-conf ${p.ai_confidence}" style="font-size:9.5px;padding:1px 6px;border-radius:999px;margin-left:6px">AI  ?  ${p.ai_confidence}</span>`
+      ? `<span class="ai-conf ${p.ai_confidence}" style="font-size:9.5px;padding:1px 6px;border-radius:999px;margin-left:6px">AI - ${p.ai_confidence}</span>`
       : '';
     div.innerHTML = `
       <div class="piece-head">
@@ -5294,7 +5210,7 @@ function renderHistoryList(rows) {
   }
   list.innerHTML = rows.map((q, i) => {
     const lane = q.destination ? `${q.origin || '-'} -> ${q.destination}` : `${q.origin || '-'} local`;
-    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join('  ?  ');
+    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join(' - ');
     return `<button class="history-item" type="button" data-history-idx="${i}">
       <span class="history-item-top"><span class="history-ref">${htmlEsc(q.quote_ref || '')}</span><span class="history-total">${htmlEsc(moneyShort(q.total_after_tax))}</span></span>
       <span class="history-lane">${htmlEsc(lane)}</span>
@@ -5591,12 +5507,12 @@ function updateOutput(options = {}) {
   $("svcPill").textContent = svc ? svc.name : '-';
 
   if (q.isLocal) {
-    $("laneLabel").textContent = `${state.origin}  ?  local delivery`;
+    $("laneLabel").textContent = `${state.origin} - local delivery`;
     $("laneInfo").style.display = "block";
     $("originOut").textContent = state.origin;
     $("destOut").textContent = "local";
   } else {
-    const middleSuffix = state.laneMode === 'middle' ? '  ?  middle mile only' : '';
+    const middleSuffix = state.laneMode === 'middle' ? ' - middle mile only' : '';
     $("laneLabel").textContent = `${state.origin} -> ${state.destination}${middleSuffix}`;
     $("laneInfo").style.display = "block";
     $("originOut").textContent = state.origin;
@@ -5856,7 +5772,7 @@ function updateOutput(options = {}) {
       const eMin = new Date(start.getTime() + baseDayMin * 86400000);
       const eMax = new Date(start.getTime() + baseDayMax * 86400000);
       const fmtD = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-      dEtaEl.textContent = 'Delivery  ?  ' + fmtD(eMin) + (baseDayMin !== baseDayMax ? ' - ' + fmtD(eMax) : '');
+      dEtaEl.textContent = 'Delivery - ' + fmtD(eMin) + (baseDayMin !== baseDayMax ? ' - ' + fmtD(eMax) : '');
     }
   }
 
@@ -5870,11 +5786,11 @@ function updateOutput(options = {}) {
       if (state.mode === 'pallet') {
         const pal = Number(p.pallets) || 1, ipp = Number(p.itemsPerPallet) || 1;
         const L = Number(p.L)||48, W = Number(p.W)||40, H = Number(p.H)||0;
-        return `  ${i+1}. ${pal} pallet(s) x ${ipp} item(s)  ?  ${L}x${W}x${H}"  ?  ${Number(p.weight)||0} lbs/pallet`;
+        return `  ${i+1}. ${pal} pallet(s) x ${ipp} item(s) - ${L}x${W}x${H}" - ${Number(p.weight)||0} lbs/pallet`;
       } else if (state.mode === 'cf') {
-        return `  ${i+1}. Qty ${Number(p.qty)||1}  ?  ${Number(p.cf)||0} ft3 each  ?  ${Number(p.weight)||0} lbs total`;
+        return `  ${i+1}. Qty ${Number(p.qty)||1} - ${Number(p.cf)||0} ft3 each - ${Number(p.weight)||0} lbs total`;
       }
-      return `  ${i+1}. Qty ${Number(p.qty)||1}  ?  ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}"  ?  ${Number(p.weight)||0} lbs total`;
+      return `  ${i+1}. Qty ${Number(p.qty)||1} - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" - ${Number(p.weight)||0} lbs total`;
     });
     const itemTypeLines = (state.pieces || [])
       .map((p, i) => (p.itemType || p.label || '').trim() ? `  ${i+1}. Type: ${(p.itemType || p.label || '').trim()}` : null)
@@ -5897,11 +5813,11 @@ function updateOutput(options = {}) {
       'Reference: ' + window._quoteRef,
       'Lane: ' + lane,
       'Service: ' + svcName,
-      'Items: ' + (q.totalPcs || 0) + '  ?  ' + (q.cubicFt||0).toFixed(2) + ' ft3  ?  ' + Math.round(q.billable||0) + ' lbs billable',
+      'Items: ' + (q.totalPcs || 0) + ' - ' + (q.cubicFt||0).toFixed(2) + ' ft3 - ' + Math.round(q.billable||0) + ' lbs billable',
       'Preferred pickup: ' + (pkEl ? pkEl.value : '-'),
       'Total: ' + (largeLinearSummary ? 'Custom review required' : fmt(q.totalAfterTax))
     ];
-    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' x ' + a.qty : '') + '  ?  ' + fmt(a.amount));
+    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' x ' + a.qty : '') + ' - ' + fmt(a.amount));
     const fullLines = [
       '=== Booking Request ===',
       'Quote ID: ' + window._quoteRef,
@@ -5954,7 +5870,7 @@ function updateOutput(options = {}) {
     const fullText = fullLines.filter(Boolean).join('\r\n');
     window._bookingSummary = summaryText;
     window._bookingEmailBody = fullText;
-    const subj = 'Booking request ' + window._quoteRef + '  ?  ' + lane;
+    const subj = 'Booking request ' + window._quoteRef + ' - ' + lane;
     const mEmail = $("mEmail"), mSum = $("modalSummary");
     if (mEmail) mEmail.href = 'mailto:info@onekindexpress.com?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(fullText);
     if (mSum) mSum.textContent = summaryText;
@@ -6420,7 +6336,7 @@ function setupActions() {
     const svc = SERVICE_LEVELS.find(s => s.id === state.service);
     const lane = q.isLocal ? `${state.origin} local` : `${state.origin} -> ${state.destination}`;
     const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
-    const summary = `OKE Canada quote  ?  ${lane}  ?  ${svc ? svc.name : ''}  ?  ${fmt(q.totalAfterTax)}${link}`;
+    const summary = `OKE Canada quote - ${lane} - ${svc ? svc.name : ''} - ${fmt(q.totalAfterTax)}${link}`;
     let shared = false;
     try {
       if (navigator.share) { await navigator.share({ title: 'OKE Canada Delivery Quote', text: summary }); shared = true; }
@@ -6762,7 +6678,7 @@ function setupAiUpload() {
       head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-muted);margin-bottom:10px;flex-wrap:wrap';
       head.innerHTML = `
         <span style="font-style:italic">${escapeHtml(sess.summary || 'AI vision result')}</span>
-        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI document reader')}  ?  ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;background:rgba(15,159,146,0.12);color:#0f9f92;border:1px solid rgba(15,159,146,0.32);padding:3px 8px;border-radius:999px">${escapeHtml(sess.model || 'AI document reader')} - ${sess.items.length} item${sess.items.length === 1 ? '' : 's'}</span>
       `;
       results.appendChild(head);
     }
@@ -6980,7 +6896,7 @@ async function init() {
     if (!sbCfg()) throw new Error('Cloud quote service is not configured.');
     const shouldOpenHistory = !!new URL(window.location.href).searchParams.get('history');
     if (shouldOpenHistory) {
-      window.location.replace('dashboard.html');
+      window.location.replace('index.html');
       return;
     }
     await initAuthSession();

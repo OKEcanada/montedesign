@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-29-national-premium-ui-modal-fix" />
+<meta name="oke-build" content="2026-05-29-national-pricing-caps-audit" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -701,7 +701,7 @@
     transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
     -webkit-appearance: none; appearance: none;
   }
-  input::placeholder { color: var(--ink-faint); font-weight: 400; }
+  input::placeholder { color: var(--ink-faint); font-weight: 400; text-transform: uppercase; }
   input:focus, select:focus {
     outline: none; border-color: var(--accent);
     background: #fffdf9;
@@ -741,11 +741,12 @@
     cursor: pointer; border-bottom: 1px solid var(--line-soft);
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     transition: background var(--transition); color: var(--ink);
+    text-transform: uppercase;
   }
   .ac-item:last-child { border-bottom: 0; }
   .ac-item:hover, .ac-item.active { background: var(--accent-soft); }
   .ac-item .ac-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ac-item .match { color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(255,122,69,0.30); padding: 1px 4px; border-radius: 3px; font-weight: 700; }
+  .ac-item .match { color: var(--accent-deep); background: var(--accent-soft); border: 1px solid rgba(255,122,69,0.30); padding: 1px 4px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
   .ac-item .ac-count { font-size: 10px; color: var(--ink-muted); background: var(--paper-alt); padding: 2px 7px; border-radius: 999px; flex-shrink: 0; }
   .ac-empty { padding: 14px; text-align: center; color: var(--ink-muted); font-size: 12.5px; }
 
@@ -3433,7 +3434,7 @@
       <div class="lane-row" id="laneRow">
         <div class="field autocomplete">
           <label class="field-label" id="originLabel">Origin city</label>
-          <input type="text" id="originInput" class="mono" placeholder="Start typing..." autocomplete="off" />
+          <input type="text" id="originInput" class="mono" placeholder="START TYPING..." autocomplete="off" />
           <div class="autocomplete-list" id="originList"></div>
         </div>
         <div class="lane-arrow" id="laneArrow">
@@ -3443,7 +3444,7 @@
         </div>
         <div class="field autocomplete" id="destField">
           <label class="field-label">Destination city</label>
-          <input type="text" id="destInput" class="mono" placeholder="Select origin first" autocomplete="off" disabled />
+          <input type="text" id="destInput" class="mono" placeholder="SELECT ORIGIN FIRST" autocomplete="off" disabled />
           <div class="autocomplete-list" id="destList"></div>
         </div>
       </div>
@@ -4801,7 +4802,7 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
     if (inputId === 'destInput' && state.origin && !DEST_CACHE[state.origin]) {
       currentItems = [];
       activeIdx = -1;
-      list.innerHTML = `<div class="ac-empty">Loading destinations...</div>`;
+      list.innerHTML = `<div class="ac-empty">LOADING DESTINATIONS...</div>`;
       list.classList.add('open');
       fetchDestinations(state.origin)
         .then(() => {
@@ -4809,7 +4810,7 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
         })
         .catch(() => {
           if (document.activeElement === input) {
-            list.innerHTML = `<div class="ac-empty">Could not load destinations</div>`;
+            list.innerHTML = `<div class="ac-empty">COULD NOT LOAD DESTINATIONS</div>`;
             list.classList.add('open');
           }
         });
@@ -4819,12 +4820,13 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
     const q = query.trim().toUpperCase();
     currentItems = q ? all.filter(it => it.label.toUpperCase().includes(q)) : all;
     if (currentItems.length === 0) {
-      list.innerHTML = `<div class="ac-empty">No matches</div>`;
+      list.innerHTML = `<div class="ac-empty">NO MATCHES</div>`;
     } else {
       list.innerHTML = currentItems.map((it, i) => {
+        const displayLabel = cityDisplayName(it.label);
         const label = q
-          ? it.label.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), m => `<span class="match">${m}</span>`)
-          : it.label;
+          ? displayLabel.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), m => `<span class="match">${m}</span>`)
+          : displayLabel;
         const ct = it.count ? `<span class="ac-count">${it.count}</span>` : '';
         return `<div class="ac-item" data-idx="${i}"><span class="ac-label">${label}</span>${ct}</div>`;
       }).join('');
@@ -5685,7 +5687,7 @@ function startNewQuote() {
   if ($("destInput")) {
     $("destInput").value = "";
     $("destInput").disabled = true;
-    $("destInput").placeholder = "Select origin first";
+    $("destInput").placeholder = "SELECT ORIGIN FIRST";
   }
   $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.lh === 'line'));
   $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'dim'));
@@ -6486,7 +6488,7 @@ function applyLaneMode() {
   const isMiddle = state.laneMode === 'middle';
   $("laneRow").classList.toggle('local', isLocal);
   $("originLabel").textContent = isLocal ? "City" : "Origin city";
-  $("originInput").placeholder = isLocal ? "Pick a city..." : "Start typing...";
+  $("originInput").placeholder = isLocal ? "PICK A CITY..." : "START TYPING...";
   if (isLocal) {
     // Final-mile-only hides destination from pricing, but keeps the last lane
     // intact so switching back to full/middle-mile does not wipe the quote.
@@ -6497,15 +6499,15 @@ function applyLaneMode() {
     if (state.origin) {
       if (DEST_CACHE[state.origin]) {
         $("destInput").disabled = false;
-        $("destInput").placeholder = "Start typing destination...";
+        $("destInput").placeholder = "START TYPING DESTINATION...";
       } else {
         $("destInput").disabled = true;
-        $("destInput").placeholder = "Loading destinations...";
+        $("destInput").placeholder = "LOADING DESTINATIONS...";
         fetchDestinations(state.origin)
           .then(() => {
             if (state.laneMode !== 'local' && state.origin) {
               $("destInput").disabled = false;
-              $("destInput").placeholder = "Start typing destination...";
+              $("destInput").placeholder = "START TYPING DESTINATION...";
               if (document.activeElement === $("destInput")) {
                 $("destInput").dispatchEvent(new Event('input', { bubbles: true }));
               }
@@ -6514,13 +6516,13 @@ function applyLaneMode() {
           .catch(() => {
             if (state.laneMode !== 'local') {
               $("destInput").disabled = false;
-              $("destInput").placeholder = "Could not load destinations";
+              $("destInput").placeholder = "COULD NOT LOAD DESTINATIONS";
             }
           });
       }
     } else {
       $("destInput").disabled = true;
-      $("destInput").placeholder = "Select origin first";
+      $("destInput").placeholder = "SELECT ORIGIN FIRST";
     }
   }
   // Show / hide service-level section in middle-mile-only mode
@@ -7375,19 +7377,19 @@ async function init() {
           const destInput = $("destInput");
           destInput.value = "";
           destInput.disabled = true;
-          $("destInput").placeholder = "Start typing destination...";
-          destInput.placeholder = "Loading destinations...";
+          $("destInput").placeholder = "START TYPING DESTINATION...";
+          destInput.placeholder = "LOADING DESTINATIONS...";
           fetchDestinations(label)
             .then(() => {
               if (state.origin !== label || state.laneMode === 'local') return;
               destInput.disabled = false;
-              destInput.placeholder = "Start typing destination...";
+              destInput.placeholder = "START TYPING DESTINATION...";
               destInput.focus();
               destInput.dispatchEvent(new Event('input', { bubbles: true }));
             })
             .catch(() => {
               destInput.disabled = false;
-              destInput.placeholder = "Could not load destinations";
+              destInput.placeholder = "COULD NOT LOAD DESTINATIONS";
             });
         }
         scheduleLaneQuoteRefresh();

@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-29-pallet-mobile-fix" />
+<meta name="oke-build" content="2026-05-29-mobile-overflow-fix" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2950,6 +2950,159 @@
   @media (max-width: 960px) {
     .page { padding: 14px 10px 32px !important; }
     .grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 600px) {
+    html, body {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+    .page,
+    .topbar,
+    .grid,
+    .card,
+    .result-card {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .grid,
+    .grid > *,
+    .card > *,
+    .result-card > *,
+    #resultContent,
+    .piece,
+    .piece > *,
+    .field,
+    .field input,
+    .field select,
+    .field textarea,
+    .r-tabs,
+    .r-tab,
+    .r-chip,
+    .r-pickup,
+    .r-density,
+    .r-breakdown,
+    .r-box,
+    .lane-info,
+    .accessorials-toggle,
+    .accessorials-content,
+    .ai-uploader,
+    .ai-uploader-inner {
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .card,
+    .result-card {
+      overflow: hidden !important;
+    }
+    .card-h1,
+    .card-sub,
+    .wordmark-text,
+    .r-total,
+    .r-total-sub,
+    .lane,
+    .b-row .l,
+    .b-row .v,
+    .r-row .l,
+    .r-row .v,
+    .r-chip .label,
+    .r-chip .val {
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+    }
+    .stepper-dots {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 4px !important;
+    }
+    .stp-dot {
+      min-width: 0 !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 4px !important;
+      text-align: center !important;
+    }
+    .stp-dot .stp-lbl {
+      max-width: 100% !important;
+      font-size: 10px !important;
+      letter-spacing: 0 !important;
+      line-height: 1.1 !important;
+    }
+    .lane-control-head,
+    .measure-row {
+      min-width: 0 !important;
+    }
+    .seg {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+    }
+    .seg-btn {
+      min-width: 0 !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      letter-spacing: 0 !important;
+      white-space: normal !important;
+      line-height: 1.15 !important;
+    }
+    .r-chips {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 8px !important;
+    }
+    .r-chip {
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    .r-tabs {
+      grid-auto-flow: unset !important;
+      grid-auto-columns: unset !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      border-radius: 14px !important;
+      padding: 4px !important;
+    }
+    .r-tab {
+      padding: 8px 3px !important;
+      font-size: 9.5px !important;
+      letter-spacing: 0 !important;
+      line-height: 1.05 !important;
+      white-space: normal !important;
+    }
+    .r-pickup {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      align-items: stretch !important;
+    }
+    .r-pickup input[type="date"],
+    .tax-select,
+    .pct-input-wrap {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+    }
+    .r-pickup #deliveryEta {
+      margin-left: 0 !important;
+    }
+    .r-density-head,
+    .r-density-scale {
+      gap: 8px !important;
+    }
+    .b-row,
+    .r-row {
+      align-items: flex-start !important;
+    }
+    .b-row .l,
+    .r-row .l {
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+    }
+    .b-row .v,
+    .r-row .v {
+      flex: 0 1 46% !important;
+      min-width: 0 !important;
+    }
   }
   html.wix-mobile-crop,
   html.wix-mobile-crop body {

@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-29-national-ui-custom-modal-fix" />
+<meta name="oke-build" content="2026-05-29-national-premium-ui-modal-fix" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3237,6 +3237,158 @@
     justify-self: center !important;
   }
 
+  /* Final visual pass: static, premium controls that survive the lightweight
+     Wix embed overrides without reintroducing expensive page animations. */
+  .r-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    padding: 5px !important;
+    margin: 16px 0 14px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(250,248,241,0.14) !important;
+    background:
+      linear-gradient(135deg, rgba(250,248,241,0.075), rgba(79,209,197,0.055)),
+      rgba(12,16,36,0.72) !important;
+    box-shadow: 0 12px 28px rgba(5,9,24,0.22), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    overflow: hidden !important;
+  }
+  .r-tabs::before,
+  .r-tabs::after,
+  .r-tab::before,
+  .r-tab::after {
+    display: none !important;
+  }
+  .r-tab {
+    min-height: 42px !important;
+    padding: 10px 12px !important;
+    border-radius: 13px !important;
+    color: rgba(250,248,241,0.66) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+    line-height: 1 !important;
+    text-transform: none !important;
+    background: transparent !important;
+    text-shadow: none !important;
+  }
+  .r-tab:hover {
+    color: var(--paper) !important;
+    background: rgba(250,248,241,0.075) !important;
+    transform: none !important;
+  }
+  .r-tab.active {
+    color: #fff !important;
+    background: linear-gradient(135deg, #ffb077 0%, #ff7a45 48%, #ff6336 100%) !important;
+    box-shadow: 0 12px 28px rgba(255,122,69,0.34), inset 0 1px 0 rgba(255,255,255,0.42) !important;
+    text-shadow: 0 1px 1px rgba(70,20,0,0.28) !important;
+  }
+  .r-tab .tab-dot {
+    display: none !important;
+  }
+  .r-tab.has-alert .tab-dot {
+    display: none !important;
+    width: 6px !important;
+    height: 6px !important;
+    margin-left: 2px !important;
+    background: currentColor !important;
+    opacity: 0.75 !important;
+    transform: none !important;
+    vertical-align: middle !important;
+  }
+  .r-btn {
+    min-height: 40px !important;
+    border-radius: 12px !important;
+    border-color: rgba(250,248,241,0.14) !important;
+    background: rgba(250,248,241,0.06) !important;
+    color: rgba(250,248,241,0.86) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  }
+  .r-btn svg {
+    width: 17px !important;
+    height: 17px !important;
+    display: block !important;
+  }
+  .intel-card.live-weather,
+  .intel-card.live-fuel {
+    border-radius: 16px !important;
+    padding: 14px !important;
+    min-height: 150px !important;
+  }
+  .intel-live-head {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    min-height: 38px !important;
+    margin-bottom: 10px !important;
+  }
+  .intel-card span.intel-live-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    line-height: 1.1 !important;
+  }
+  .intel-live-icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  .intel-live-icon svg {
+    display: block !important;
+    width: 19px !important;
+    height: 19px !important;
+  }
+  .intel-card .live-badge {
+    margin-left: auto !important;
+    align-self: center !important;
+    line-height: 1.2 !important;
+  }
+  .intel-card b {
+    font-size: 13.5px !important;
+    line-height: 1.22 !important;
+  }
+  .fuel-inline-action,
+  .intel-card .mini-action {
+    border-radius: 10px !important;
+  }
+  html.is-embedded .modal.open {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding-top: 112px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    overflow-y: auto !important;
+  }
+  html.is-embedded .modal-card {
+    max-height: min(620px, calc(100vh - 132px)) !important;
+    overflow-y: auto !important;
+  }
+  @media (max-width: 700px) {
+    .r-tabs {
+      border-radius: 16px !important;
+      gap: 4px !important;
+    }
+    .r-tab {
+      min-height: 38px !important;
+      padding: 9px 6px !important;
+      font-size: 12px !important;
+    }
+    html.is-embedded .modal.open {
+      padding-top: 72px !important;
+    }
+    html.is-embedded .modal-card {
+      max-height: min(620px, calc(100vh - 92px)) !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -4491,6 +4643,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => "$" + n.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtW = n => Math.round(n).toLocaleString("en-CA") + " lbs";
 const fmtCF = n => n.toFixed(2) + " ft3";
+const cityDisplayName = v => (v || '').toString().toUpperCase();
 const cmToIn = v => v / 2.54;
 const kgToLb = v => v / 0.45359237;
 const toInches = v => state.lenUnit === 'cm' ? cmToIn(v) : v;
@@ -4688,7 +4841,7 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
   function pick(idx) {
     if (idx < 0 || idx >= currentItems.length) return;
     const it = currentItems[idx];
-    input.value = it.label;
+    input.value = cityDisplayName(it.label);
     list.classList.remove('open');
     onSelect(it.label);
   }
@@ -5293,8 +5446,8 @@ function applyQuoteSnapshot(snapshot) {
     }
   }
 
-  if ($("originInput")) $("originInput").value = state.origin || '';
-  if ($("destInput")) $("destInput").value = state.destination || '';
+  if ($("originInput")) $("originInput").value = cityDisplayName(state.origin) || '';
+  if ($("destInput")) $("destInput").value = cityDisplayName(state.destination) || '';
   $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.lh === state.laneMode));
   $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
   $("lenUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === state.lenUnit));
@@ -5784,16 +5937,16 @@ function updateOutput(options = {}) {
   $("svcPill").textContent = svc ? svc.name : '-';
 
   if (q.isLocal) {
-    $("laneLabel").textContent = `${state.origin} - local delivery`;
+    $("laneLabel").textContent = `${cityDisplayName(state.origin)} - local delivery`;
     $("laneInfo").style.display = "block";
-    $("originOut").textContent = state.origin;
+    $("originOut").textContent = cityDisplayName(state.origin);
     $("destOut").textContent = "local";
   } else {
     const middleSuffix = state.laneMode === 'middle' ? ' - middle mile only' : '';
-    $("laneLabel").textContent = `${state.origin} -> ${state.destination}${middleSuffix}`;
+    $("laneLabel").textContent = `${cityDisplayName(state.origin)} -> ${cityDisplayName(state.destination)}${middleSuffix}`;
     $("laneInfo").style.display = "block";
-    $("originOut").textContent = state.origin;
-    $("destOut").textContent = state.destination;
+    $("originOut").textContent = cityDisplayName(state.origin);
+    $("destOut").textContent = cityDisplayName(state.destination);
   }
   // Hide service pill in middle mode (no final-mile service applies)
   const svcPillEl = $("svcPill");
@@ -5985,8 +6138,8 @@ function updateOutput(options = {}) {
   // Journey labels + local mode handling
   const isMiddleOnly = state.laneMode === 'middle';
   const jO = $("jOrigin"), jD = $("jDest"), jOSub = $("jOriginSub"), jDSub = $("jDestSub");
-  if (jO) jO.textContent = state.origin || 'Origin';
-  if (jD) jD.textContent = q.isLocal ? state.origin || 'Local stops' : (state.destination || 'Destination');
+  if (jO) jO.textContent = cityDisplayName(state.origin) || 'Origin';
+  if (jD) jD.textContent = q.isLocal ? (cityDisplayName(state.origin) || 'Local stops') : (cityDisplayName(state.destination) || 'Destination');
   if (jOSub) jOSub.textContent = isMiddleOnly ? 'Origin dock' : 'Pickup point';
   if (jDSub) jDSub.textContent = q.isLocal ? 'Within same city' : (isMiddleOnly ? 'Destination dock' : 'Final mile delivery');
 
@@ -6056,7 +6209,7 @@ function updateOutput(options = {}) {
   // Build booking summary and prime modal action links
   {
     const svcName = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || '';
-    const lane = q.isLocal ? state.origin + ' (local)' : state.origin + ' -> ' + state.destination;
+    const lane = q.isLocal ? cityDisplayName(state.origin) + ' (local)' : cityDisplayName(state.origin) + ' -> ' + cityDisplayName(state.destination);
     const largeLinearSummary = Number(q.linearFt || 0) > 10;
     const pieceLines = (state.pieces || []).map((p, i) => {
       const type = (p.itemType || p.label || 'Item').trim();
@@ -6598,7 +6751,7 @@ function setupActions() {
     const q = computeQuote();
     if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
     const svc = SERVICE_LEVELS.find(s => s.id === state.service);
-    const lane = q.isLocal ? `${state.origin} local delivery` : `${state.origin} to ${state.destination}`;
+    const lane = q.isLocal ? `${cityDisplayName(state.origin)} local delivery` : `${cityDisplayName(state.origin)} to ${cityDisplayName(state.destination)}`;
     const largeLinear = Number(q.linearFt || 0) > 10;
     const text = [
       'OKE Canada delivery quote',
@@ -6637,7 +6790,7 @@ function setupActions() {
       return;
     }
     const svc = SERVICE_LEVELS.find(s => s.id === state.service);
-    const lane = q.isLocal ? `${state.origin} local` : `${state.origin} -> ${state.destination}`;
+    const lane = q.isLocal ? `${cityDisplayName(state.origin)} local` : `${cityDisplayName(state.origin)} -> ${cityDisplayName(state.destination)}`;
     const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
     const summary = `OKE Canada quote - ${lane} - ${svc ? svc.name : ''} - ${Number(q.linearFt || 0) > 10 ? 'Custom quote' : fmt(q.totalAfterTax)}${link}`;
     let shared = false;

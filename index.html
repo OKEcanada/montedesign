@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-31-national-booking-email-v1" />
+<meta name="oke-build" content="2026-05-31-national-wix-quote-links-v1" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4346,7 +4346,8 @@ window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
 };
 window.MONTE_CONFIG = window.MONTE_CONFIG || {
-  shareBase: "https://okecanada.github.io/montedesign/q",
+  shareBase: "https://www.onekindexpress.com/national-calculator",
+  quoteBridgeBase: "https://okecanada.github.io/montedesign/quote.html",
   slackNotifyOnSave: true,
   slackNotifyOnView: false
 };
@@ -6563,15 +6564,48 @@ function buildQuoteRecord(q) {
 }
 
 function quoteShareUrl(publicToken) {
-  // Prefer MONTE_CONFIG.shareBase if set (e.g. "https://monte.onekindexpress.com/q")
+  if (!publicToken) return '';
+  // Wix embeds this calculator in a fixed iframe URL and does not pass parent
+  // query params into the iframe. The bridge stores the token on this origin,
+  // then lands the customer on the Wix page where the iframe can load it.
+  if (MONTE_CONFIG.quoteBridgeBase) {
+    const bridge = new URL(String(MONTE_CONFIG.quoteBridgeBase), window.location.href);
+    bridge.searchParams.set('token', publicToken);
+    bridge.searchParams.set('open', 'wix');
+    return bridge.toString();
+  }
   if (MONTE_CONFIG.shareBase) {
-    const base = String(MONTE_CONFIG.shareBase).replace(/\/+$/, '');
-    return `${base}/${publicToken}`;
+    const url = new URL(String(MONTE_CONFIG.shareBase), window.location.href);
+    url.searchParams.set('quote', publicToken);
+    return url.toString();
   }
   // Fallback: same calculator URL with ?quote=<token>
   const url = new URL(window.location.href);
   url.searchParams.set('quote', publicToken);
   return url.toString();
+}
+
+function pendingQuoteTokenFromStorage() {
+  try {
+    const raw = localStorage.getItem('montePendingQuoteToken');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.token) return null;
+    if (Date.now() - Number(parsed.createdAt || 0) > 10 * 60 * 1000) {
+      localStorage.removeItem('montePendingQuoteToken');
+      return null;
+    }
+    return String(parsed.token);
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearPendingQuoteToken(token) {
+  try {
+    const pending = pendingQuoteTokenFromStorage();
+    if (!token || pending === token) localStorage.removeItem('montePendingQuoteToken');
+  } catch (e) {}
 }
 
 async function copyTextSafe(text) {
@@ -6748,7 +6782,8 @@ function applyQuoteSnapshot(snapshot) {
 }
 
 async function loadSharedQuoteIfPresent() {
-  const token = new URL(window.location.href).searchParams.get('quote');
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get('quote') || url.searchParams.get('token') || pendingQuoteTokenFromStorage();
   if (!token) return false;
   const cfg = getSupabaseConfig();
   if (cfg) {
@@ -6770,6 +6805,7 @@ async function loadSharedQuoteIfPresent() {
           window._publicToken = record.public_token || token;
           window._lastSavedQuote = record;
           window._lastQuoteShareUrl = quoteShareUrl(token);
+          clearPendingQuoteToken(token);
           return true;
         }
       }
@@ -6781,8 +6817,10 @@ async function loadSharedQuoteIfPresent() {
     window._publicToken = local.public_token || token;
     window._lastSavedQuote = local;
     window._lastQuoteShareUrl = quoteShareUrl(token);
+    clearPendingQuoteToken(token);
     return true;
   }
+  clearPendingQuoteToken(token);
   return false;
 }
 

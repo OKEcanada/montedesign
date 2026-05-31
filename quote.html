@@ -348,6 +348,28 @@
     font: 12px/1.55 var(--mono);
   }
   .form-grid { display: grid; gap: 12px; }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .required-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .required-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid rgba(66,232,212,.22);
+    border-radius: 999px;
+    background: rgba(66,232,212,.08);
+    color: #c9fffa;
+    font: 800 11px/1 var(--mono);
+  }
   label {
     display: grid;
     gap: 6px;
@@ -411,6 +433,7 @@
     .panel-inner,
     .section-body { padding: 16px; }
     .metric-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
     .actions button,
     .actions .btn { width: 100%; }
     .order-top,
@@ -533,12 +556,32 @@
         </div>
       </div>
       <div class="section-body">
-        <p class="helper">Confirm pickup details and OKE will review the quote, addresses, timing, access notes, and capacity before dispatch.</p>
+        <p class="helper">Confirm the practical details OKE needs to review the quote, addresses, timing, access notes, and capacity before dispatch.</p>
+        <div class="required-list" aria-label="Required booking details">
+          <span class="required-chip">Name</span>
+          <span class="required-chip">Email</span>
+          <span class="required-chip">Phone</span>
+          <span class="required-chip">Pickup address</span>
+          <span class="required-chip">Delivery address</span>
+        </div>
         <div class="form-grid" style="margin-top:16px">
-          <label>Your name <input id="contactName" autocomplete="name"></label>
-          <label>Email <input id="contactEmail" type="email" autocomplete="email"></label>
-          <label>Phone optional <input id="contactPhone" type="tel" autocomplete="tel"></label>
-          <label>Notes for dispatch optional <textarea id="contactNotes" placeholder="Pickup window, delivery restrictions, access notes, PO number, or anything OKE should review."></textarea></label>
+          <div class="form-row">
+            <label>Your name <input id="contactName" autocomplete="name" placeholder="Contact name"></label>
+            <label>Company optional <input id="contactCompany" autocomplete="organization" placeholder="Company name"></label>
+          </div>
+          <div class="form-row">
+            <label>Email <input id="contactEmail" type="email" autocomplete="email" placeholder="name@company.com"></label>
+            <label>Phone <input id="contactPhone" type="tel" autocomplete="tel" placeholder="Best callback number"></label>
+          </div>
+          <div class="form-row">
+            <label>Pickup address <textarea id="pickupAddress" autocomplete="street-address" placeholder="Street, unit, dock/access notes"></textarea></label>
+            <label>Delivery address <textarea id="deliveryAddress" autocomplete="street-address" placeholder="Street, unit, room/floor/access notes"></textarea></label>
+          </div>
+          <div class="form-row">
+            <label>Preferred window optional <input id="requestedWindow" placeholder="Example: Tue 9 AM - 1 PM"></label>
+            <label>PO / reference optional <input id="poNumber" placeholder="PO, project, or internal ref"></label>
+          </div>
+          <label>Notes or requested changes <textarea id="contactNotes" placeholder="Pickup/delivery restrictions, appointment needs, changes to the quote, or questions for OKE."></textarea></label>
         </div>
         <div class="actions">
           <button class="primary" id="confirmBtn" type="button">Confirm this booking</button>
@@ -546,6 +589,24 @@
           <a class="btn cool" id="emailOkeBtn" href="mailto:info@onekindexpress.com">Email OKE</a>
         </div>
         <div id="confirmStatus" class="status-text"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">What happens next</div>
+          <h2>OKE review flow</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="metric-grid">
+          <div class="metric"><span>1. Customer copy</span><b>Email confirmation</b></div>
+          <div class="metric"><span>2. OKE review</span><b>Access + capacity</b></div>
+          <div class="metric"><span>3. Follow up</span><b>Timing confirmed</b></div>
+          <div class="metric"><span>4. Dispatch</span><b>Final booking</b></div>
+        </div>
+        <p class="helper" style="margin-top:14px">Submitting this page sends the saved quote, contact details, notes, and any requested changes to OKE. Dispatch details are confirmed before a truck is assigned.</p>
       </div>
     </section>
   </div>
@@ -807,6 +868,42 @@ async function loadQuote() {
     showError(e.message || String(e));
   }
 }
+function readContactFields() {
+  return {
+    name: $("contactName").value.trim(),
+    company: $("contactCompany").value.trim(),
+    email: $("contactEmail").value.trim(),
+    phone: $("contactPhone").value.trim(),
+    pickupAddress: $("pickupAddress").value.trim(),
+    deliveryAddress: $("deliveryAddress").value.trim(),
+    requestedWindow: $("requestedWindow").value.trim(),
+    poNumber: $("poNumber").value.trim(),
+    notes: $("contactNotes").value.trim()
+  };
+}
+function isEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || "").trim());
+}
+function structuredNotes(fields) {
+  return [
+    fields.company ? `Company: ${fields.company}` : "",
+    fields.pickupAddress ? `Pickup address: ${fields.pickupAddress}` : "",
+    fields.deliveryAddress ? `Delivery address: ${fields.deliveryAddress}` : "",
+    fields.requestedWindow ? `Preferred window: ${fields.requestedWindow}` : "",
+    fields.poNumber ? `PO / reference: ${fields.poNumber}` : "",
+    fields.notes ? `Notes: ${fields.notes}` : ""
+  ].filter(Boolean).join("\n");
+}
+function validateContactFields(fields, action) {
+  const missing = [];
+  if (!fields.name) missing.push("name");
+  if (!isEmail(fields.email)) missing.push("valid email");
+  if (action === "accept" && !fields.phone) missing.push("phone");
+  if (action === "accept" && !fields.pickupAddress) missing.push("pickup address");
+  if (action === "accept" && !fields.deliveryAddress) missing.push("delivery address");
+  if (action !== "accept" && !fields.notes) missing.push("notes describing the requested change");
+  return missing;
+}
 async function notifyBookingEmailsFromQuote(contactBody, action) {
   const cfg = sbCfg();
   if (!cfg || !LOADED_QUOTE) return { ok: false, skipped: true };
@@ -819,9 +916,14 @@ async function notifyBookingEmailsFromQuote(contactBody, action) {
     pickup_date: LOADED_QUOTE.pickup_date || "",
     total: LOADED_QUOTE.total_after_tax,
     customer: contactBody.p_contact_name,
+    company: contactBody.company,
     email: contactBody.p_contact_email,
     phone: contactBody.p_contact_phone,
-    notes: contactBody.p_notes,
+    pickup_address: contactBody.pickup_address,
+    delivery_address: contactBody.delivery_address,
+    requested_window: contactBody.requested_window,
+    po_number: contactBody.po_number,
+    notes: contactBody.notes,
     action,
     share_url: quoteShareUrl(LOADED_QUOTE.public_token),
     booking_summary: quoteEmailBody(LOADED_QUOTE),
@@ -843,16 +945,29 @@ async function submitBooking(action) {
   if (!LOADED_QUOTE) return;
   const status = $("confirmStatus");
   const btn = action === "accept" ? $("confirmBtn") : $("changesBtn");
+  const fields = readContactFields();
+  const missing = validateContactFields(fields, action);
+  if (missing.length) {
+    status.style.color = "var(--danger)";
+    status.textContent = `Please add ${missing.join(", ")}.`;
+    return;
+  }
   btn.disabled = true;
   status.style.color = "var(--muted)";
   status.textContent = "Sending...";
   const body = {
     p_token: LOADED_QUOTE.public_token,
     p_action: action,
-    p_contact_name: $("contactName").value.trim(),
-    p_contact_email: $("contactEmail").value.trim(),
-    p_contact_phone: $("contactPhone").value.trim(),
-    p_notes: $("contactNotes").value.trim(),
+    p_contact_name: fields.name,
+    p_contact_email: fields.email,
+    p_contact_phone: fields.phone,
+    p_notes: structuredNotes(fields),
+    company: fields.company,
+    pickup_address: fields.pickupAddress,
+    delivery_address: fields.deliveryAddress,
+    requested_window: fields.requestedWindow,
+    po_number: fields.poNumber,
+    notes: fields.notes,
     p_user_agent: navigator.userAgent || null
   };
   try {
@@ -864,7 +979,7 @@ async function submitBooking(action) {
     const customerOk = !!(emailNotice && emailNotice.data && emailNotice.data.customer && emailNotice.data.customer.ok);
     status.style.color = "var(--good)";
     status.textContent = customerOk
-      ? "Done. OKE received it and a customer copy was emailed."
+      ? (action === "accept" ? "Done. OKE received the booking request and a customer copy was emailed." : "Done. OKE received the change request and a customer copy was emailed.")
       : "Done. OKE received it. Customer email copy did not confirm, so copy the quote link if needed.";
     $("confirmBtn").disabled = true;
     $("changesBtn").disabled = true;

@@ -4301,17 +4301,43 @@
             <input id="bookingName" type="text" autocomplete="name" placeholder="Contact name" />
           </div>
           <div class="booking-field">
+            <label for="bookingCompany">Company optional</label>
+            <input id="bookingCompany" type="text" autocomplete="organization" placeholder="Company name" />
+          </div>
+        </div>
+        <div class="booking-form-row">
+          <div class="booking-field">
             <label for="bookingPhone">Phone</label>
             <input id="bookingPhone" type="tel" autocomplete="tel" placeholder="Phone number" />
           </div>
+          <div class="booking-field">
+            <label for="bookingEmail">Email</label>
+            <input id="bookingEmail" type="email" autocomplete="email" placeholder="Email address" />
+          </div>
         </div>
-        <div class="booking-field">
-          <label for="bookingEmail">Email</label>
-          <input id="bookingEmail" type="email" autocomplete="email" placeholder="Email address" />
+        <div class="booking-form-row">
+          <div class="booking-field">
+            <label for="bookingPickupAddress">Pickup address</label>
+            <textarea id="bookingPickupAddress" placeholder="Street, unit, dock/access notes"></textarea>
+          </div>
+          <div class="booking-field">
+            <label for="bookingDeliveryAddress">Delivery address</label>
+            <textarea id="bookingDeliveryAddress" placeholder="Street, unit, room/floor/access notes"></textarea>
+          </div>
+        </div>
+        <div class="booking-form-row">
+          <div class="booking-field">
+            <label for="bookingWindow">Preferred window optional</label>
+            <input id="bookingWindow" type="text" placeholder="Example: Tue 9 AM - 1 PM" />
+          </div>
+          <div class="booking-field">
+            <label for="bookingPo">PO / reference optional</label>
+            <input id="bookingPo" type="text" placeholder="PO, project, or internal ref" />
+          </div>
         </div>
         <div class="booking-field">
           <label for="bookingNotes">Notes</label>
-          <textarea id="bookingNotes" placeholder="Pickup/delivery details, access notes, timing, or questions"></textarea>
+          <textarea id="bookingNotes" placeholder="Pickup/delivery restrictions, access notes, timing, or questions"></textarea>
         </div>
         <button class="modal-submit" id="bookingSubmit" type="button">Confirm this booking</button>
         <div class="booking-status" id="bookingStatus" aria-live="polite"></div>
@@ -8400,6 +8426,23 @@ function setupActions() {
     bookModal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeBookingModal));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bookModal.classList.contains('open')) closeBookingModal(); });
   }
+  function bookingFieldValue(id) {
+    const el = $(id);
+    return el && el.value ? el.value.trim() : '';
+  }
+  function validBookingEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
+  }
+  function buildBookingStructuredNotes(fields) {
+    return [
+      fields.company ? `Company: ${fields.company}` : '',
+      fields.pickupAddress ? `Pickup address: ${fields.pickupAddress}` : '',
+      fields.deliveryAddress ? `Delivery address: ${fields.deliveryAddress}` : '',
+      fields.window ? `Preferred window: ${fields.window}` : '',
+      fields.po ? `PO / reference: ${fields.po}` : '',
+      fields.notes ? `Notes: ${fields.notes}` : ''
+    ].filter(Boolean).join('\n');
+  }
   const bookingSubmit = $("bookingSubmit");
   if (bookingSubmit) bookingSubmit.addEventListener('click', async () => {
     const statusEl = $("bookingStatus");
@@ -8410,10 +8453,25 @@ function setupActions() {
       statusEl.classList.toggle('ok', tone === 'ok');
       statusEl.classList.toggle('err', tone === 'err');
     };
-    const email = ($("bookingEmail") && $("bookingEmail").value || '').trim();
-    const phone = ($("bookingPhone") && $("bookingPhone").value || '').trim();
-    if (!email && !phone) {
-      setStatus('Add an email or phone so dispatch can reach you.', 'err');
+    const fields = {
+      name: bookingFieldValue('bookingName'),
+      company: bookingFieldValue('bookingCompany'),
+      email: bookingFieldValue('bookingEmail'),
+      phone: bookingFieldValue('bookingPhone'),
+      pickupAddress: bookingFieldValue('bookingPickupAddress'),
+      deliveryAddress: bookingFieldValue('bookingDeliveryAddress'),
+      window: bookingFieldValue('bookingWindow'),
+      po: bookingFieldValue('bookingPo'),
+      notes: bookingFieldValue('bookingNotes')
+    };
+    const missing = [];
+    if (!fields.name) missing.push('name');
+    if (!validBookingEmail(fields.email)) missing.push('valid email');
+    if (!fields.phone) missing.push('phone');
+    if (!fields.pickupAddress) missing.push('pickup address');
+    if (!fields.deliveryAddress) missing.push('delivery address');
+    if (missing.length) {
+      setStatus(`Add ${missing.join(', ')} so OKE can confirm the booking and email the customer copy.`, 'err');
       return;
     }
     bookingSubmit.disabled = true;
@@ -8427,10 +8485,10 @@ function setupActions() {
       const body = {
         p_token: saved.public_token,
         p_action: 'accept',
-        p_contact_name: ($("bookingName") && $("bookingName").value || '').trim(),
-        p_contact_email: email,
-        p_contact_phone: phone,
-        p_notes: ($("bookingNotes") && $("bookingNotes").value || '').trim(),
+        p_contact_name: fields.name,
+        p_contact_email: fields.email,
+        p_contact_phone: fields.phone,
+        p_notes: buildBookingStructuredNotes(fields),
         p_user_agent: navigator.userAgent || null
       };
       await sbRpc('submit_quote_request', body);
@@ -8443,9 +8501,15 @@ function setupActions() {
         pickup_date: saved.pickup_date || (($("pickupDate") && $("pickupDate").value) || ''),
         total: saved.total_after_tax,
         customer: body.p_contact_name,
+        company: fields.company,
         email: body.p_contact_email,
         phone: body.p_contact_phone,
-        notes: body.p_notes,
+        pickup_address: fields.pickupAddress,
+        delivery_address: fields.deliveryAddress,
+        requested_window: fields.window,
+        po_number: fields.po,
+        action: 'accept',
+        notes: fields.notes,
         share_url: quoteShareUrl(saved.public_token),
         booking_summary: window._bookingSummary || '',
         booking_email_body: window._bookingEmailBody || ''

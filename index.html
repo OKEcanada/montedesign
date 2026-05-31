@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-31-national-wix-quote-links-v1" />
+<meta name="oke-build" content="2026-05-31-national-wix-handoff-v2" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6608,6 +6608,52 @@ function clearPendingQuoteToken(token) {
   } catch (e) {}
 }
 
+async function quoteHandoffSignature() {
+  const tz = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || "";
+  const parts = [
+    navigator.userAgent || "",
+    navigator.language || "",
+    navigator.platform || "",
+    tz,
+    screen.width || 0,
+    screen.height || 0,
+    screen.colorDepth || 0,
+    window.devicePixelRatio || 1,
+    navigator.hardwareConcurrency || 0,
+    navigator.maxTouchPoints || 0
+  ].join("|");
+  try {
+    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parts));
+    return Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) {
+    return btoa(unescape(encodeURIComponent(parts))).replace(/[^A-Za-z0-9]/g, "").slice(0, 96);
+  }
+}
+
+async function resolveQuoteHandoffToken() {
+  const cfg = getSupabaseConfig();
+  if (!cfg) return null;
+  const ref = String(document.referrer || "");
+  const embeddedOnWix = ref.includes("onekindexpress.com") || window.self !== window.top;
+  if (!embeddedOnWix) return null;
+  try {
+    const signature = await quoteHandoffSignature();
+    const res = await fetch(`${cfg.url}/functions/v1/quote-handoff`, {
+      method: "POST",
+      headers: {
+        apikey: cfg.anonKey,
+        Authorization: `Bearer ${cfg.anonKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ action: "resolve", signature })
+    });
+    const data = await res.json().catch(() => ({}));
+    return res.ok && data && data.ok && data.token ? String(data.token) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function copyTextSafe(text) {
   const value = String(text || '');
   if (!value) return false;
@@ -6783,7 +6829,8 @@ function applyQuoteSnapshot(snapshot) {
 
 async function loadSharedQuoteIfPresent() {
   const url = new URL(window.location.href);
-  const token = url.searchParams.get('quote') || url.searchParams.get('token') || pendingQuoteTokenFromStorage();
+  let token = url.searchParams.get('quote') || url.searchParams.get('token') || pendingQuoteTokenFromStorage();
+  if (!token) token = await resolveQuoteHandoffToken();
   if (!token) return false;
   const cfg = getSupabaseConfig();
   if (cfg) {

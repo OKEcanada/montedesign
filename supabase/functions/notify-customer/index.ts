@@ -15,6 +15,12 @@ type MailPayload = Record<string, unknown> & {
   customer_phone?: string;
   email?: string;
   phone?: string;
+  company?: string;
+  pickup_address?: string;
+  delivery_address?: string;
+  requested_window?: string;
+  po_number?: string;
+  action?: string;
   notes?: string;
   requested_at?: string;
   pickup_date?: string;
@@ -101,21 +107,30 @@ function line(label: string, value: unknown) {
 function htmlRow(label: string, value: unknown) {
   const v = text(value);
   if (!v) return "";
-  return `<tr><td style="padding:7px 10px;color:#6b7280;width:145px">${htmlEsc(label)}</td><td style="padding:7px 10px;color:#111827;font-weight:700">${htmlEsc(v)}</td></tr>`;
+  return `<tr><td style="padding:9px 12px;color:#747b91;width:150px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:800">${htmlEsc(label)}</td><td style="padding:9px 12px;color:#111827;font-weight:800">${htmlEsc(v)}</td></tr>`;
+}
+
+function isChangeRequest(payload: MailPayload) {
+  const action = text(payload.action).toLowerCase();
+  return action.includes("change") || action.includes("revision");
+}
+
+function requestKind(payload: MailPayload) {
+  return isChangeRequest(payload) ? "Change request" : "Booking request";
 }
 
 function emailShell(title: string, intro: string, rows: string, extraHtml = "") {
-  return `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.55;color:#111827;background:#f5f2ea;padding:24px">
-    <div style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden">
-      <div style="background:#080d25;color:#ffffff;padding:18px 22px">
-        <div style="font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#ff9b6b;font-weight:800">One Kind Express</div>
-        <h1 style="margin:8px 0 0;font-size:24px;line-height:1.2">${htmlEsc(title)}</h1>
+  return `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.55;color:#111827;background:#05060d;padding:28px">
+    <div style="max-width:720px;margin:0 auto;background:#fbfaf6;border:1px solid #e7dfd2;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.28)">
+      <div style="background:linear-gradient(135deg,#07091a,#111827 58%,#30140b);color:#ffffff;padding:22px 24px">
+        <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#ffad7a;font-weight:900">One Kind Express</div>
+        <h1 style="margin:9px 0 0;font-size:28px;line-height:1.08;letter-spacing:-.03em">${htmlEsc(title)}</h1>
       </div>
-      <div style="padding:22px">
-        <p style="margin:0 0 16px;color:#374151">${htmlEsc(intro)}</p>
-        <table style="width:100%;border-collapse:collapse;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">${rows}</table>
+      <div style="padding:24px">
+        <p style="margin:0 0 18px;color:#374151;font-size:15px">${htmlEsc(intro)}</p>
+        <table style="width:100%;border-collapse:collapse;background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden">${rows}</table>
         ${extraHtml}
-        <p style="margin:20px 0 0;color:#6b7280;font-size:13px">One Kind Express<br>info@onekindexpress.com | 1-833-653-5777</p>
+        <p style="margin:22px 0 0;color:#6b7280;font-size:13px">One Kind Express<br>info@onekindexpress.com | 1-833-653-5777</p>
       </div>
     </div>
   </div>`;
@@ -123,40 +138,53 @@ function emailShell(title: string, intro: string, rows: string, extraHtml = "") 
 
 function buildInternalEmail(payload: MailPayload) {
   const quote = text(payload.quote_ref) || "New quote";
+  const isChange = isChangeRequest(payload);
   const customerEmail = text(payload.customer_email || payload.email);
   const customerPhone = text(payload.customer_phone || payload.phone);
   const customerName = text(payload.customer) || "Customer";
   const rows = [
+    htmlRow("Request type", requestKind(payload)),
     htmlRow("Quote", quote),
     htmlRow("Requested", formatDateTime(payload.requested_at)),
     htmlRow("Preferred pickup", formatDate(payload.pickup_date)),
     htmlRow("Customer", customerName),
+    htmlRow("Company", payload.company),
     htmlRow("Email", customerEmail),
     htmlRow("Phone", customerPhone),
     htmlRow("Lane", quoteLane(payload)),
+    htmlRow("Pickup address", payload.pickup_address),
+    htmlRow("Delivery address", payload.delivery_address),
+    htmlRow("Preferred window", payload.requested_window),
+    htmlRow("PO / reference", payload.po_number),
     htmlRow("Total", payload.total ? formatMoney(payload.total) : ""),
     htmlRow("Notes", payload.notes),
   ].join("");
   const quoteBody = text(payload.booking_email_body || payload.booking_summary);
   const extra = [
     payload.share_url
-      ? `<p style="margin:18px 0"><a style="display:inline-block;background:#ff6b3a;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:800" href="${htmlEsc(payload.share_url)}">Open saved quote</a></p>`
+      ? `<p style="margin:18px 0"><a style="display:inline-block;background:linear-gradient(135deg,#ff7a45,#f04418);color:#fff;text-decoration:none;padding:13px 18px;border-radius:999px;font-weight:900" href="${htmlEsc(payload.share_url)}">Open saved quote page</a></p>`
       : "",
     quoteBody
       ? `<div style="margin-top:18px"><div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;font-weight:800;margin-bottom:8px">Quote details</div><pre style="white-space:pre-wrap;margin:0;background:#111827;color:#f9fafb;border-radius:12px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.55">${htmlEsc(quoteBody)}</pre></div>`
       : "",
   ].join("");
-  const subject = `New booking request ${quote} - ${quoteLane(payload)}`;
+  const subject = `${isChange ? "Quote change request" : "New booking request"} ${quote} - ${quoteLane(payload)}`;
   const plain = [
-    "New One Kind Express booking request",
+    `New One Kind Express ${isChange ? "change request" : "booking request"}`,
     "",
+    line("Request type", requestKind(payload)),
     line("Quote", quote),
     line("Requested", formatDateTime(payload.requested_at)),
     line("Preferred pickup", formatDate(payload.pickup_date)),
     line("Customer", customerName),
+    line("Company", payload.company),
     line("Email", customerEmail),
     line("Phone", customerPhone),
     line("Lane", quoteLane(payload)),
+    line("Pickup address", payload.pickup_address),
+    line("Delivery address", payload.delivery_address),
+    line("Preferred window", payload.requested_window),
+    line("PO / reference", payload.po_number),
     payload.total ? line("Total", formatMoney(payload.total)) : "",
     line("Notes", payload.notes),
     payload.share_url ? line("Quote link", payload.share_url) : "",
@@ -165,36 +193,58 @@ function buildInternalEmail(payload: MailPayload) {
   return {
     subject,
     text: plain,
-    html: emailShell("New booking request", "A customer requested this quote from the national calculator.", rows, extra),
+    html: emailShell(
+      isChange ? "Quote change request" : "New booking request",
+      isChange
+        ? "A customer requested changes to this saved quote. Open the quote page first, review the notes, then reopen the calculator from that page if edits are needed."
+        : "A customer requested this quote. Open the saved quote page first, then use the calculator button there if edits are needed.",
+      rows,
+      extra,
+    ),
   };
 }
 
 function buildCustomerEmail(name: string, payload: MailPayload) {
   const quote = text(payload.quote_ref) || "your quote";
+  const isChange = isChangeRequest(payload);
   const rows = [
+    htmlRow("Request type", requestKind(payload)),
     htmlRow("Quote", quote),
     htmlRow("Preferred pickup", formatDate(payload.pickup_date)),
     htmlRow("Lane", quoteLane(payload)),
+    htmlRow("Pickup address", payload.pickup_address),
+    htmlRow("Delivery address", payload.delivery_address),
+    htmlRow("Preferred window", payload.requested_window),
+    htmlRow("PO / reference", payload.po_number),
     htmlRow("Total", payload.total ? formatMoney(payload.total) : ""),
   ].join("");
   const quoteBody = text(payload.booking_email_body || payload.booking_summary);
   const extra = [
     payload.share_url
-      ? `<p style="margin:18px 0"><a style="display:inline-block;background:#ff6b3a;color:#fff;text-decoration:none;padding:12px 16px;border-radius:10px;font-weight:800" href="${htmlEsc(payload.share_url)}">Open your quote</a></p>`
+      ? `<p style="margin:18px 0"><a style="display:inline-block;background:linear-gradient(135deg,#ff7a45,#f04418);color:#fff;text-decoration:none;padding:13px 18px;border-radius:999px;font-weight:900" href="${htmlEsc(payload.share_url)}">View your saved quote</a></p><p style="margin:0 0 18px;color:#6b7280;font-size:13px">This opens your quote page first. From there you can copy details, print, or open the same quote in the calculator.</p>`
       : "",
     quoteBody
       ? `<div style="margin-top:18px"><div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;font-weight:800;margin-bottom:8px">Quote details and pricing</div><pre style="white-space:pre-wrap;margin:0;background:#f9fafb;color:#111827;border:1px solid #e5e7eb;border-radius:12px;padding:14px;font-family:Consolas,monospace;font-size:12px;line-height:1.55">${htmlEsc(quoteBody)}</pre></div>`
       : "",
   ].join("");
-  const subject = `One Kind Express received your booking request ${quote}`;
+  const subject = isChange
+    ? `One Kind Express received your change request ${quote}`
+    : `One Kind Express received your booking request ${quote}`;
   const plain = [
     `Hi ${name || "there"},`,
     "",
-    "We received your booking request. Our team will review the shipment details and follow up with next steps.",
+    isChange
+      ? "We received your requested changes. OKE will review the note and quote details, then follow up with the next step."
+      : "We received your booking request. OKE will review the addresses, access notes, timing, and capacity before dispatch confirmation.",
     "",
+    line("Request type", requestKind(payload)),
     line("Quote", quote),
     line("Preferred pickup", formatDate(payload.pickup_date)),
     line("Lane", quoteLane(payload)),
+    line("Pickup address", payload.pickup_address),
+    line("Delivery address", payload.delivery_address),
+    line("Preferred window", payload.requested_window),
+    line("PO / reference", payload.po_number),
     payload.total ? line("Total", formatMoney(payload.total)) : "",
     payload.share_url ? line("Quote link", payload.share_url) : "",
     quoteBody ? `\nQUOTE DETAILS AND PRICING\n${quoteBody}` : "",
@@ -206,8 +256,10 @@ function buildCustomerEmail(name: string, payload: MailPayload) {
     subject,
     text: plain,
     html: emailShell(
-      "Booking request received",
-      `Hi ${name || "there"}, we received your booking request. Our team will review the shipment details and follow up with next steps.`,
+      isChange ? "Change request received" : "Booking request received",
+      isChange
+        ? `Hi ${name || "there"}, we received your requested changes. OKE will review the quote and follow up with the next step.`
+        : `Hi ${name || "there"}, we received your booking request. OKE will review the addresses, access notes, timing, and capacity before dispatch confirmation.`,
       rows,
       extra,
     ),
@@ -274,7 +326,8 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
 
   const body = await req.json().catch(() => ({}));
-  const payload = (body.payload || {}) as MailPayload;
+  const payload = { ...((body.payload || {}) as MailPayload) };
+  if (!payload.action && body.event) payload.action = text(body.event);
   const recipientType = text(payload.recipient_type || body.recipient_type).toLowerCase();
   if (recipientType === "booking_pair") {
     const customerEmail = text(body.email || body.to || payload.email || payload.customer_email);

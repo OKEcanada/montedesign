@@ -176,39 +176,19 @@
   .route-truck {
     position: absolute;
     left: 8%;
-    top: calc(50% - 18px);
-    width: 52px;
-    height: 32px;
-    border-radius: 10px 13px 8px 8px;
-    background: linear-gradient(135deg, var(--brand), var(--brand2));
-    box-shadow: 0 16px 34px rgba(255,106,0,.36);
+    top: 50%;
+    width: 58px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 15px 24px rgba(255,106,0,.42));
     animation: truckMove 7s cubic-bezier(.65,0,.35,1) infinite;
-  }
-  .route-truck::before {
-    content: "";
-    position: absolute;
-    right: -9px;
-    bottom: 4px;
-    width: 15px;
-    height: 16px;
-    border-radius: 4px 5px 4px 2px;
-    background: #ffd5bd;
-  }
-  .route-truck::after {
-    content: "";
-    position: absolute;
-    left: 8px;
-    right: -4px;
-    bottom: -5px;
-    height: 8px;
-    background:
-      radial-gradient(circle, #050505 0 4px, transparent 4.5px) left center / 18px 8px no-repeat,
-      radial-gradient(circle, #050505 0 4px, transparent 4.5px) right center / 18px 8px no-repeat;
+    z-index: 2;
+    will-change: left, opacity, transform;
   }
   @keyframes truckMove {
-    0%, 7% { left: 7%; opacity: .24; transform: translateY(8px) scale(.94); }
-    16%, 82% { opacity: 1; transform: translateY(0) scale(1); }
-    92%, 100% { left: 82%; opacity: .25; transform: translateY(-6px) scale(.96); }
+    0%, 7% { left: 8%; opacity: .28; transform: translate(-50%, calc(-50% + 7px)) scale(.94); }
+    16%, 82% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    92%, 100% { left: 84%; opacity: .32; transform: translate(-50%, calc(-50% - 5px)) scale(.96); }
   }
   .metric-strip {
     position: absolute;
@@ -216,25 +196,34 @@
     right: 18px;
     bottom: 18px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
   }
   .metric {
     border: 1px solid rgba(255,255,255,.12);
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 12px;
     background: rgba(0,0,0,.26);
+    min-height: 116px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
   .metric b {
     display: block;
-    font-size: 18px;
-    letter-spacing: -.02em;
+    font-size: 17px;
+    line-height: 1.18;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
   }
   .metric span {
     display: block;
-    margin-top: 2px;
+    margin-top: 7px;
     color: var(--muted);
     font-size: 12px;
+    line-height: 1.36;
+    overflow-wrap: anywhere;
   }
   .hero-copy {
     display: flex;
@@ -459,7 +448,7 @@
     nav { justify-content: flex-start; }
     main { padding-top: 24px; }
     .metric-strip { grid-template-columns: 1fr; }
-    .hero-panel { min-height: 390px; }
+    .hero-panel { min-height: 560px; }
     .table-row { grid-template-columns: 1fr; }
     .cta { align-items: stretch; flex-direction: column; }
     .cta-actions { justify-content: stretch; }
@@ -487,7 +476,13 @@
     <div class="hero-panel" aria-label="Animated delivery route">
       <div class="route-stage">
         <div class="route-line"></div>
-        <div class="route-truck"></div>
+        <svg class="route-truck" viewBox="-22 -12 44 24" aria-hidden="true">
+          <rect x="-20" y="-9" width="22" height="14" rx="2" fill="#ff7a45" stroke="#fff" stroke-opacity="0.5" stroke-width="0.8"/>
+          <rect x="2" y="-5" width="9" height="10" rx="1.5" fill="#fff"/>
+          <rect x="3.5" y="-3.5" width="6" height="5" fill="#0c1024"/>
+          <circle cx="-13" cy="7" r="3" fill="#0c1024" stroke="#ff7a45" stroke-width="1"/>
+          <circle cx="6" cy="7" r="3" fill="#0c1024" stroke="#ff7a45" stroke-width="1"/>
+        </svg>
       </div>
       <div class="metric-strip">
         <div class="metric"><b>1 lane</b><span>Origin to destination</span></div>

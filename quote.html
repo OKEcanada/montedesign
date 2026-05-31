@@ -1,178 +1,635 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Your OKE Canada quote</title>
-<meta name="robots" content="noindex" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your One Kind Express quote</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07091a">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0d10;
-    --panel: #14171c;
-    --panel-2: #1a1e25;
-    --line: #232830;
-    --text: #e9ecef;
-    --muted: #8e9aa7;
+    --bg: #000;
+    --ink: #fafafa;
+    --muted: #a9afc4;
+    --soft: rgba(255,255,255,.08);
+    --line: rgba(255,255,255,.14);
+    --panel: rgba(8, 11, 25, .84);
+    --panel2: rgba(17, 24, 39, .82);
     --brand: #ff6a00;
-    --ok: #4ade80;
-    --warn: #fbbf24;
-    --danger: #f87171;
+    --brand2: #ff9b66;
+    --cool: #42e8d4;
+    --good: #42d392;
+    --warn: #f6bd60;
+    --danger: #ff6b6b;
+    --shadow: 0 28px 90px rgba(0,0,0,.46);
+    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
-  a { color: var(--brand); }
-  header { padding: 24px 32px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
-  header .brand { font-weight: 700; letter-spacing: 0.5px; font-size: 18px; }
-  header .brand small { color: var(--muted); font-weight: 400; margin-left: 8px; }
-  main { max-width: 880px; margin: 0 auto; padding: 32px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
-  .ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); }
-  h1 { margin: 0 0 4px; font-size: 28px; }
-  .lane { font-size: 20px; color: var(--muted); margin-bottom: 16px; }
-  .total { font-size: 44px; font-weight: 700; color: var(--brand); }
-  .total small { font-size: 14px; color: var(--muted); font-weight: 400; margin-left: 6px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-top: 16px; }
-  .grid div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--line); }
-  .grid div span:first-child { color: var(--muted); }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-  button, .btn { background: var(--brand); color: #000; border: none; padding: 12px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; }
-  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
-  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); }
-  .pill.ok { color: var(--ok); border-color: rgba(74,222,128,0.4); }
-  .pill.warn { color: var(--warn); border-color: rgba(251,191,36,0.4); }
-  .pill.danger { color: var(--danger); border-color: rgba(248,113,113,0.4); }
-  .muted { color: var(--muted); }
-  .expired { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); }
-  input, textarea { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); padding: 10px 12px; border-radius: 8px; font: inherit; width: 100%; }
-  label { display: block; margin: 10px 0 6px; font-size: 12px; color: var(--muted); }
-  footer { padding: 24px 32px; color: var(--muted); font-size: 12px; text-align: center; border-top: 1px solid var(--line); margin-top: 40px; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 15px/1.5 var(--font);
+    background:
+      radial-gradient(900px 560px at 78% -12%, rgba(255,106,0,.19), transparent 60%),
+      radial-gradient(760px 520px at 8% 100%, rgba(66,232,212,.14), transparent 62%),
+      #000;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .26;
+    background:
+      linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 88px 88px;
+    -webkit-mask-image: linear-gradient(to bottom, #000, transparent 82%);
+    mask-image: linear-gradient(to bottom, #000, transparent 82%);
+  }
+  a { color: inherit; }
+  .wrap {
+    position: relative;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 22px 0 64px;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin: 0 calc((100vw - min(1180px, calc(100vw - 32px))) / -2);
+    padding: 14px max(16px, calc((100vw - 1180px) / 2));
+    background: rgba(0,0,0,.72);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(18px);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    font-weight: 900;
+    letter-spacing: -.02em;
+  }
+  .mark {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 40px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--brand), #f04418);
+    box-shadow: 0 16px 34px rgba(255,106,0,.28);
+  }
+  .brand span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav-actions a,
+  button,
+  .btn {
+    appearance: none;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    padding: 0 15px;
+    background: rgba(255,255,255,.055);
+    color: var(--ink);
+    text-decoration: none;
+    font: 850 13px/1 var(--font);
+    cursor: pointer;
+  }
+  button.primary,
+  .btn.primary {
+    border-color: rgba(255,106,0,.58);
+    background: linear-gradient(135deg, #ff7a45, #f04418);
+    color: #fff;
+    box-shadow: 0 18px 38px rgba(255,106,0,.28);
+  }
+  button.cool,
+  .btn.cool {
+    border-color: rgba(66,232,212,.36);
+    background: rgba(66,232,212,.10);
+    color: #c9fffa;
+  }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(340px, .62fr);
+    gap: 18px;
+    margin-top: 26px;
+  }
+  .panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    background:
+      radial-gradient(440px 260px at 100% 0%, rgba(255,106,0,.16), transparent 64%),
+      radial-gradient(360px 250px at 0% 100%, rgba(66,232,212,.13), transparent 64%),
+      var(--panel);
+    box-shadow: var(--shadow);
+  }
+  .panel-inner { position: relative; padding: clamp(20px, 3vw, 30px); }
+  .kicker {
+    color: var(--brand2);
+    font: 850 11px/1 var(--mono);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    margin: 12px 0 10px;
+    max-width: 760px;
+    font-size: clamp(34px, 6vw, 72px);
+    line-height: .95;
+    letter-spacing: -.055em;
+  }
+  .lane {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(17px, 2vw, 23px);
+    font-weight: 700;
+  }
+  .total {
+    margin-top: 18px;
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: .92;
+    letter-spacing: -.055em;
+    font-weight: 950;
+    color: var(--brand2);
+  }
+  .total small {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font: 750 13px/1.3 var(--font);
+    letter-spacing: 0;
+  }
+  .pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,.065);
+    color: var(--muted);
+    font: 850 11px/1 var(--mono);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .pill.ok { color: #b7ffe3; border-color: rgba(66,211,146,.42); background: rgba(66,211,146,.10); }
+  .pill.warn { color: #ffe6a6; border-color: rgba(246,189,96,.44); background: rgba(246,189,96,.12); }
+  .pill.danger { color: #ffd1d1; border-color: rgba(255,107,107,.44); background: rgba(255,107,107,.12); }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .metric {
+    min-height: 94px;
+    padding: 15px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+  }
+  .metric span {
+    display: block;
+    color: var(--muted);
+    font: 850 11px/1.2 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .metric b {
+    display: block;
+    margin-top: 9px;
+    font-size: 21px;
+    line-height: 1.1;
+  }
+  .section {
+    margin-top: 18px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: rgba(8,11,25,.72);
+    box-shadow: 0 18px 58px rgba(0,0,0,.32);
+    overflow: hidden;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.10);
+  }
+  .section h2 {
+    margin: 0;
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  .section-body { padding: 18px 20px 20px; }
+  .price-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .price-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 15px;
+    background: rgba(255,255,255,.038);
+  }
+  .price-row.total-row {
+    border-color: rgba(255,106,0,.36);
+    background: linear-gradient(135deg, rgba(255,106,0,.16), rgba(66,232,212,.06));
+  }
+  .price-row span { color: var(--muted); }
+  .price-row b { color: #fff; font-size: 16px; }
+  .two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(320px, .78fr);
+    gap: 18px;
+  }
+  .orders { display: grid; gap: 12px; }
+  .order-card {
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    overflow: hidden;
+  }
+  .order-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255,255,255,.09);
+  }
+  .order-title b { display: block; font-size: 18px; }
+  .order-title span { display: block; margin-top: 3px; color: var(--muted); }
+  .order-price {
+    color: var(--brand2);
+    font: 900 17px/1 var(--mono);
+    white-space: nowrap;
+  }
+  .item-list { display: grid; gap: 8px; padding: 12px; }
+  .item-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(0,0,0,.20);
+  }
+  .item-line b { display: block; margin-bottom: 3px; }
+  .item-line span { display: block; color: var(--muted); font-size: 13px; }
+  .mono { font-family: var(--mono); }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px;
+    background: rgba(255,255,255,.045);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .details {
+    margin: 0;
+    max-height: 320px;
+    overflow: auto;
+    white-space: pre-wrap;
+    color: #e8ecf7;
+    background: #080b18;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 18px;
+    padding: 16px;
+    font: 12px/1.55 var(--mono);
+  }
+  .form-grid { display: grid; gap: 12px; }
+  label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font: 800 12px/1.2 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 15px;
+    background: rgba(255,255,255,.055);
+    color: #fff;
+    padding: 13px 14px;
+    font: 600 15px/1.35 var(--font);
+    outline: none;
+  }
+  textarea { min-height: 98px; resize: vertical; }
+  input:focus,
+  textarea:focus {
+    border-color: rgba(255,106,0,.62);
+    box-shadow: 0 0 0 4px rgba(255,106,0,.12);
+  }
+  .status-text {
+    margin-top: 12px;
+    min-height: 22px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .helper {
+    margin: 0;
+    color: var(--muted);
+  }
   .hidden { display: none !important; }
+  .empty {
+    color: var(--muted);
+    border: 1px dashed rgba(255,255,255,.14);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  footer {
+    margin-top: 30px;
+    color: rgba(250,250,250,.48);
+    text-align: center;
+    font-size: 12px;
+  }
+  @media (max-width: 900px) {
+    .hero,
+    .two-col { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .wrap { width: min(100% - 22px, 1180px); padding-top: 12px; }
+    header { position: relative; }
+    .nav { align-items: flex-start; flex-direction: column; }
+    .nav-actions { width: 100%; justify-content: stretch; }
+    .nav-actions a { flex: 1 1 auto; }
+    .panel-inner,
+    .section-body { padding: 16px; }
+    .metric-grid { grid-template-columns: 1fr; }
+    .actions button,
+    .actions .btn { width: 100%; }
+    .order-top,
+    .item-line { grid-template-columns: 1fr; }
+    .order-price { white-space: normal; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">OKE Canada <small>· freight quote</small></div>
-  <div class="ref" id="quoteRef"></div>
-</header>
-<main>
-  <div id="loadingView" class="card">Loading quote…</div>
-  <div id="errorView" class="card hidden" style="color: var(--danger);"></div>
-
-  <div id="quoteView" class="hidden">
-    <div class="card" id="summaryCard">
-      <span class="pill" id="statusPill">draft</span>
-      <span class="pill" id="expiryPill"></span>
-      <h1 id="serviceTitle">—</h1>
-      <div class="lane" id="laneText">—</div>
-      <div class="total"><span id="totalAmount">—</span><small id="taxLabel"></small></div>
-      <div class="grid">
-        <div><span>Origin</span><span id="origin">—</span></div>
-        <div><span>Destination</span><span id="destination">—</span></div>
-        <div><span>Pickup date</span><span id="pickupDate">—</span></div>
-        <div><span>Pieces</span><span id="pieces">—</span></div>
-        <div><span>Billable weight</span><span id="billable">—</span></div>
-        <div><span>Actual / Dim</span><span id="weights">—</span></div>
-        <div><span>Middle-mile</span><span id="middleMile">—</span></div>
-        <div><span>Final-mile base</span><span id="finalMile">—</span></div>
-        <div><span>Accessorials</span><span id="acc">—</span></div>
-        <div><span>Subtotal</span><span id="subtotal">—</span></div>
-        <div><span>Fuel surcharge</span><span id="fuel">—</span></div>
-        <div><span>Tax</span><span id="tax">—</span></div>
-      </div>
-      <div class="row">
-        <button id="openCalculatorBtn" type="button">Open in calculator</button>
-        <button class="btn btn-ghost" id="copyQuoteLinkBtn" type="button">Copy quote link</button>
-      </div>
-    </div>
-
-    <div class="card" id="confirmCard">
-      <h2 style="margin-top:0">Ready to book?</h2>
-      <p class="muted">Confirm pickup details and we'll lock in this rate. A dispatcher will reach out within one business day.</p>
-      <label for="contactName">Your name</label>
-      <input id="contactName" autocomplete="name" />
-      <label for="contactEmail">Email</label>
-      <input id="contactEmail" type="email" autocomplete="email" />
-      <label for="contactPhone">Phone (optional)</label>
-      <input id="contactPhone" type="tel" autocomplete="tel" />
-      <label for="contactNotes">Notes for dispatch (optional)</label>
-      <textarea id="contactNotes" rows="3" placeholder="Anything we should know about pickup or delivery?"></textarea>
-      <div class="row">
-        <button id="confirmBtn">Confirm this booking</button>
-        <button class="btn btn-ghost" id="changesBtn">Request changes</button>
-      </div>
-      <div id="confirmStatus" class="muted" style="margin-top:12px"></div>
+  <div class="nav">
+    <div class="brand"><span class="mark">OKE</span><span>Saved freight quote</span></div>
+    <div class="nav-actions">
+      <a href="http://quote.onekindexpress.com/manual.html">Manual</a>
+      <a href="http://quote.onekindexpress.com/calculator.html">Calculator</a>
+      <a class="primary" href="tel:18336535777">Call OKE</a>
     </div>
   </div>
-</main>
-<footer>
-  Quote valid for 14 days unless otherwise noted · OKE Canada · onekindexpress.com
-</footer>
+</header>
 
-<!-- Supabase credentials. Same shape as on index.html. -->
+<main class="wrap">
+  <div id="loadingView" class="section"><div class="section-body">Loading quote...</div></div>
+  <div id="errorView" class="section hidden"><div class="section-body" id="errorText" style="color:var(--danger)"></div></div>
+
+  <div id="quoteView" class="hidden">
+    <section class="hero">
+      <div class="panel" id="summaryCard">
+        <div class="panel-inner">
+          <div class="pill-row">
+            <span class="pill" id="statusPill">draft</span>
+            <span class="pill" id="expiryPill"></span>
+            <span class="pill" id="quoteRef"></span>
+          </div>
+          <div class="kicker">One Kind Express quote</div>
+          <h1 id="serviceTitle">Freight quote</h1>
+          <p class="lane" id="laneText">-</p>
+          <div class="total"><span id="totalAmount">-</span><small id="taxLabel"></small></div>
+          <div class="actions">
+            <button class="primary" id="openCalculatorBtn" type="button">Open / edit in calculator</button>
+            <button class="cool" id="copyQuoteDetailsBtn" type="button">Copy quote details</button>
+            <button id="copyQuoteLinkBtn" type="button">Copy quote link</button>
+            <button id="printBtn" type="button">Print</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-inner">
+          <div class="kicker">Shipment snapshot</div>
+          <div class="metric-grid" style="margin-top:14px">
+            <div class="metric"><span>Pickup</span><b id="pickupDate">Flexible</b></div>
+            <div class="metric"><span>Pieces</span><b id="pieces">-</b></div>
+            <div class="metric"><span>Billable weight</span><b id="billable">-</b></div>
+            <div class="metric"><span>Cube</span><b id="cube">-</b></div>
+            <div class="metric"><span>Actual / dim</span><b id="weights">-</b></div>
+            <div class="metric"><span>Mode</span><b id="modeText">-</b></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Pricing</div>
+          <h2>Cost breakdown</h2>
+        </div>
+        <button class="cool" id="copyPricingBtn" type="button">Copy pricing</button>
+      </div>
+      <div class="section-body">
+        <div class="price-grid" id="priceBody"></div>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Freight</div>
+            <h2>Orders and items</h2>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="orders" id="orderList"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Handling</div>
+            <h2>Additional services</h2>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="tag-list" id="accessorialList"></div>
+          <p class="helper" style="margin-top:14px">Final service details are confirmed by OKE before dispatch. Oversized or over-10-linear-foot shipments may require review.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Saved copy</div>
+          <h2>Full quote text</h2>
+        </div>
+        <button id="copyFullTextBtn" type="button">Copy full text</button>
+      </div>
+      <div class="section-body">
+        <pre class="details" id="detailsText"></pre>
+      </div>
+    </section>
+
+    <section class="section" id="confirmCard">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Booking request</div>
+          <h2>Ready to book?</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="helper">Confirm pickup details and OKE will review the quote, addresses, timing, access notes, and capacity before dispatch.</p>
+        <div class="form-grid" style="margin-top:16px">
+          <label>Your name <input id="contactName" autocomplete="name"></label>
+          <label>Email <input id="contactEmail" type="email" autocomplete="email"></label>
+          <label>Phone optional <input id="contactPhone" type="tel" autocomplete="tel"></label>
+          <label>Notes for dispatch optional <textarea id="contactNotes" placeholder="Pickup window, delivery restrictions, access notes, PO number, or anything OKE should review."></textarea></label>
+        </div>
+        <div class="actions">
+          <button class="primary" id="confirmBtn" type="button">Confirm this booking</button>
+          <button id="changesBtn" type="button">Request changes</button>
+          <a class="btn cool" id="emailOkeBtn" href="mailto:info@onekindexpress.com">Email OKE</a>
+        </div>
+        <div id="confirmStatus" class="status-text"></div>
+      </div>
+    </section>
+  </div>
+  <footer>One Kind Express public quote page. Quotes are valid for 14 days unless otherwise noted.</footer>
+</main>
+
 <script>
-  // Public browser config. The anon key is safe to publish; never put the service-role key here.
-  window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
-    url: "https://wwtaadvzonnbvyhottlv.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
-  };
+window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
+  url: "https://wwtaadvzonnbvyhottlv.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
+};
 </script>
 <script>
-const WIX_CALCULATOR_URL = "http://quote.onekindexpress.com/calculator.html";
+const CALCULATOR_URL = "http://quote.onekindexpress.com/calculator.html";
 const QUOTE_VIEW_BASE = "http://quote.onekindexpress.com/";
 
 function $(id) { return document.getElementById(id); }
-function fmt(n) { return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function escapeHtml(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fmt(n) {
+  const value = Number(n || 0);
+  return "$" + value.toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 function fmtW(n) { return Math.round(Number(n || 0)).toLocaleString("en-CA") + " lbs"; }
+function fmtCube(n) { return Number(n || 0).toLocaleString("en-CA", { maximumFractionDigits: 2 }) + " ft3"; }
+function dateShort(v) {
+  if (!v) return "Flexible";
+  const d = new Date(String(v).includes("T") ? v : `${v}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return d.toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "2-digit" });
+}
 function sbCfg() {
   const cfg = window.MONTE_SUPABASE || {};
   if (!cfg.url || !cfg.anonKey) return null;
-  return { url: String(cfg.url).replace(/\/+$/, ''), anonKey: String(cfg.anonKey) };
+  return { url: String(cfg.url).replace(/\/+$/, ""), anonKey: String(cfg.anonKey) };
 }
-async function sbRpc(name, params, opts) {
+async function sbRpc(name, params) {
   const cfg = sbCfg();
   if (!cfg) throw new Error("Supabase not configured");
   const res = await fetch(`${cfg.url}/rest/v1/rpc/${name}`, {
-    method: 'POST',
-    headers: {
-      apikey: cfg.anonKey,
-      Authorization: `Bearer ${cfg.anonKey}`,
-      'Content-Type': 'application/json'
-    },
+    method: "POST",
+    headers: { apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(params || {})
   });
   if (!res.ok) throw new Error(`${name}: ${res.status} ${await res.text()}`);
   return res.json();
 }
-
 function tokenFromUrl() {
-  // Accept /q/<token>, ?quote=<token>, or ?token=<token>
   const u = new URL(window.location.href);
   const m = u.pathname.match(/\/q\/([A-Za-z0-9-_]+)/);
   if (m) return m[1];
-  return u.searchParams.get('quote') || u.searchParams.get('token');
+  return u.searchParams.get("quote") || u.searchParams.get("token");
 }
-
 function quoteShareUrl(token) {
   const url = new URL(QUOTE_VIEW_BASE);
-  url.searchParams.set('token', token);
+  url.searchParams.set("token", token);
   return url.toString();
 }
-
+function calculatorUrl(token) {
+  const url = new URL(CALCULATOR_URL);
+  url.searchParams.set("quote", token);
+  return url.toString();
+}
+async function copyTextSafe(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (_) {}
+    ta.remove();
+    return ok;
+  }
+}
 async function quoteHandoffSignature() {
   const tz = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || "";
-  const parts = [
-    navigator.userAgent || "",
-    navigator.language || "",
-    navigator.platform || "",
-    tz,
-    screen.width || 0,
-    screen.height || 0,
-    screen.colorDepth || 0,
-    window.devicePixelRatio || 1,
-    navigator.hardwareConcurrency || 0,
-    navigator.maxTouchPoints || 0
-  ].join("|");
+  const parts = [navigator.userAgent || "", navigator.language || "", navigator.platform || "", tz, screen.width || 0, screen.height || 0, screen.colorDepth || 0, window.devicePixelRatio || 1, navigator.hardwareConcurrency || 0, navigator.maxTouchPoints || 0].join("|");
   let h1 = 0x811c9dc5;
   let h2 = 0x9e3779b9;
   for (let i = 0; i < parts.length; i++) {
@@ -183,7 +640,6 @@ async function quoteHandoffSignature() {
   }
   return h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0");
 }
-
 async function createQuoteHandoff(token) {
   const cfg = sbCfg();
   if (!cfg || !token) return false;
@@ -191,17 +647,8 @@ async function createQuoteHandoff(token) {
     const signature = await quoteHandoffSignature();
     const res = await fetch(`${cfg.url}/functions/v1/quote-handoff`, {
       method: "POST",
-      headers: {
-        apikey: cfg.anonKey,
-        Authorization: `Bearer ${cfg.anonKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        action: "create",
-        token,
-        signature,
-        userAgent: navigator.userAgent || ""
-      })
+      headers: { apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "create", token, signature, userAgent: navigator.userAgent || "" })
     });
     const data = await res.json().catch(() => ({}));
     return res.ok && data && data.ok;
@@ -210,160 +657,165 @@ async function createQuoteHandoff(token) {
   }
 }
 
-async function bridgeToWixIfRequested() {
-  const u = new URL(window.location.href);
-  const token = tokenFromUrl();
-  if (!token || u.searchParams.get('view') === '1') return false;
-  const shouldBridge = u.searchParams.get('open') === 'wix' || u.searchParams.get('wix') === '1';
-  if (!shouldBridge) return false;
-  document.getElementById('loadingView').textContent = 'Opening quote on One Kind Express...';
-  await createQuoteHandoff(token);
-  try {
-    localStorage.setItem('montePendingQuoteToken', JSON.stringify({ token, createdAt: Date.now() }));
-  } catch (e) {}
-  const wix = new URL(WIX_CALCULATOR_URL);
-  wix.searchParams.set('quote', token);
-  window.location.replace(wix.toString());
-  return true;
-}
-
-async function openQuoteInCalculator() {
-  const token = tokenFromUrl() || (LOADED_QUOTE && LOADED_QUOTE.public_token);
-  if (!token) return;
-  await createQuoteHandoff(token);
-  const wix = new URL(WIX_CALCULATOR_URL);
-  wix.searchParams.set('quote', token);
-  window.location.href = wix.toString();
-}
-
-async function copyTextSafe(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (e) {
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.setAttribute('readonly', '');
-      ta.style.position = 'fixed';
-      ta.style.left = '-9999px';
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand('copy');
-      ta.remove();
-      return !!ok;
-    } catch (_) {
-      return false;
-    }
-  }
-}
-
 let LOADED_QUOTE = null;
-
-async function loadQuote() {
-  const token = tokenFromUrl();
-  if (!token) { showError("No quote token in URL."); return; }
-  try {
-    const rows = await sbRpc('get_quote_by_token', { share_token: token });
-    const record = Array.isArray(rows) ? rows[0] : rows;
-    if (!record) { showError("Quote not found or expired."); return; }
-    LOADED_QUOTE = record;
-    renderQuote(record);
-    // Log the view (fire-and-forget, never blocks UX)
-    sbRpc('log_quote_view', {
-      p_token: token,
-      p_user_agent: navigator.userAgent || null,
-      p_referrer: document.referrer || null
-    }).catch(() => {});
-  } catch (e) {
-    showError(e.message || String(e));
-  }
-}
-
-function showError(msg) {
-  $("loadingView").classList.add('hidden');
-  $("errorView").classList.remove('hidden');
-  $("errorView").textContent = msg;
-}
-
-function renderQuote(r) {
-  $("loadingView").classList.add('hidden');
-  $("quoteView").classList.remove('hidden');
-  $("quoteRef").textContent = r.quote_ref || '';
-
-  const status = r.status || 'draft';
-  const pill = $("statusPill");
-  pill.textContent = status;
-  pill.classList.toggle('ok', status === 'accepted' || status === 'booked');
-  pill.classList.toggle('warn', status === 'sent' || status === 'viewed');
-
-  // Expiry
-  if (r.valid_until) {
-    const validUntil = new Date(r.valid_until);
-    const expired = validUntil.getTime() < Date.now();
-    const expPill = $("expiryPill");
-    expPill.textContent = expired
-      ? `Expired ${validUntil.toLocaleDateString()}`
-      : `Valid through ${validUntil.toLocaleDateString()}`;
-    expPill.classList.toggle('danger', expired);
-    expPill.classList.toggle('ok', !expired);
-    if (expired) {
-      $("summaryCard").classList.add('expired');
-      $("confirmBtn").disabled = true;
-      $("confirmBtn").textContent = "Quote expired — request fresh quote";
-    }
-  }
-
-  $("serviceTitle").textContent = r.service_name || 'Freight quote';
-  const laneTxt = r.destination
-    ? `${r.origin} → ${r.destination}`
-    : (r.origin || '—');
-  $("laneText").textContent = laneTxt;
-  $("totalAmount").textContent = fmt(r.total_after_tax);
-  if (r.tax_label && r.tax_amount > 0) {
-    $("taxLabel").textContent = ` incl. ${r.tax_label}`;
-  }
-  $("origin").textContent = r.origin || '—';
-  $("destination").textContent = r.destination || (r.lane_mode === 'local' ? 'Local delivery' : '—');
-  $("pickupDate").textContent = r.pickup_date || 'Flexible';
-  $("pieces").textContent = (r.total_pcs ?? '—') + (r.measurement_mode ? ` (${r.measurement_mode})` : '');
-  $("billable").textContent = fmtW(r.billable_weight_lbs);
-  $("weights").textContent = `${fmtW(r.actual_weight_lbs)} / ${fmtW(r.dim_weight_lbs)} dim`;
-  $("middleMile").textContent = fmt(r.middle_mile_sell);
-  $("finalMile").textContent = fmt(r.final_mile_base);
-  $("acc").textContent = fmt(r.accessorials_amount);
-  $("subtotal").textContent = fmt(r.subtotal);
-  $("fuel").textContent = `${Number(r.fuel_pct || 0).toFixed(1)}% · ${fmt(r.fuel_amount)}`;
-  $("tax").textContent = fmt(r.tax_amount);
-}
 
 function quoteEmailBody(r) {
   return (r && r.payload && r.payload.quote && (r.payload.quote.bookingEmailBody || r.payload.quote.bookingSummary))
     || [
-      `Reference: ${r.quote_ref || '-'}`,
-      `Lane: ${r.origin || '-'} -> ${r.destination || '-'}`,
-      `Service: ${r.service_name || '-'}`,
-      `Pieces: ${r.total_pcs ?? '-'}`,
+      `Reference: ${r.quote_ref || "-"}`,
+      `Lane: ${r.origin || "-"} -> ${r.destination || "-"}`,
+      `Service: ${r.service_name || "-"}`,
+      `Pieces: ${r.total_pcs ?? "-"}`,
       `Billable weight: ${fmtW(r.billable_weight_lbs)}`,
       `Middle-mile: ${fmt(r.middle_mile_sell)}`,
       `Final-mile base: ${fmt(r.final_mile_base)}`,
+      `Extra boxes/items: ${fmt(r.extra_piece_charge)}`,
       `Additional services: ${fmt(r.accessorials_amount)}`,
       `Fuel: ${Number(r.fuel_pct || 0).toFixed(1)}% / ${fmt(r.fuel_amount)}`,
       `Tax: ${fmt(r.tax_amount)}`,
       `Total: ${fmt(r.total_after_tax)}`
-    ].join('\n');
+    ].join("\n");
 }
-
+function sectionLines(text, start, end) {
+  const lines = String(text || "").split(/\r?\n/);
+  const s = lines.findIndex(line => line.trim().toUpperCase() === start);
+  if (s < 0) return [];
+  const e = end ? lines.findIndex((line, i) => i > s && line.trim().toUpperCase() === end) : -1;
+  return lines.slice(s + 1, e > s ? e : undefined).map(line => line.trim()).filter(Boolean);
+}
+function statusTone(status) {
+  if (/book|accept|request/i.test(status || "")) return "ok";
+  if (/expire|cancel|void/i.test(status || "")) return "danger";
+  return "warn";
+}
+function statusLabel(status) {
+  return String(status || "draft").replace(/_/g, " ");
+}
+function priceRow(label, value, note, total) {
+  return `<div class="price-row${total ? " total-row" : ""}"><span>${escapeHtml(label)}${note ? `<br><small>${escapeHtml(note)}</small>` : ""}</span><b>${escapeHtml(value)}</b></div>`;
+}
+function renderPrice(r) {
+  const rows = [
+    priceRow("Middle-mile line haul", fmt(r.middle_mile_sell), "Combined shipment rating"),
+    priceRow("Final-mile base", fmt(r.final_mile_base), "Service base across quote orders"),
+    priceRow("Extra boxes/items", fmt(r.extra_piece_charge), "Full quote only, after included pieces"),
+    priceRow("Additional services", fmt(r.accessorials_amount), "Handling, materials, and selected extras"),
+    priceRow("Subtotal", fmt(r.subtotal)),
+    priceRow(`Fuel surcharge (${Number(r.fuel_pct || 0).toFixed(1)}%)`, fmt(r.fuel_amount)),
+    priceRow(`Tax${r.tax_label ? " - " + r.tax_label : ""}`, fmt(r.tax_amount)),
+    priceRow("Total after tax", fmt(r.total_after_tax), "", true)
+  ];
+  $("priceBody").innerHTML = rows.join("");
+}
+function pieceDescription(p) {
+  const itemType = p.itemType || p.label || "Freight";
+  const dims = [p.L, p.W, p.H].map(v => Number(v || 0)).join(" x ");
+  if (p.mode === "pallet") {
+    const pallets = Number(p.pallets || p.itemCount || 1);
+    const per = Number(p.itemsPerPallet || p.piecesPerItem || 1);
+    const basis = p.weightBasis === "box" ? "per box" : "per pallet";
+    return {
+      title: itemType,
+      meta: `${pallets} pallet(s) x ${per} box(es)/pallet - ${dims} in - ${fmtW(p.weight)} ${basis}`
+    };
+  }
+  const count = Number(p.itemCount || p.qty || 1);
+  const per = Number(p.piecesPerItem || 1);
+  return {
+    title: itemType,
+    meta: `${count} same box(es)${per > 1 ? ` x ${per} piece(s)/box` : ""} - ${dims} in - ${fmtW(p.weight)} per box`
+  };
+}
+function renderOrders(r) {
+  const state = r.payload && r.payload.state || {};
+  const breakdown = r.payload && r.payload.quote && Array.isArray(r.payload.quote.orderBreakdown) ? r.payload.quote.orderBreakdown : [];
+  const pieces = Array.isArray(state.pieces) ? state.pieces : [];
+  const orders = breakdown.length ? breakdown : [{ id: "order-1", serviceName: r.service_name, pieces: r.total_pcs, actualWeight: r.actual_weight_lbs, base: r.final_mile_base, mode: r.measurement_mode }];
+  $("orderList").innerHTML = orders.map((order, i) => {
+    const orderPieces = pieces.filter(p => (p.orderId || "order-1") === (order.id || `order-${i + 1}`));
+    const itemHtml = orderPieces.length ? orderPieces.map((p, pi) => {
+      const d = pieceDescription(p);
+      return `<div class="item-line"><div><b>${escapeHtml(pi + 1)}. ${escapeHtml(d.title)}</b><span>${escapeHtml(d.meta)}</span></div><span class="mono">${escapeHtml((p.mode || order.mode || "").toUpperCase())}</span></div>`;
+    }).join("") : `<div class="empty">Detailed item rows were not saved with this quote.</div>`;
+    return `<article class="order-card">
+      <div class="order-top">
+        <div class="order-title"><b>Order ${i + 1}: ${escapeHtml(order.serviceName || order.serviceId || "Service")}</b><span>${escapeHtml(order.pieces || 0)} pieces - ${escapeHtml(fmtW(order.actualWeight || 0))} actual - ${escapeHtml(order.mode || r.measurement_mode || "")}</span></div>
+        <div class="order-price">${escapeHtml(fmt(order.base || 0))}</div>
+      </div>
+      <div class="item-list">${itemHtml}</div>
+    </article>`;
+  }).join("");
+}
+function renderAccessorials(r) {
+  const lines = sectionLines(quoteEmailBody(r), "ACCESSORIALS", "PRICING BREAKDOWN").filter(line => line.startsWith("-"));
+  if (!lines.length) {
+    $("accessorialList").innerHTML = `<span class="tag">No additional services selected</span>`;
+    return;
+  }
+  $("accessorialList").innerHTML = lines.map(line => `<span class="tag">${escapeHtml(line.replace(/^-+\s*/, ""))}</span>`).join("");
+}
+function renderQuote(r) {
+  $("loadingView").classList.add("hidden");
+  $("quoteView").classList.remove("hidden");
+  $("quoteRef").textContent = r.quote_ref || "";
+  const status = r.status || "draft";
+  $("statusPill").textContent = statusLabel(status);
+  $("statusPill").className = `pill ${statusTone(status)}`;
+  if (r.valid_until) {
+    const expired = new Date(r.valid_until).getTime() < Date.now();
+    $("expiryPill").textContent = expired ? `Expired ${dateShort(r.valid_until)}` : `Valid through ${dateShort(r.valid_until)}`;
+    $("expiryPill").className = `pill ${expired ? "danger" : "ok"}`;
+    if (expired) {
+      $("summaryCard").classList.add("expired");
+      $("confirmBtn").disabled = true;
+      $("confirmBtn").textContent = "Quote expired - request fresh quote";
+    }
+  }
+  $("serviceTitle").textContent = r.service_name || "Freight quote";
+  $("laneText").textContent = r.destination ? `${r.origin || "-"} -> ${r.destination}` : (r.origin || "-");
+  $("totalAmount").textContent = fmt(r.total_after_tax);
+  $("taxLabel").textContent = r.tax_amount > 0 ? `Includes ${r.tax_label || "tax"}` : "Tax shown separately below";
+  $("pickupDate").textContent = dateShort(r.pickup_date);
+  $("pieces").textContent = `${r.total_pcs ?? "-"} ${r.measurement_mode ? "(" + r.measurement_mode + ")" : ""}`;
+  $("billable").textContent = fmtW(r.billable_weight_lbs);
+  $("cube").textContent = fmtCube(r.cubic_ft);
+  $("weights").textContent = `${fmtW(r.actual_weight_lbs)} / ${fmtW(r.dim_weight_lbs)} dim`;
+  $("modeText").textContent = r.lane_mode === "middle" ? "Middle mile only" : "Full quote";
+  $("detailsText").textContent = quoteEmailBody(r);
+  $("emailOkeBtn").href = `mailto:info@onekindexpress.com?subject=${encodeURIComponent("Quote " + (r.quote_ref || ""))}&body=${encodeURIComponent(quoteEmailBody(r) + "\n\nQuote link: " + quoteShareUrl(r.public_token))}`;
+  renderPrice(r);
+  renderOrders(r);
+  renderAccessorials(r);
+}
+function showError(msg) {
+  $("loadingView").classList.add("hidden");
+  $("errorView").classList.remove("hidden");
+  $("errorText").textContent = msg;
+}
+async function loadQuote() {
+  const token = tokenFromUrl();
+  if (!token) { showError("No quote token in URL."); return; }
+  try {
+    const rows = await sbRpc("get_quote_by_token", { share_token: token });
+    const record = Array.isArray(rows) ? rows[0] : rows;
+    if (!record) { showError("Quote not found or expired."); return; }
+    LOADED_QUOTE = record;
+    renderQuote(record);
+    sbRpc("log_quote_view", { p_token: token, p_user_agent: navigator.userAgent || null, p_referrer: document.referrer || null }).catch(() => {});
+  } catch (e) {
+    showError(e.message || String(e));
+  }
+}
 async function notifyBookingEmailsFromQuote(contactBody, action) {
   const cfg = sbCfg();
   if (!cfg || !LOADED_QUOTE) return { ok: false, skipped: true };
   const payload = {
-    recipient_type: 'booking_pair',
+    recipient_type: "booking_pair",
     quote_ref: LOADED_QUOTE.quote_ref,
     origin: LOADED_QUOTE.origin,
     destination: LOADED_QUOTE.destination,
     requested_at: new Date().toISOString(),
-    pickup_date: LOADED_QUOTE.pickup_date || '',
+    pickup_date: LOADED_QUOTE.pickup_date || "",
     total: LOADED_QUOTE.total_after_tax,
     customer: contactBody.p_contact_name,
     email: contactBody.p_contact_email,
@@ -376,14 +828,9 @@ async function notifyBookingEmailsFromQuote(contactBody, action) {
   };
   try {
     const res = await fetch(`${cfg.url}/functions/v1/notify-customer`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-      body: JSON.stringify({
-        event: action === 'accept' ? 'booking.requested' : 'quote.changes_requested',
-        email: contactBody.p_contact_email,
-        name: contactBody.p_contact_name,
-        payload
-      })
+      method: "POST",
+      headers: { "content-type": "application/json", apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+      body: JSON.stringify({ event: action === "accept" ? "booking.requested" : "quote.changes_requested", email: contactBody.p_contact_email, name: contactBody.p_contact_name, payload })
     });
     const data = await res.json().catch(() => ({}));
     return { ok: res.ok && data && data.ok !== false, status: res.status, data };
@@ -391,15 +838,13 @@ async function notifyBookingEmailsFromQuote(contactBody, action) {
     return { ok: false, error: e && e.message || String(e) };
   }
 }
-
 async function submitBooking(action) {
   if (!LOADED_QUOTE) return;
-  const cfg = sbCfg();
-  if (!cfg) return;
   const status = $("confirmStatus");
-  const btn = action === 'accept' ? $("confirmBtn") : $("changesBtn");
+  const btn = action === "accept" ? $("confirmBtn") : $("changesBtn");
   btn.disabled = true;
-  status.textContent = "Sending…";
+  status.style.color = "var(--muted)";
+  status.textContent = "Sending...";
   const body = {
     p_token: LOADED_QUOTE.public_token,
     p_action: action,
@@ -410,50 +855,65 @@ async function submitBooking(action) {
     p_user_agent: navigator.userAgent || null
   };
   try {
-    const result = await sbRpc('submit_quote_request', body);
+    const result = await sbRpc("submit_quote_request", body);
     const saved = Array.isArray(result) ? result[0] : result;
     LOADED_QUOTE.status = saved && saved.status ? saved.status : LOADED_QUOTE.status;
     renderQuote(LOADED_QUOTE);
-    // Ping Slack
-    fetch(`${cfg.url}/functions/v1/notify-slack`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
-      body: JSON.stringify({ event: action === 'accept' ? 'quote.confirmed' : 'quote.changes_requested', payload: { ...body, quote_ref: LOADED_QUOTE.quote_ref } })
-    }).catch(() => {});
     const emailNotice = await notifyBookingEmailsFromQuote(body, action);
-    status.style.color = 'var(--ok)';
-    status.textContent = action === 'accept'
-      ? "Thanks! A dispatcher will reach out within one business day."
-      : "Got it — we'll send you a revised quote shortly.";
     const customerOk = !!(emailNotice && emailNotice.data && emailNotice.data.customer && emailNotice.data.customer.ok);
+    status.style.color = "var(--good)";
     status.textContent = customerOk
-      ? "Thanks! OKE received it and a customer copy was emailed."
-      : (action === 'accept'
-        ? "Thanks! OKE received it. Customer email copy did not confirm, so copy the quote link if needed."
-        : "Got it - OKE received the change request.");
+      ? "Done. OKE received it and a customer copy was emailed."
+      : "Done. OKE received it. Customer email copy did not confirm, so copy the quote link if needed.";
     $("confirmBtn").disabled = true;
     $("changesBtn").disabled = true;
   } catch (e) {
     btn.disabled = false;
-    status.style.color = 'var(--danger)';
+    status.style.color = "var(--danger)";
     status.textContent = "Could not send: " + (e.message || e);
   }
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-  if (await bridgeToWixIfRequested()) return;
-  $("confirmBtn").addEventListener('click', () => submitBooking('accept'));
-  $("changesBtn").addEventListener('click', () => submitBooking('changes_requested'));
-  $("openCalculatorBtn").addEventListener('click', openQuoteInCalculator);
-  $("copyQuoteLinkBtn").addEventListener('click', async () => {
+async function openQuoteInCalculator() {
+  const token = tokenFromUrl() || (LOADED_QUOTE && LOADED_QUOTE.public_token);
+  if (!token) return;
+  await createQuoteHandoff(token);
+  window.location.href = calculatorUrl(token);
+}
+function wireActions() {
+  $("openCalculatorBtn").addEventListener("click", openQuoteInCalculator);
+  $("copyQuoteLinkBtn").addEventListener("click", async () => {
     const token = tokenFromUrl() || (LOADED_QUOTE && LOADED_QUOTE.public_token);
     if (!token) return;
-    const btn = $("copyQuoteLinkBtn");
-    const old = btn.textContent;
     await copyTextSafe(quoteShareUrl(token));
-    btn.textContent = 'Copied';
-    setTimeout(() => { btn.textContent = old; }, 1400);
+    flashButton($("copyQuoteLinkBtn"), "Copied");
   });
+  $("copyQuoteDetailsBtn").addEventListener("click", async () => {
+    if (!LOADED_QUOTE) return;
+    await copyTextSafe(quoteEmailBody(LOADED_QUOTE));
+    flashButton($("copyQuoteDetailsBtn"), "Copied");
+  });
+  $("copyPricingBtn").addEventListener("click", async () => {
+    if (!LOADED_QUOTE) return;
+    const lines = sectionLines(quoteEmailBody(LOADED_QUOTE), "PRICING BREAKDOWN", null).join("\n");
+    await copyTextSafe(lines || quoteEmailBody(LOADED_QUOTE));
+    flashButton($("copyPricingBtn"), "Copied");
+  });
+  $("copyFullTextBtn").addEventListener("click", async () => {
+    if (!LOADED_QUOTE) return;
+    await copyTextSafe(quoteEmailBody(LOADED_QUOTE));
+    flashButton($("copyFullTextBtn"), "Copied");
+  });
+  $("printBtn").addEventListener("click", () => window.print());
+  $("confirmBtn").addEventListener("click", () => submitBooking("accept"));
+  $("changesBtn").addEventListener("click", () => submitBooking("changes_requested"));
+}
+function flashButton(btn, text) {
+  const old = btn.textContent;
+  btn.textContent = text;
+  setTimeout(() => { btn.textContent = old; }, 1400);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  wireActions();
   loadQuote();
 });
 </script>

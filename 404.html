@@ -31,7 +31,7 @@
   if (match) {
     const token = decodeURIComponent(match[1]);
     const base = path.replace(/\/q\/[^/?#]+$/, '/quote.html');
-    const url = `${window.location.origin}${base}?token=${encodeURIComponent(token)}`;
+    const url = `${window.location.origin}${base}?token=${encodeURIComponent(token)}&open=wix`;
     document.getElementById('fallback').href = url;
     window.location.replace(url);
   } else {

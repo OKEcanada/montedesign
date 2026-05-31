@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-31-national-wix-handoff-v2" />
+<meta name="oke-build" content="2026-05-31-national-quote-domain-v1" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3857,7 +3857,7 @@
       </div>
     </div>
     <div class="topbar-tools">
-      <a class="history-btn manual-link" href="manual.html" target="_top" rel="noopener">
+      <a class="history-btn manual-link" href="https://quote.onekindexpress.com/manual.html" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
         Manual
       </a>
@@ -4346,8 +4346,9 @@ window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3dGFhZHZ6b25uYnZ5aG90dGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTkxNDAsImV4cCI6MjA5NDYzNTE0MH0.UciCmDWB3Mq7SsPbXqOXvai6cisqRiGC9gQkxmP2gSA"
 };
 window.MONTE_CONFIG = window.MONTE_CONFIG || {
-  shareBase: "https://www.onekindexpress.com/national-calculator",
-  quoteBridgeBase: "https://okecanada.github.io/montedesign/quote.html",
+  shareBase: "https://quote.onekindexpress.com/quote.html",
+  quoteBridgeBase: "",
+  calculatorBase: "https://www.onekindexpress.com/national-calculator",
   slackNotifyOnSave: true,
   slackNotifyOnView: false
 };
@@ -4374,6 +4375,8 @@ const MONTE_CONFIG = window.MONTE_CONFIG || {
   // Public viewer URL for share links. Set to your customer host
   // (e.g. "https://monte.onekindexpress.com/q"). Falls back to current location.
   shareBase: null,
+  quoteBridgeBase: null,
+  calculatorBase: null,
   // Slack notify is wired via the notify-slack Edge Function (no secret in browser).
   slackNotifyOnSave: true,
   slackNotifyOnView: false
@@ -4542,19 +4545,25 @@ function emailNoticeFailureText(emailNotice) {
 }
 
 async function notifyBookingEmails(payload) {
-  const internalPayload = {
+  const pairPayload = {
     ...payload,
-    email: 'info@onekindexpress.com',
-    name: 'One Kind Express Dispatch',
-    recipient_type: 'internal',
+    recipient_type: 'booking_pair',
     customer_email: payload.email || '',
     customer_phone: payload.phone || '',
   };
-  const internal = await notifyCustomer('booking.requested', internalPayload);
-  const customer = payload.email
-    ? await notifyCustomer('booking.requested', { ...payload, recipient_type: 'customer' })
-    : { ok: false, skipped: true };
-  return { internal, customer };
+  const result = await notifyCustomer('booking.requested', pairPayload);
+  if (result && result.data && result.data.recipient_type === 'booking_pair') {
+    return {
+      internal: result.data.internal || { ok: false, error: result.error || result.text || 'internal email failed' },
+      customer: result.data.customer || { ok: false, skipped: !payload.email, error: 'customer email failed' },
+      pair: result,
+    };
+  }
+  return {
+    internal: result,
+    customer: { ok: false, skipped: !payload.email, error: payload.email ? 'customer copy was not confirmed' : 'customer email missing' },
+    pair: result,
+  };
 }
 
 function sbCfg() {
@@ -6576,7 +6585,7 @@ function quoteShareUrl(publicToken) {
   }
   if (MONTE_CONFIG.shareBase) {
     const url = new URL(String(MONTE_CONFIG.shareBase), window.location.href);
-    url.searchParams.set('quote', publicToken);
+    url.searchParams.set('token', publicToken);
     return url.toString();
   }
   // Fallback: same calculator URL with ?quote=<token>

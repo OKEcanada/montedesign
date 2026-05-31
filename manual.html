@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OKE National Calculator Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000;
+    --panel: #09090b;
+    --panel2: #101423;
+    --ink: #fafafa;
+    --muted: #a8adbd;
+    --line: rgba(255,255,255,.13);
+    --brand: #ff6a00;
+    --brand2: #ff9b66;
+    --cool: #42e8d4;
+    --cream: #f7f1e6;
+    --shadow: 0 26px 80px rgba(0,0,0,.42);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 15px/1.55 Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(920px 520px at 82% -12%, rgba(255,106,0,.18), transparent 58%),
+      radial-gradient(760px 560px at 8% 98%, rgba(66,232,212,.13), transparent 62%),
+      #000;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .28;
+    background:
+      linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 92px 92px;
+    mask-image: linear-gradient(to bottom, #000, transparent 78%);
+  }
+  a { color: inherit; }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px clamp(16px, 4vw, 34px);
+    background: rgba(0,0,0,.76);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(18px);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    letter-spacing: -.02em;
+  }
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 38px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    box-shadow: 0 16px 34px rgba(255,106,0,.28);
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  nav a {
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 800;
+    font-size: 13px;
+    background: rgba(255,255,255,.04);
+  }
+  nav a.primary {
+    border-color: rgba(255,106,0,.55);
+    background: linear-gradient(135deg, var(--brand), #f04418);
+    box-shadow: 0 12px 30px rgba(255,106,0,.22);
+  }
+  main {
+    position: relative;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 42px 18px 72px;
+  }
+  .kicker {
+    color: var(--brand2);
+    font: 850 11px/1 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, .44fr);
+    gap: 22px;
+    align-items: stretch;
+    margin-bottom: 22px;
+  }
+  h1 {
+    margin: 10px 0 16px;
+    max-width: 850px;
+    font-size: clamp(42px, 7vw, 84px);
+    line-height: .94;
+    letter-spacing: -.06em;
+  }
+  .lead {
+    max-width: 760px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 18px;
+  }
+  .hero-panel {
+    position: relative;
+    min-height: 330px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      radial-gradient(420px 280px at 95% 0%, rgba(255,106,0,.22), transparent 62%),
+      radial-gradient(360px 260px at 0% 100%, rgba(66,232,212,.16), transparent 62%),
+      linear-gradient(145deg, #070915, #111827);
+    box-shadow: var(--shadow);
+  }
+  .route-stage {
+    position: absolute;
+    inset: 22px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 22px;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.055) 0 1px, transparent 1px 30px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 30px),
+      rgba(255,255,255,.035);
+  }
+  .route-line {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    top: 50%;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--brand), rgba(255,255,255,.42), var(--cool));
+    box-shadow: 0 0 28px rgba(255,106,0,.36);
+  }
+  .route-line::before,
+  .route-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: var(--cream);
+    box-shadow: 0 0 0 8px rgba(255,255,255,.08);
+  }
+  .route-line::before { left: 0; }
+  .route-line::after { right: 0; background: var(--cool); }
+  .route-truck {
+    position: absolute;
+    left: 8%;
+    top: calc(50% - 18px);
+    width: 52px;
+    height: 32px;
+    border-radius: 10px 13px 8px 8px;
+    background: linear-gradient(135deg, var(--brand), var(--brand2));
+    box-shadow: 0 16px 34px rgba(255,106,0,.36);
+    animation: truckMove 7s cubic-bezier(.65,0,.35,1) infinite;
+  }
+  .route-truck::before {
+    content: "";
+    position: absolute;
+    right: -9px;
+    bottom: 4px;
+    width: 15px;
+    height: 16px;
+    border-radius: 4px 5px 4px 2px;
+    background: #ffd5bd;
+  }
+  .route-truck::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: -4px;
+    bottom: -5px;
+    height: 8px;
+    background:
+      radial-gradient(circle, #050505 0 4px, transparent 4.5px) left center / 18px 8px no-repeat,
+      radial-gradient(circle, #050505 0 4px, transparent 4.5px) right center / 18px 8px no-repeat;
+  }
+  @keyframes truckMove {
+    0%, 7% { left: 7%; opacity: .24; transform: translateY(8px) scale(.94); }
+    16%, 82% { opacity: 1; transform: translateY(0) scale(1); }
+    92%, 100% { left: 82%; opacity: .25; transform: translateY(-6px) scale(.96); }
+  }
+  .metric-strip {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .metric {
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 16px;
+    padding: 12px;
+    background: rgba(0,0,0,.26);
+  }
+  .metric b {
+    display: block;
+    font-size: 18px;
+    letter-spacing: -.02em;
+  }
+  .metric span {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 330px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: clamp(22px, 4vw, 36px);
+    background: rgba(9,9,11,.78);
+    box-shadow: var(--shadow);
+  }
+  .quick-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 22px 0;
+  }
+  .quick {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    background: rgba(9,9,11,.72);
+  }
+  .quick b {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  .quick span { color: var(--muted); }
+  .section {
+    margin-top: 24px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: clamp(18px, 3vw, 26px);
+    background: rgba(9,9,11,.78);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section h2 {
+    margin: 8px 0 10px;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1;
+    letter-spacing: -.05em;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .card {
+    position: relative;
+    min-height: 168px;
+    padding: 17px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 20px;
+    background:
+      radial-gradient(240px 160px at var(--mx, 90%) var(--my, 0%), rgba(255,106,0,.15), transparent 64%),
+      rgba(255,255,255,.035);
+    overflow: hidden;
+    transition: transform .22s ease, border-color .22s ease, background .22s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,106,0,.48);
+  }
+  .card .num {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 13px;
+    margin-bottom: 16px;
+    color: #fff;
+    background: linear-gradient(135deg, #12172f, #0b1026);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
+    font: 900 12px/1 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .card b {
+    display: block;
+    font-size: 18px;
+    line-height: 1.1;
+    letter-spacing: -.03em;
+    margin-bottom: 8px;
+  }
+  .card span { color: var(--muted); }
+  .flow {
+    display: grid;
+    grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .steps { display: grid; gap: 10px; }
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 13px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 17px;
+    background: rgba(255,255,255,.035);
+  }
+  .step strong {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--brand), #f04418);
+  }
+  .step b { display: block; margin-bottom: 3px; }
+  .step span { color: var(--muted); }
+  .info-panel {
+    border: 1px solid rgba(66,232,212,.22);
+    border-radius: 24px;
+    padding: 20px;
+    background:
+      radial-gradient(360px 240px at 100% 0%, rgba(66,232,212,.16), transparent 64%),
+      linear-gradient(145deg, rgba(17,24,39,.95), rgba(8,11,24,.92));
+  }
+  .info-panel ul {
+    margin: 14px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .info-panel li {
+    list-style: none;
+    padding: 12px 12px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    color: rgba(250,250,250,.78);
+    background: rgba(255,255,255,.045);
+  }
+  .info-panel b { color: #fff; }
+  .table {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .table-row {
+    display: grid;
+    grid-template-columns: minmax(150px,.42fr) minmax(0,1fr);
+    gap: 10px;
+    padding: 13px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    background: rgba(255,255,255,.035);
+  }
+  .table-row b { color: #fff; }
+  .table-row span { color: var(--muted); }
+  .callout {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,106,0,.34);
+    background:
+      radial-gradient(260px 160px at 0 0, rgba(255,106,0,.18), transparent 66%),
+      rgba(255,106,0,.08);
+  }
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding: clamp(18px, 3vw, 24px);
+    border: 1px solid rgba(255,106,0,.42);
+    border-radius: 26px;
+    background:
+      radial-gradient(420px 220px at 100% 0%, rgba(255,106,0,.24), transparent 62%),
+      radial-gradient(360px 220px at 0 100%, rgba(66,232,212,.15), transparent 62%),
+      #09090b;
+    box-shadow: var(--shadow);
+  }
+  .cta h2 {
+    margin: 0 0 6px;
+    font-size: clamp(26px, 4vw, 42px);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  .cta p { margin: 0; color: var(--muted); }
+  .cta-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.14);
+    text-decoration: none;
+    font-weight: 900;
+    background: rgba(255,255,255,.05);
+  }
+  .btn.primary {
+    border-color: rgba(255,106,0,.55);
+    background: linear-gradient(135deg, var(--brand), #f04418);
+    box-shadow: 0 16px 34px rgba(255,106,0,.28);
+  }
+  footer {
+    margin-top: 28px;
+    color: rgba(250,250,250,.42);
+    text-align: center;
+    font-size: 12px;
+  }
+  @media (max-width: 980px) {
+    .hero, .flow { grid-template-columns: 1fr; }
+    .card-grid, .quick-row { grid-template-columns: 1fr; }
+    .hero-copy { min-height: auto; }
+  }
+  @media (max-width: 640px) {
+    header { position: relative; align-items: flex-start; flex-direction: column; }
+    nav { justify-content: flex-start; }
+    main { padding-top: 24px; }
+    .metric-strip { grid-template-columns: 1fr; }
+    .hero-panel { min-height: 390px; }
+    .table-row { grid-template-columns: 1fr; }
+    .cta { align-items: stretch; flex-direction: column; }
+    .cta-actions { justify-content: stretch; }
+    .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="mark">OKE</span><span>National Calculator Manual</span></div>
+  <nav>
+    <a href="./">Calculator</a>
+    <a href="mailto:info@onekindexpress.com">Email</a>
+    <a class="primary" href="tel:18336535777">Call OKE</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="kicker">Public guide</div>
+      <h1>Build a clear delivery quote without guessing.</h1>
+      <p class="lead">Use one origin and destination, add the freight exactly how it ships, choose the delivery service needed for each order, and review the quote before sending a booking request.</p>
+    </div>
+    <div class="hero-panel" aria-label="Animated delivery route">
+      <div class="route-stage">
+        <div class="route-line"></div>
+        <div class="route-truck"></div>
+      </div>
+      <div class="metric-strip">
+        <div class="metric"><b>1 lane</b><span>Origin to destination</span></div>
+        <div class="metric"><b>Mixed orders</b><span>Different service levels</span></div>
+        <div class="metric"><b>Review ready</b><span>Copy, call, or book</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-row" aria-label="Quick guidance">
+    <div class="quick"><b>Use Full Quote</b><span>For delivery service plus freight details, including mixed service levels, extras, and booking request.</span></div>
+    <div class="quick"><b>Use Middle Mile Only</b><span>For freight movement between the selected cities without final-mile delivery services or extra box charges.</span></div>
+    <div class="quick"><b>Use Custom Review</b><span>If the shipment is over 10 linear feet, the calculator pauses instant pricing so OKE can confirm capacity and equipment.</span></div>
+  </section>
+
+  <section class="section">
+    <div class="kicker">Core workflow</div>
+    <h2>How to complete a quote.</h2>
+    <div class="flow">
+      <div class="steps">
+        <div class="step"><strong>1</strong><div><b>Choose the lane.</b><span>Select the origin city and destination city first. The calculator uses this lane for the full shipment.</span></div></div>
+        <div class="step"><strong>2</strong><div><b>Pick quote type.</b><span>Full Quote includes delivery service. Middle Mile Only keeps the quote focused on freight movement.</span></div></div>
+        <div class="step"><strong>3</strong><div><b>Add each order.</b><span>Use separate orders when the shipment has different delivery needs, product groups, or handling requirements.</span></div></div>
+        <div class="step"><strong>4</strong><div><b>Enter freight details.</b><span>Choose pallets or floor-loaded boxes, then enter quantities, dimensions, and weights as accurately as possible.</span></div></div>
+        <div class="step"><strong>5</strong><div><b>Review and send.</b><span>Check the breakdown, add any services needed, then copy the details, call, email, or request the booking.</span></div></div>
+      </div>
+      <aside class="info-panel">
+        <div class="kicker">Useful rule</div>
+        <ul>
+          <li><b>Different orders can use different delivery services.</b> This is useful when one part of the shipment is curbside and another needs room-of-choice or White Glove handling.</li>
+          <li><b>The first 2 boxes/items are included in Full Quote.</b> Extra boxes/items are shown separately at $20 each. This does not apply in Middle Mile Only.</li>
+          <li><b>Dimensions still matter even when weight is known.</b> The calculator uses dimensions to estimate cube, dimensional weight, and linear feet.</li>
+          <li><b>Quotes over 10 linear feet require review.</b> You can copy the details and contact OKE so the shipment can be checked properly.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="kicker">Service levels</div>
+    <h2>Choose the handling that matches the delivery.</h2>
+    <div class="card-grid">
+      <div class="card"><span class="num">01</span><b>Curbside</b><span>Delivery to driveway or first dry area. Best for simple handoff when indoor placement is not required.</span></div>
+      <div class="card"><span class="num">02</span><b>Threshold</b><span>Inside front door delivery. Useful when freight needs to cross the door but does not need room placement.</span></div>
+      <div class="card"><span class="num">03</span><b>Room of Choice</b><span>Carried to the chosen room. Use this when placement inside the home or business is required.</span></div>
+      <div class="card"><span class="num">04</span><b>White Glove</b><span>Unbox, assemble, and remove debris when selected. Extra time is entered on the White Glove order itself.</span></div>
+      <div class="card"><span class="num">05</span><b>Additional Services</b><span>Add stairs, door removal, haul-away, appointment, or other delivery extras when they apply.</span></div>
+      <div class="card"><span class="num">06</span><b>Custom Review</b><span>For oversized freight, special access, unusual equipment, or lanes where OKE should confirm before pricing.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="kicker">Measurements</div>
+    <h2>How to enter boxes, pallets, and weights.</h2>
+    <div class="table">
+      <div class="table-row"><b>Floor-loaded boxes</b><span>Enter the number of same boxes, weight per box, and the packaged length, width, and height for that box group.</span></div>
+      <div class="table-row"><b>Pallets</b><span>Enter the number of same pallets, boxes per pallet, weight, and pallet dimensions. If the weight you have is per box on the pallet, switch the weight basis to Per box.</span></div>
+      <div class="table-row"><b>Total order weight</b><span>If you only know the total weight for an order, enter it in Total order weight. The calculator will use that for actual weight while still using row dimensions for cube and linear feet.</span></div>
+      <div class="table-row"><b>Multiple box or pallet groups</b><span>Add a new group when dimensions or weights are different. Duplicate an order when the next order is similar and only small edits are needed.</span></div>
+      <div class="table-row"><b>Linear feet</b><span>Linear feet estimate how much trailer floor space the freight uses. Over 10 linear feet, instant public pricing is paused for custom review.</span></div>
+    </div>
+    <div class="callout"><b>Tip:</b> Use packaged dimensions, not product-only dimensions. Labels, packing slips, and manufacturer specs are usually better than visual estimates.</div>
+  </section>
+
+  <section class="section">
+    <div class="kicker">Before booking</div>
+    <h2>Quick accuracy checklist.</h2>
+    <div class="card-grid">
+      <div class="card"><span class="num">A</span><b>Lane</b><span>Confirm city, province, pickup location, and destination location before sending the request.</span></div>
+      <div class="card"><span class="num">B</span><b>Freight</b><span>Confirm total pieces, pallet count, dimensions, actual weight, and whether weight is per box, per pallet, or total order.</span></div>
+      <div class="card"><span class="num">C</span><b>Access</b><span>Confirm stairs, elevator, dock, appointment needs, doorway restrictions, and whether debris removal or assembly is required.</span></div>
+      <div class="card"><span class="num">D</span><b>Timing</b><span>Choose the preferred pickup date and include any schedule restrictions in the booking notes.</span></div>
+      <div class="card"><span class="num">E</span><b>Contact</b><span>Include the best name, email, phone number, and any delivery instructions for follow-up.</span></div>
+      <div class="card"><span class="num">F</span><b>Review</b><span>Use the copy button for a clean summary, or contact OKE directly when the calculator shows Custom Quote.</span></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div>
+      <h2>Ready to build the quote?</h2>
+      <p>Open the calculator, enter the lane and freight, then contact OKE if anything needs review.</p>
+    </div>
+    <div class="cta-actions">
+      <a class="btn primary" href="./">Open Calculator</a>
+      <a class="btn" href="mailto:info@onekindexpress.com">Email OKE</a>
+      <a class="btn" href="tel:18336535777">1-833-653-5777</a>
+    </div>
+  </section>
+
+  <footer>One Kind Express public calculator guide. Final service details are confirmed by OKE before booking.</footer>
+</main>
+
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('pointermove', event => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((event.clientX - rect.left) / rect.width * 100).toFixed(2) + '%');
+      card.style.setProperty('--my', ((event.clientY - rect.top) / rect.height * 100).toFixed(2) + '%');
+    });
+  });
+</script>
+</body>
+</html>

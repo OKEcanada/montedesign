@@ -80,6 +80,10 @@
         <div><span>Fuel surcharge</span><span id="fuel">—</span></div>
         <div><span>Tax</span><span id="tax">—</span></div>
       </div>
+      <div class="row">
+        <button id="openCalculatorBtn" type="button">Open in calculator</button>
+        <button class="btn btn-ghost" id="copyQuoteLinkBtn" type="button">Copy quote link</button>
+      </div>
     </div>
 
     <div class="card" id="confirmCard">
@@ -115,6 +119,7 @@
 </script>
 <script>
 const WIX_CALCULATOR_URL = "https://www.onekindexpress.com/national-calculator";
+const QUOTE_VIEW_BASE = "https://quote.onekindexpress.com/quote.html";
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return "$" + Number(n || 0).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -146,6 +151,12 @@ function tokenFromUrl() {
   const m = u.pathname.match(/\/q\/([A-Za-z0-9-_]+)/);
   if (m) return m[1];
   return u.searchParams.get('quote') || u.searchParams.get('token');
+}
+
+function quoteShareUrl(token) {
+  const url = new URL(QUOTE_VIEW_BASE);
+  url.searchParams.set('token', token);
+  return url.toString();
 }
 
 async function quoteHandoffSignature() {
@@ -211,6 +222,37 @@ async function bridgeToWixIfRequested() {
   wix.searchParams.set('quote', token);
   window.location.replace(wix.toString());
   return true;
+}
+
+async function openQuoteInCalculator() {
+  const token = tokenFromUrl() || (LOADED_QUOTE && LOADED_QUOTE.public_token);
+  if (!token) return;
+  await createQuoteHandoff(token);
+  const wix = new URL(WIX_CALCULATOR_URL);
+  wix.searchParams.set('quote', token);
+  window.location.href = wix.toString();
+}
+
+async function copyTextSafe(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return !!ok;
+    } catch (_) {
+      return false;
+    }
+  }
 }
 
 let LOADED_QUOTE = null;
@@ -292,6 +334,61 @@ function renderQuote(r) {
   $("tax").textContent = fmt(r.tax_amount);
 }
 
+function quoteEmailBody(r) {
+  return (r && r.payload && r.payload.quote && (r.payload.quote.bookingEmailBody || r.payload.quote.bookingSummary))
+    || [
+      `Reference: ${r.quote_ref || '-'}`,
+      `Lane: ${r.origin || '-'} -> ${r.destination || '-'}`,
+      `Service: ${r.service_name || '-'}`,
+      `Pieces: ${r.total_pcs ?? '-'}`,
+      `Billable weight: ${fmtW(r.billable_weight_lbs)}`,
+      `Middle-mile: ${fmt(r.middle_mile_sell)}`,
+      `Final-mile base: ${fmt(r.final_mile_base)}`,
+      `Additional services: ${fmt(r.accessorials_amount)}`,
+      `Fuel: ${Number(r.fuel_pct || 0).toFixed(1)}% / ${fmt(r.fuel_amount)}`,
+      `Tax: ${fmt(r.tax_amount)}`,
+      `Total: ${fmt(r.total_after_tax)}`
+    ].join('\n');
+}
+
+async function notifyBookingEmailsFromQuote(contactBody, action) {
+  const cfg = sbCfg();
+  if (!cfg || !LOADED_QUOTE) return { ok: false, skipped: true };
+  const payload = {
+    recipient_type: 'booking_pair',
+    quote_ref: LOADED_QUOTE.quote_ref,
+    origin: LOADED_QUOTE.origin,
+    destination: LOADED_QUOTE.destination,
+    requested_at: new Date().toISOString(),
+    pickup_date: LOADED_QUOTE.pickup_date || '',
+    total: LOADED_QUOTE.total_after_tax,
+    customer: contactBody.p_contact_name,
+    email: contactBody.p_contact_email,
+    phone: contactBody.p_contact_phone,
+    notes: contactBody.p_notes,
+    action,
+    share_url: quoteShareUrl(LOADED_QUOTE.public_token),
+    booking_summary: quoteEmailBody(LOADED_QUOTE),
+    booking_email_body: quoteEmailBody(LOADED_QUOTE)
+  };
+  try {
+    const res = await fetch(`${cfg.url}/functions/v1/notify-customer`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
+      body: JSON.stringify({
+        event: action === 'accept' ? 'booking.requested' : 'quote.changes_requested',
+        email: contactBody.p_contact_email,
+        name: contactBody.p_contact_name,
+        payload
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok && data && data.ok !== false, status: res.status, data };
+  } catch (e) {
+    return { ok: false, error: e && e.message || String(e) };
+  }
+}
+
 async function submitBooking(action) {
   if (!LOADED_QUOTE) return;
   const cfg = sbCfg();
@@ -320,10 +417,17 @@ async function submitBooking(action) {
       headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
       body: JSON.stringify({ event: action === 'accept' ? 'quote.confirmed' : 'quote.changes_requested', payload: { ...body, quote_ref: LOADED_QUOTE.quote_ref } })
     }).catch(() => {});
+    const emailNotice = await notifyBookingEmailsFromQuote(body, action);
     status.style.color = 'var(--ok)';
     status.textContent = action === 'accept'
       ? "Thanks! A dispatcher will reach out within one business day."
       : "Got it — we'll send you a revised quote shortly.";
+    const customerOk = !!(emailNotice && emailNotice.data && emailNotice.data.customer && emailNotice.data.customer.ok);
+    status.textContent = customerOk
+      ? "Thanks! OKE received it and a customer copy was emailed."
+      : (action === 'accept'
+        ? "Thanks! OKE received it. Customer email copy did not confirm, so copy the quote link if needed."
+        : "Got it - OKE received the change request.");
     $("confirmBtn").disabled = true;
     $("changesBtn").disabled = true;
   } catch (e) {
@@ -337,6 +441,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (await bridgeToWixIfRequested()) return;
   $("confirmBtn").addEventListener('click', () => submitBooking('accept'));
   $("changesBtn").addEventListener('click', () => submitBooking('changes_requested'));
+  $("openCalculatorBtn").addEventListener('click', openQuoteInCalculator);
+  $("copyQuoteLinkBtn").addEventListener('click', async () => {
+    const token = tokenFromUrl() || (LOADED_QUOTE && LOADED_QUOTE.public_token);
+    if (!token) return;
+    const btn = $("copyQuoteLinkBtn");
+    const old = btn.textContent;
+    await copyTextSafe(quoteShareUrl(token));
+    btn.textContent = 'Copied';
+    setTimeout(() => { btn.textContent = old; }, 1400);
+  });
   loadQuote();
 });
 </script>

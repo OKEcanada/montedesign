@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-30-national-mixed-orders-extras-v3" />
+<meta name="oke-build" content="2026-05-31-national-ux-breakdown-v1" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -470,6 +470,20 @@
   }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   .topbar-tools { display: flex; align-items: center; gap: 8px; }
+  .manual-link {
+    border-color: rgba(255,122,69,0.45) !important;
+    background: rgba(255,122,69,0.16) !important;
+    color: #fff !important;
+  }
+  .manual-link svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
   @media (min-width: 961px) {
     html.is-embedded .page {
       padding-top: 88px !important;
@@ -1309,6 +1323,101 @@
   }
   .b-row.grand .l { color: var(--paper); font-weight: 700; }
   .b-row.grand .v { color: var(--accent-light); font-weight: 800; font-size: 17px; }
+  .cost-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin: 6px 0 2px;
+    padding: 11px 12px;
+    border: 1px solid rgba(250,248,241,0.14);
+    border-radius: 13px;
+    background: rgba(250,248,241,0.055);
+    color: var(--paper);
+    cursor: pointer;
+    font: 800 12px/1 var(--font-body);
+  }
+  .cost-toggle .at-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .cost-toggle .at-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(255,122,69,0.92), rgba(255,91,54,0.92));
+    box-shadow: 0 8px 18px rgba(255,122,69,0.22);
+    transition: transform var(--transition);
+  }
+  .cost-toggle.open .at-icon { transform: rotate(45deg); }
+  .cost-toggle .at-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(250,248,241,0.62);
+    white-space: nowrap;
+  }
+  .cost-details {
+    display: none;
+    padding: 12px;
+    border: 1px solid rgba(250,248,241,0.12);
+    border-radius: 13px;
+    background: rgba(250,248,241,0.045);
+  }
+  .cost-details.open {
+    display: grid;
+    gap: 10px;
+  }
+  .cost-section {
+    display: grid;
+    gap: 6px;
+  }
+  .cost-section h4 {
+    margin: 0;
+    color: rgba(250,248,241,0.54);
+    font: 850 10px/1 var(--font-mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .cost-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: baseline;
+    color: rgba(250,248,241,0.74);
+    font-size: 12px;
+  }
+  .cost-line b {
+    color: var(--paper);
+    font-weight: 750;
+  }
+  .cost-line em {
+    display: block;
+    margin-top: 2px;
+    color: rgba(250,248,241,0.43);
+    font-style: normal;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .cost-line span:last-child {
+    font-family: var(--font-mono);
+    color: var(--paper);
+    white-space: nowrap;
+  }
+  .cost-note {
+    padding-top: 8px;
+    border-top: 1px dashed rgba(250,248,241,0.12);
+    color: rgba(250,248,241,0.48);
+    font-size: 11px;
+    line-height: 1.4;
+  }
 
   .pct-input-wrap {
     display: inline-flex; align-items: center;
@@ -1490,7 +1599,7 @@
   .intel-card:hover::after { opacity: 1; }
   .intel-card > * { position: relative; z-index: 1; }
   .r-actions {
-    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px; margin-top: 14px;
   }
   .r-btn {
@@ -3652,6 +3761,90 @@
     }
   }
 
+  .middle-order-card .middle-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .piece-grid.middle-dim {
+    grid-template-columns: 1.05fr 1.05fr 1fr 1fr 1fr;
+  }
+  .topbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+  }
+  .topbar-tools {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+  .topbar-badge {
+    white-space: nowrap !important;
+  }
+  .r-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  .r-actions .r-btn {
+    min-height: 44px !important;
+    padding: 10px 10px !important;
+    white-space: normal !important;
+    line-height: 1.1 !important;
+  }
+  @media (max-width: 700px) {
+    .piece-grid.middle-dim {
+      grid-template-columns: 1fr 1fr;
+    }
+    .topbar {
+      grid-template-columns: 1fr !important;
+      justify-items: center !important;
+      text-align: center !important;
+      gap: 10px !important;
+      padding: 12px !important;
+    }
+    .wordmark {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+    .topbar-tools {
+      width: 100% !important;
+      justify-content: center !important;
+      flex-direction: column !important;
+      flex-wrap: wrap !important;
+      gap: 7px !important;
+    }
+    .manual-link {
+      min-height: 36px !important;
+      padding: 8px 12px !important;
+    }
+    .topbar-badge {
+      width: auto !important;
+      max-width: 100% !important;
+      justify-content: center !important;
+      white-space: normal !important;
+      text-align: center !important;
+      line-height: 1.2 !important;
+    }
+    .r-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 9px !important;
+    }
+    .r-actions .r-btn {
+      min-height: 48px !important;
+      padding: 12px 10px !important;
+      font-size: 12px !important;
+      gap: 7px !important;
+    }
+    .cost-line {
+      grid-template-columns: 1fr !important;
+      gap: 4px !important;
+    }
+    .cost-line span:last-child {
+      justify-self: start !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -3664,6 +3857,10 @@
       </div>
     </div>
     <div class="topbar-tools">
+      <a class="history-btn manual-link" href="manual.html" target="_top" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+        Manual
+      </a>
       <div class="topbar-badge">Powered by One Kind Express</div>
     </div>
   </header>
@@ -3886,6 +4083,11 @@
             <div class="b-row"><span class="l" id="baseLabelOut">Base delivery</span><span class="v" id="baseOut">$0.00</span></div>
             <div class="b-row" id="extraPieceRow" style="display:none;"><span class="l">Extra boxes/items</span><span class="v" id="extraPieceOut">$0.00</span></div>
             <div class="b-row" id="accBreakdownRow" style="display:none;"><span class="l">Additional services</span><span class="v" id="accAmountOut">$0.00</span></div>
+            <button class="cost-toggle" id="costToggle" type="button">
+              <span class="at-left"><span class="at-icon">+</span><span>Detailed cost breakdown</span></span>
+              <span class="at-count" id="costCount">closed</span>
+            </button>
+            <div class="cost-details" id="costDetails"></div>
             <div class="b-row subtotal"><span class="l">Subtotal</span><span class="v" id="subtotalOut">$0.00</span></div>
             <div class="b-row">
               <span class="l">
@@ -4317,6 +4519,22 @@ async function notifyCustomer(event, payload) {
   } catch (e) {
     return { ok: false, error: e && e.message || String(e) };
   }
+}
+
+async function notifyBookingEmails(payload) {
+  const internalPayload = {
+    ...payload,
+    email: 'info@onekindexpress.com',
+    name: 'One Kind Express Dispatch',
+    recipient_type: 'internal',
+    customer_email: payload.email || '',
+    customer_phone: payload.phone || '',
+  };
+  const internal = await notifyCustomer('booking.requested', internalPayload);
+  const customer = payload.email
+    ? await notifyCustomer('booking.requested', { ...payload, recipient_type: 'customer' })
+    : { ok: false, skipped: true };
+  return { internal, customer };
 }
 
 function sbCfg() {
@@ -5052,14 +5270,14 @@ function orderPieces(order) {
 }
 
 function orderTotalWeightLbs(order) {
-  if (!order || state.laneMode === 'middle') return 0;
+  if (!order) return 0;
   const total = Number(order.totalWeight) || 0;
   return total > 0 ? toLbs(total) : 0;
 }
 
 function pieceHasWeightSource(p) {
   if (!p) return false;
-  if (state.laneMode !== 'middle' && orderTotalWeightLbs(orderForPiece(p)) > 0) return true;
+  if (orderTotalWeightLbs(orderForPiece(p)) > 0) return true;
   return Number(p.weight) > 0;
 }
 
@@ -5264,7 +5482,7 @@ function computeOrderActualWeight(order) {
 function computeShipmentMetrics() {
   ensureOrders();
   let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
-  if (state.laneMode === 'middle') {
+  if (state.laneMode === 'middle' && state.mode === 'pallet') {
     for (const p of state.pieces) {
       const vc = volumetricCount(p);
       actualWtLbs += computePieceActualWeight(p);
@@ -5557,7 +5775,7 @@ function renderOrderBuilder() {
             <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="H" value="${p.H ?? ""}" placeholder="height" /></div>
           </div>`
         : `<div class="piece-grid dim">
-            <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Boxes in group</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
             <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
             <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
             <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
@@ -5756,6 +5974,190 @@ function renderOrderBuilder() {
   updateOrderSubtitles();
 }
 
+function renderMiddleMileOrderBuilder() {
+  const wrap = $("piecesWrap");
+  if (!wrap) return;
+  ensureOrders();
+  const mode = normalizeMode(state.mode) === 'cf' ? 'cf' : 'dim';
+  const dl = $("itemTypeOptions");
+  if (dl && !dl.dataset.ready) {
+    dl.innerHTML = ITEM_TYPE_OPTIONS.map(v => `<option value="${htmlEsc(v)}"></option>`).join('');
+    dl.dataset.ready = '1';
+  }
+  state.orders.forEach(order => { order.mode = mode; });
+  state.pieces.forEach(p => {
+    p.mode = mode;
+    p.piecesPerItem = null;
+    if (!p.orderId || !state.orders.some(o => o.id === p.orderId)) p.orderId = state.orders[0].id;
+  });
+  state.orders.forEach(order => {
+    if (!orderPieces(order).length) state.pieces.push(blankPiece(mode, order.id));
+  });
+  const lenLabel = state.lenUnit.toUpperCase();
+  const wtLabel = state.wtUnit.toUpperCase();
+  wrap.innerHTML = "";
+
+  state.orders.forEach((order, oi) => {
+    const pieces = orderPieces(order);
+    const totalBoxes = pieces.reduce((sum, p) => sum + piecesCount(p), 0);
+    const div = document.createElement("div");
+    div.className = "order-card middle-order-card";
+    div.dataset.orderId = order.id;
+    const linesHtml = pieces.map((p, lineIdx) => {
+      const globalIdx = state.pieces.indexOf(p);
+      const removeBtn = pieces.length > 1
+        ? `<button class="piece-remove" data-mid-line-remove="${globalIdx}" aria-label="Remove box group">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+            </svg>
+          </button>`
+        : '';
+      const inputsHtml = mode === 'cf'
+        ? `<div class="piece-grid cf">
+            <div class="field"><label class="field-label">Boxes in group</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">Cubic feet / box</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
+          </div>`
+        : `<div class="piece-grid dim middle-dim">
+            <div class="field"><label class="field-label">Boxes in group</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-mid-p="${globalIdx}" data-k="H" value="${p.H ?? ""}" placeholder="0" /></div>
+          </div>`;
+      return `<div class="order-line">
+        <div class="order-line-head">
+          <div class="order-line-title"><span>${lineIdx + 1}</span>Box group ${lineIdx + 1}</div>
+          <div class="piece-controls">
+            <label class="piece-type">
+              <span>Freight type</span>
+              <input type="text" list="itemTypeOptions" data-mid-p="${globalIdx}" data-k="itemType" value="${htmlEsc(p.itemType || p.label || '')}" placeholder="Boxes, cartons..." autocomplete="off" />
+            </label>
+            ${removeBtn}
+          </div>
+        </div>
+        ${inputsHtml}
+        <div class="piece-meta" data-meta="${globalIdx}"></div>
+      </div>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="order-top">
+        <div>
+          <div class="order-title"><span class="order-num">${oi + 1}</span><span>Freight order ${oi + 1}</span></div>
+          <div class="order-sub">${totalBoxes ? `${totalBoxes} box${totalBoxes === 1 ? '' : 'es'}` : 'Add box groups for this order'}</div>
+        </div>
+        <div class="order-actions">
+          <button class="order-duplicate" type="button" data-mid-order-duplicate="${order.id}">Duplicate order</button>
+          ${state.orders.length > 1 ? `<button class="order-remove" type="button" data-mid-order-remove="${order.id}">Remove order</button>` : ''}
+        </div>
+      </div>
+      <div class="order-options middle-options">
+        <div class="order-option-card">
+          <label class="field-label">Total order weight (${wtLabel})</label>
+          <input type="number" min="0" step="1" inputmode="decimal" data-mid-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
+          <p>Use this when the order total is known. Dimensions still calculate cube, dim weight, and linear feet.</p>
+        </div>
+      </div>
+      <div class="order-lines">${linesHtml}</div>
+      <button class="order-add-line" type="button" data-mid-order-add-line="${order.id}">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add box group
+      </button>
+    `;
+    wrap.appendChild(div);
+  });
+
+  wrap.querySelectorAll('input[data-mid-p]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = Number(e.target.dataset.midP);
+      const k = e.target.dataset.k;
+      const p = state.pieces[i];
+      if (!p) return;
+      if (k === 'itemType') {
+        p.itemType = e.target.value;
+        p.label = e.target.value;
+      } else {
+        p[k] = e.target.value === "" ? null : Number(e.target.value);
+      }
+      p.mode = mode;
+      p.piecesPerItem = null;
+      updatePieceTags();
+      updateMiddleOrderSubtitles();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('input[data-mid-order-total-weight]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const order = state.orders.find(o => o.id === e.target.dataset.midOrderTotalWeight);
+      if (!order) return;
+      order.totalWeight = e.target.value === "" ? null : Math.max(0, Number(e.target.value) || 0);
+      updatePieceTags();
+      updateMiddleOrderSubtitles();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-mid-line-remove]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = Number(e.currentTarget.dataset.midLineRemove);
+      const p = state.pieces[idx];
+      if (!p) return;
+      const order = orderForPiece(p);
+      const pieces = orderPieces(order);
+      if (pieces.length <= 1) {
+        state.pieces[idx] = blankPiece(mode, order.id);
+      } else {
+        state.pieces.splice(idx, 1);
+      }
+      renderPieces();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-mid-order-add-line]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const order = state.orders.find(o => o.id === btn.dataset.midOrderAddLine);
+      if (!order || state.pieces.length >= 40) return;
+      state.pieces.push(blankPiece(mode, order.id));
+      renderPieces();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-mid-order-duplicate]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const source = state.orders.find(o => o.id === btn.dataset.midOrderDuplicate);
+      if (!source || state.orders.length >= 12) return;
+      const copy = newOrder(null, mode);
+      copy.mode = mode;
+      copy.totalWeight = source.totalWeight || null;
+      state.orders.push(copy);
+      const sourcePieces = orderPieces(source);
+      if (sourcePieces.length) {
+        sourcePieces.forEach(p => {
+          const cloned = JSON.parse(JSON.stringify(p));
+          cloned.orderId = copy.id;
+          cloned.mode = mode;
+          state.pieces.push(cloned);
+        });
+      } else {
+        state.pieces.push(blankPiece(mode, copy.id));
+      }
+      render();
+    });
+  });
+  wrap.querySelectorAll('[data-mid-order-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (state.orders.length <= 1) return;
+      const id = btn.dataset.midOrderRemove;
+      state.orders = state.orders.filter(o => o.id !== id);
+      state.pieces = state.pieces.filter(p => p.orderId !== id);
+      ensureOrders();
+      render();
+    });
+  });
+
+  updatePieceTags();
+  updateMiddleOrderSubtitles();
+}
+
 function updateOrderSubtitles() {
   if (state.laneMode === 'middle' || !Array.isArray(state.orders)) return;
   state.orders.forEach(order => {
@@ -5768,7 +6170,22 @@ function updateOrderSubtitles() {
   });
 }
 
+function updateMiddleOrderSubtitles() {
+  if (state.laneMode !== 'middle' || !Array.isArray(state.orders)) return;
+  state.orders.forEach(order => {
+    const card = document.querySelector(`.order-card[data-order-id="${order.id}"]`);
+    const sub = card && card.querySelector('.order-sub');
+    if (!sub) return;
+    const totalBoxes = orderPieces(order).reduce((sum, p) => sum + piecesCount(p), 0);
+    sub.textContent = totalBoxes ? `${totalBoxes} box${totalBoxes === 1 ? '' : 'es'}` : 'Add box groups for this order';
+  });
+}
+
 function renderPieces() {
+  if (state.laneMode === 'middle' && state.mode !== 'pallet') {
+    renderMiddleMileOrderBuilder();
+    return;
+  }
   if (state.laneMode !== 'middle') {
     renderOrderBuilder();
     return;
@@ -5790,8 +6207,8 @@ function renderPieces() {
     let inputsHtml = "";
     if (state.mode === 'dim') {
       inputsHtml = `<div class="piece-grid dim">
-        <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Pieces / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Boxes in group</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Handling pieces</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
         <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
@@ -5799,8 +6216,8 @@ function renderPieces() {
       </div>`;
     } else if (state.mode === 'cf') {
       inputsHtml = `<div class="piece-grid cf">
-        <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Pieces / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Boxes in group</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Handling pieces</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
         <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">Cubic feet / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
       </div>`;
@@ -6358,6 +6775,75 @@ function moneyShort(n) {
   return '$' + Number(n || 0).toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
+function costDetailLine(label, amount, detail = '') {
+  return `<div class="cost-line"><span><b>${htmlEsc(label)}</b>${detail ? `<em>${htmlEsc(detail)}</em>` : ''}</span><span>${fmt(Number(amount) || 0)}</span></div>`;
+}
+
+function renderCostDetails(q, largeLinearQuote) {
+  const box = $("costDetails");
+  const count = $("costCount");
+  if (!box || !q) return;
+  if (largeLinearQuote) {
+    box.innerHTML = `<div class="cost-note">This shipment is above the instant quote threshold. OKE will review line-haul capacity, equipment, handling, and additional services before confirming price.</div>`;
+    if (count) count.textContent = 'custom review';
+    return;
+  }
+  const sections = [];
+  let lineCount = 0;
+  const baseLines = [];
+  if (q.middleMileSell > 0 || state.laneMode === 'middle') {
+    const rate = q.rates || CURRENT_LANE_QUOTE || {};
+    const detail = state.laneMode === 'middle'
+      ? 'Dock-to-dock freight movement for the selected lane.'
+      : 'Line haul between the selected cities, included in base delivery.';
+    baseLines.push(costDetailLine('Middle-mile line haul', q.middleMileSell || 0, rate.cwtCol ? `${detail} Rate basis: ${rate.cwtCol}.` : detail));
+  }
+  if (state.laneMode !== 'middle') {
+    const orders = q.orderBreakdown || [];
+    if (orders.length) {
+      orders.forEach((order, idx) => {
+        baseLines.push(costDetailLine(
+          `Order ${idx + 1} ${order.serviceName}`,
+          order.base,
+          `${order.pieces || 0} box/item${order.pieces === 1 ? '' : 's'}${order.totalWeightOverride ? ', total order weight used' : ''}.`
+        ));
+      });
+    } else if (q.baseFinalMile > 0) {
+      baseLines.push(costDetailLine('Final-mile service', q.baseFinalMile, 'Delivery service for the selected order.'));
+    }
+  }
+  lineCount += baseLines.length;
+  if (baseLines.length) sections.push(`<div class="cost-section"><h4>${state.laneMode === 'middle' ? 'Middle mile' : 'Base delivery includes'}</h4>${baseLines.join('')}</div>`);
+
+  const handlingLines = [];
+  if (q.extraPieces > 0) {
+    handlingLines.push(costDetailLine('Extra boxes/items', q.extraPieceCharge, `${q.extraPieces} x ${fmt(state.extraPiece)} after the first 2 included in Full Quote.`));
+  } else if (state.laneMode !== 'middle' && q.totalPcs > 0) {
+    handlingLines.push(`<div class="cost-line"><span><b>Extra boxes/items</b><em>First 2 are included in Full Quote.</em></span><span>${fmt(0)}</span></div>`);
+  }
+  lineCount += handlingLines.length;
+  if (handlingLines.length) sections.push(`<div class="cost-section"><h4>Handling</h4>${handlingLines.join('')}</div>`);
+
+  const accLines = (q.accSelected || []).map(a => costDetailLine(
+    a.name || a.label || a.id,
+    a.amount,
+    a.detail || (a.qty > 1 ? `${a.qty} selected` : 'Selected additional service')
+  ));
+  lineCount += accLines.length;
+  if (accLines.length) sections.push(`<div class="cost-section"><h4>Additional services</h4>${accLines.join('')}</div>`);
+
+  const finalLines = [
+    costDetailLine('Subtotal', q.subtotal || 0, 'Before fuel surcharge and tax.'),
+    state.fscPct > 0 ? costDetailLine(`Fuel surcharge (${state.fscPct}%)`, q.fscAmount || 0, 'Calculated from subtotal.') : null,
+    q.tax && q.tax.rate > 0 ? costDetailLine(`Tax (${q.tax.label})`, q.taxAmount || 0, `${q.tax.rate}%`) : null,
+  ].filter(Boolean);
+  lineCount += finalLines.length;
+  sections.push(`<div class="cost-section"><h4>Total math</h4>${finalLines.join('')}</div>`);
+
+  box.innerHTML = sections.join('') + `<div class="cost-note">Detailed lines are shown for transparency. OKE reviews submitted booking requests before dispatch confirmation.</div>`;
+  if (count) count.textContent = `${lineCount} lines`;
+}
+
 function dateShort(v) {
   return v ? new Date(v).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 }
@@ -6793,7 +7279,7 @@ function updateOutput(options = {}) {
     gt.classList.add('bump');
   }
   if (largeLinearQuote) window.__cancelMoneyTween('#grandTotal2', 'Custom quote');
-  else window.__tweenMoney('#grandTotal2', q.total);
+  else window.__cancelMoneyTween('#grandTotal2', fmt(q.total));
 
   const svc = serviceForId(primaryServiceId());
   $("svcPill").textContent = serviceSummary(q);
@@ -6846,6 +7332,7 @@ function updateOutput(options = {}) {
 
   $("accBreakdownRow").style.display = q.accAmount > 0 ? "flex" : "none";
   $("accAmountOut").textContent = largeLinearQuote ? 'Reviewed manually' : fmt(q.accAmount);
+  renderCostDetails(q, largeLinearQuote);
 
   $("subtotalOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.subtotal);
   $("fscAmountOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.fscAmount);
@@ -7303,7 +7790,14 @@ function setupMode() {
         state.pieces.forEach(p => { p.cf=null; p.pallets=null; p.itemsPerPallet=null; });
       } else if (state.mode === 'pallet') {
         state.pieces.forEach(p => { p.cf=null; p.qty=null; });
+        state.orders.forEach(o => { o.totalWeight = null; });
       }
+      state.orders.forEach(o => { o.mode = state.mode === 'pallet' ? 'pallet' : (state.mode === 'cf' ? 'cf' : 'dim'); });
+      state.pieces.forEach(p => {
+        p.mode = state.mode;
+        if (state.mode !== 'pallet') p.piecesPerItem = null;
+      });
+      applyLaneMode();
       render();
     });
   });
@@ -7339,7 +7833,9 @@ function setupOrders() {
   btn.addEventListener('click', () => {
     if (state.orders && state.orders.length >= 12) return;
     ensureOrders();
-    const order = newOrder(null, 'dim');
+    const orderMode = state.laneMode === 'middle' ? state.mode : 'dim';
+    const order = newOrder(null, orderMode);
+    order.mode = orderMode;
     state.orders.push(order);
     state.pieces.push(blankPiece(order.mode, order.id));
     render();
@@ -7351,6 +7847,13 @@ function setupAccordion() {
     t.classList.toggle('open');
     c.classList.toggle('open');
   });
+  const costToggle = $("costToggle"), costDetails = $("costDetails");
+  if (costToggle && costDetails) {
+    costToggle.addEventListener('click', () => {
+      costToggle.classList.toggle('open');
+      costDetails.classList.toggle('open');
+    });
+  }
 }
 function setupLaneMode() {
   $("lhToggle").querySelectorAll('.seg-btn').forEach(btn => {
@@ -7417,11 +7920,30 @@ function applyLaneMode() {
   const ordersHead = $("ordersHead");
   const legacyItemsLabel = $("legacyItemsLabel");
   const addPieceBtn = $("addPieceBtn");
+  const middleBoxOrders = isMiddle && state.mode !== 'pallet';
   if (legacyServiceBlock) legacyServiceBlock.style.display = 'none';
   if (legacyMeasureBlock) legacyMeasureBlock.style.display = isMiddle ? '' : 'none';
-  if (ordersHead) ordersHead.style.display = isMiddle ? 'none' : 'flex';
-  if (legacyItemsLabel) legacyItemsLabel.style.display = isMiddle ? '' : 'none';
-  if (addPieceBtn) addPieceBtn.style.display = isMiddle ? '' : 'none';
+  if (ordersHead) {
+    ordersHead.style.display = middleBoxOrders || !isMiddle ? 'flex' : 'none';
+    const ordersText = ordersHead.querySelector('p');
+    const addOrder = $("addOrderBtn");
+    if (ordersText) {
+      ordersText.textContent = middleBoxOrders
+        ? 'Add freight orders and box groups. Middle mile prices the combined shipment only.'
+        : 'Each order can use its own final-mile service. Middle mile still prices the combined shipment.';
+    }
+    if (addOrder) {
+      const label = addOrder.childNodes[addOrder.childNodes.length - 1];
+      if (label) label.textContent = middleBoxOrders ? ' Add freight order' : ' Add order';
+    }
+  }
+  if (legacyItemsLabel) {
+    legacyItemsLabel.style.display = isMiddle ? '' : 'none';
+    legacyItemsLabel.innerHTML = middleBoxOrders
+      ? 'Freight orders - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">middle-mile only, no service levels or final-mile extra box charge</span>'
+      : 'Freight rows - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">middle-mile only, no final-mile extra box charge</span>';
+  }
+  if (addPieceBtn) addPieceBtn.style.display = isMiddle && state.mode === 'pallet' ? '' : 'none';
   const accToggle = $("accToggle");
   const accContent = $("accContent");
   if (accToggle) accToggle.style.display = isMiddle ? 'none' : '';
@@ -7811,12 +8333,14 @@ function setupActions() {
         booking_email_body: window._bookingEmailBody || ''
       };
       await notifySlack('quote.confirmed', notificationPayload);
-      const emailNotice = await notifyCustomer('booking.requested', notificationPayload);
+      const emailNotice = await notifyBookingEmails(notificationPayload);
       bookingSubmit.classList.add('saved');
       bookingSubmit.textContent = 'Booking request sent';
-      setStatus(emailNotice && emailNotice.ok
-        ? 'Done. OKE has the quote, your contact details, and an email notification was sent.'
-        : 'Done. One Kind Express has your booking request and contact details.',
+      setStatus(emailNotice && emailNotice.internal && emailNotice.internal.ok
+        ? (emailNotice.customer && emailNotice.customer.ok
+            ? 'Done. OKE received the booking email and a customer copy was sent.'
+            : 'Done. OKE received the booking email. Use Share or Copy if the customer also needs a copy.')
+        : 'Booking saved in the quote system. Email notification did not confirm, so use Email OKE or Copy details if it is urgent.',
         'ok');
     } catch (e) {
       bookingSubmit.disabled = false;

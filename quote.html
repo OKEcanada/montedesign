@@ -148,18 +148,67 @@ function tokenFromUrl() {
   return u.searchParams.get('quote') || u.searchParams.get('token');
 }
 
-function bridgeToWixIfRequested() {
+async function quoteHandoffSignature() {
+  const tz = (Intl.DateTimeFormat().resolvedOptions() || {}).timeZone || "";
+  const parts = [
+    navigator.userAgent || "",
+    navigator.language || "",
+    navigator.platform || "",
+    tz,
+    screen.width || 0,
+    screen.height || 0,
+    screen.colorDepth || 0,
+    window.devicePixelRatio || 1,
+    navigator.hardwareConcurrency || 0,
+    navigator.maxTouchPoints || 0
+  ].join("|");
+  try {
+    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parts));
+    return Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) {
+    return btoa(unescape(encodeURIComponent(parts))).replace(/[^A-Za-z0-9]/g, "").slice(0, 96);
+  }
+}
+
+async function createQuoteHandoff(token) {
+  const cfg = sbCfg();
+  if (!cfg || !token) return false;
+  try {
+    const signature = await quoteHandoffSignature();
+    const res = await fetch(`${cfg.url}/functions/v1/quote-handoff`, {
+      method: "POST",
+      headers: {
+        apikey: cfg.anonKey,
+        Authorization: `Bearer ${cfg.anonKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "create",
+        token,
+        signature,
+        userAgent: navigator.userAgent || ""
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    return res.ok && data && data.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function bridgeToWixIfRequested() {
   const u = new URL(window.location.href);
   const token = tokenFromUrl();
   if (!token || u.searchParams.get('view') === '1') return false;
   const shouldBridge = u.searchParams.get('open') === 'wix' || u.searchParams.get('wix') === '1';
   if (!shouldBridge) return false;
+  document.getElementById('loadingView').textContent = 'Opening quote on One Kind Express...';
+  await createQuoteHandoff(token);
   try {
     localStorage.setItem('montePendingQuoteToken', JSON.stringify({ token, createdAt: Date.now() }));
   } catch (e) {}
   const wix = new URL(WIX_CALCULATOR_URL);
   wix.searchParams.set('quote', token);
-  document.getElementById('loadingView').textContent = 'Opening quote on One Kind Express...';
   window.location.replace(wix.toString());
   return true;
 }
@@ -284,8 +333,8 @@ async function submitBooking(action) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (bridgeToWixIfRequested()) return;
+document.addEventListener('DOMContentLoaded', async () => {
+  if (await bridgeToWixIfRequested()) return;
   $("confirmBtn").addEventListener('click', () => submitBooking('accept'));
   $("changesBtn").addEventListener('click', () => submitBooking('changes_requested'));
   loadQuote();

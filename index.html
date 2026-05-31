@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-31-national-ux-breakdown-v1" />
+<meta name="oke-build" content="2026-05-31-national-email-diagnostics-v1" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4515,10 +4515,29 @@ async function notifyCustomer(event, payload) {
       headers: { 'content-type': 'application/json', apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` },
       body: JSON.stringify({ event, email, name, payload })
     });
-    return { ok: res.ok, status: res.status, text: res.ok ? '' : await res.text().catch(() => '') };
+    const text = await res.text().catch(() => '');
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) {}
+    const backendOk = res.ok && (!data || data.ok !== false);
+    const error = backendOk ? '' : (data && (data.error || data.message || data.detail)) || text || `HTTP ${res.status}`;
+    return { ok: backendOk, status: res.status, text, data, error };
   } catch (e) {
     return { ok: false, error: e && e.message || String(e) };
   }
+}
+
+function emailNoticeFailureText(emailNotice) {
+  const failures = [];
+  if (emailNotice && emailNotice.internal && !emailNotice.internal.ok) failures.push(emailNotice.internal);
+  if (emailNotice && emailNotice.customer && !emailNotice.customer.ok && !emailNotice.customer.skipped) failures.push(emailNotice.customer);
+  const raw = failures.map(f => f && (f.error || f.text || f.status)).filter(Boolean).join(' | ');
+  if (!raw) return '';
+  if (/No email provider configured|RESEND_API_KEY|BREVO_API_KEY/i.test(raw)) {
+    return 'email provider is not configured in Supabase';
+  }
+  if (/401|403|JWT|Unauthorized|forbidden/i.test(raw)) return 'email function authorization failed';
+  if (/404|not found/i.test(raw)) return 'email function is not deployed';
+  return raw.length > 180 ? raw.slice(0, 177) + '...' : raw;
 }
 
 async function notifyBookingEmails(payload) {
@@ -8336,12 +8355,16 @@ function setupActions() {
       const emailNotice = await notifyBookingEmails(notificationPayload);
       bookingSubmit.classList.add('saved');
       bookingSubmit.textContent = 'Booking request sent';
-      setStatus(emailNotice && emailNotice.internal && emailNotice.internal.ok
-        ? (emailNotice.customer && emailNotice.customer.ok
-            ? 'Done. OKE received the booking email and a customer copy was sent.'
-            : 'Done. OKE received the booking email. Use Share or Copy if the customer also needs a copy.')
-        : 'Booking saved in the quote system. Email notification did not confirm, so use Email OKE or Copy details if it is urgent.',
-        'ok');
+      if (emailNotice && emailNotice.internal && emailNotice.internal.ok) {
+        setStatus(emailNotice.customer && emailNotice.customer.ok
+          ? 'Done. OKE received the booking email and a customer copy was sent.'
+          : 'Done. OKE received the booking email. Use Share or Copy if the customer also needs a copy.',
+          'ok');
+      } else {
+        const why = emailNoticeFailureText(emailNotice);
+        setStatus('Booking saved, but automated email did not send' + (why ? `: ${why}.` : '.') + ' Use Email OKE or Copy details now.',
+          'err');
+      }
     } catch (e) {
       bookingSubmit.disabled = false;
       bookingSubmit.textContent = original;

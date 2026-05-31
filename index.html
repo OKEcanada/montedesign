@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-30-national-mixed-orders-extras" />
+<meta name="oke-build" content="2026-05-30-national-mixed-orders-extras-v3" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1012,7 +1012,7 @@
   }
   .acc-list {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    grid-auto-rows: 1fr;
+    grid-auto-rows: auto;
   }
   @media (max-width: 600px) { .acc-list { grid-template-columns: 1fr; grid-auto-rows: auto; } }
   .acc-row {
@@ -1020,7 +1020,7 @@
     padding: 12px 14px; border-radius: var(--radius-sm);
     background: rgba(255,255,255,0.55); border: 1px solid var(--line);
     cursor: pointer; transition: all var(--transition);
-    user-select: none; min-height: 60px; height: 100%;
+    user-select: none; min-height: 58px; height: auto;
     gap: 10px;
   }
   .acc-row:hover { border-color: rgba(255,122,69,0.40); transform: translateY(-1px); }
@@ -1052,6 +1052,36 @@
     border-radius: 6px;
   }
   .acc-row:not(.checked) .acc-qty { opacity: 0.35; pointer-events: none; }
+  .local-extra-panel {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.80), rgba(255,250,244,0.62));
+    padding: 14px;
+  }
+  .local-extra-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .local-extra-grid .field-label {
+    margin-bottom: 6px;
+    font-size: 10px;
+  }
+  .local-extra-grid input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.86);
+    font-size: 13.5px;
+  }
+  .local-extra-note {
+    margin: 8px 0 0;
+    color: var(--ink-muted);
+    font-size: 12.5px;
+  }
 
   /* RESULT CARD */
   .result-card {
@@ -3529,23 +3559,55 @@
     font-family: var(--font-mono);
     font-size: 12px;
   }
-  .local-extra-panel {
-    margin-top: 14px;
-    border-top: 1px solid rgba(12,16,36,0.08);
-    padding-top: 14px;
+  .order-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
-  .local-extra-grid {
+  .order-duplicate {
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.78);
+    color: var(--ink);
+    padding: 8px 10px;
+    cursor: pointer;
+    font-weight: 850;
+  }
+  .order-duplicate:hover,
+  .order-remove:hover {
+    border-color: rgba(255,122,69,0.38);
+    color: var(--accent-deep);
+  }
+  .order-options {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    margin: 0 0 12px;
   }
-  .local-extra-note {
-    margin: 8px 0 0;
+  .order-option-card {
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 13px;
+    background: rgba(255,255,255,0.64);
+    padding: 11px;
+  }
+  .order-option-card input,
+  .order-option-card select,
+  .piece-grid select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.90);
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+  .order-option-card p {
+    margin: 7px 0 0;
     color: var(--ink-muted);
-    font-size: 12.5px;
-  }
-  .white-glove-time {
-    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.35;
   }
   .white-glove-time[hidden] {
     display: none !important;
@@ -3569,6 +3631,7 @@
       flex-direction: column;
     }
     .order-service-grid,
+    .order-options,
     .local-extra-grid {
       grid-template-columns: 1fr;
     }
@@ -3694,7 +3757,7 @@
       </div>
 
       <div class="section-label legacy-items-label" id="legacyItemsLabel" style="margin-top: 6px;">
-        Items - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included - $25 each beyond</span>
+        Freight rows - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">middle-mile only, no final-mile extra box charge</span>
       </div>
       <div class="pieces" id="piecesWrap"></div>
       <datalist id="itemTypeOptions"></datalist>
@@ -3702,7 +3765,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
-        Add another item
+        Add freight row
       </button>
 
       <!-- AI photo identifier: drop a photo, screenshot of an order list, or a PDF page.
@@ -3821,7 +3884,7 @@
 
           <div class="r-breakdown">
             <div class="b-row"><span class="l" id="baseLabelOut">Base delivery</span><span class="v" id="baseOut">$0.00</span></div>
-            <div class="b-row" id="extraPieceRow" style="display:none;"><span class="l">Extra items</span><span class="v" id="extraPieceOut">$0.00</span></div>
+            <div class="b-row" id="extraPieceRow" style="display:none;"><span class="l">Extra boxes/items</span><span class="v" id="extraPieceOut">$0.00</span></div>
             <div class="b-row" id="accBreakdownRow" style="display:none;"><span class="l">Additional services</span><span class="v" id="accAmountOut">$0.00</span></div>
             <div class="b-row subtotal"><span class="l">Subtotal</span><span class="v" id="subtotalOut">$0.00</span></div>
             <div class="b-row">
@@ -4849,12 +4912,12 @@ const state = {
   mode: 'dim',
   lenUnit: 'in',
   wtUnit: 'lb',
-  orders: [{ id: 'order-1', service: null, mode: 'dim' }],
+  orders: [{ id: 'order-1', service: null, mode: 'dim', totalWeight: null, whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES }],
   pieces: [{ orderId: 'order-1', mode: 'dim', itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
   fscPct: 0,
   taxId: 'none',
     dimFactor: 10,
-  extraPiece: 25,
+  extraPiece: 20,
   servicePrices: {},
   accPrices: loadAccPrices(),
   accessorials: {}, // {id: {selected: true, qty: 2}}
@@ -4865,7 +4928,6 @@ const state = {
     blankets: 0,
     storageAfter24h: 0,
     crossDock: 0,
-    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
   },
 };
 
@@ -4892,7 +4954,7 @@ const palletCount = p => Number(p && p.pallets) > 0 ? Number(p.pallets) : 1;
 const itemsPerPalletCount = p => Number(p && p.itemsPerPallet) > 0 ? Number(p.itemsPerPallet) : 1;
 const palletLength = p => Number(p && p.L) > 0 ? Number(p.L) : palletDefaultLength();
 const palletWidth = p => Number(p && p.W) > 0 ? Number(p.W) : palletDefaultWidth();
-const SERVICE_ID_ALIASES = { roomofchoice: 'roc', 'room-of-choice': 'roc', 'room_of_choice': 'roc' };
+const SERVICE_ID_ALIASES = { roomchoice: 'roc', roomofchoice: 'roc', 'room-of-choice': 'roc', 'room_of_choice': 'roc' };
 
 function normalizeServiceId(id) {
   if (!id) return null;
@@ -4927,12 +4989,19 @@ function blankPiece(mode = 'dim', orderId = null) {
     qty: null,
     pallets: m === 'pallet' ? 1 : null,
     itemsPerPallet: m === 'pallet' ? 1 : null,
+    weightBasis: m === 'pallet' ? 'pallet' : null,
   };
 }
 
 function newOrder(service = null, mode = 'dim') {
   ORDER_SEQ += 1;
-  return { id: 'order-' + ORDER_SEQ, service: normalizeServiceId(service), mode: normalizeMode(mode) === 'cf' ? 'dim' : normalizeMode(mode) };
+  return {
+    id: 'order-' + ORDER_SEQ,
+    service: normalizeServiceId(service),
+    mode: normalizeMode(mode) === 'cf' ? 'dim' : normalizeMode(mode),
+    totalWeight: null,
+    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
+  };
 }
 
 function syncPrimaryService() {
@@ -4942,12 +5011,14 @@ function syncPrimaryService() {
 
 function ensureOrders() {
   if (!Array.isArray(state.orders) || !state.orders.length) {
-    state.orders = [{ id: 'order-1', service: normalizeServiceId(state.service), mode: normalizeMode(state.mode) === 'cf' ? 'dim' : normalizeMode(state.mode) }];
+    state.orders = [{ id: 'order-1', service: normalizeServiceId(state.service), mode: normalizeMode(state.mode) === 'cf' ? 'dim' : normalizeMode(state.mode), totalWeight: null, whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES }];
   }
   state.orders.forEach((order, idx) => {
     if (!order.id) order.id = 'order-' + (idx + 1);
     order.service = normalizeServiceId(order.service);
     order.mode = normalizeMode(order.mode) === 'cf' ? 'dim' : normalizeMode(order.mode);
+    order.totalWeight = Number(order.totalWeight) > 0 ? Number(order.totalWeight) : null;
+    order.whiteGloveMinutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(order.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES);
     const m = String(order.id).match(/order-(\d+)/);
     if (m) ORDER_SEQ = Math.max(ORDER_SEQ, Number(m[1]));
   });
@@ -4959,6 +5030,7 @@ function ensureOrders() {
     if (!p.orderId || !state.orders.some(o => o.id === p.orderId)) p.orderId = state.orders[0].id;
     const order = state.orders.find(o => o.id === p.orderId) || state.orders[0];
     if (!p.mode) p.mode = order.mode || normalizeMode(state.mode);
+    if (normalizeMode(p.mode || order.mode) === 'pallet' && !p.weightBasis) p.weightBasis = 'pallet';
     if (p.label && !p.itemType) p.itemType = p.label;
   });
   syncPrimaryService();
@@ -4979,6 +5051,18 @@ function orderPieces(order) {
   return state.pieces.filter(p => p.orderId === order.id);
 }
 
+function orderTotalWeightLbs(order) {
+  if (!order || state.laneMode === 'middle') return 0;
+  const total = Number(order.totalWeight) || 0;
+  return total > 0 ? toLbs(total) : 0;
+}
+
+function pieceHasWeightSource(p) {
+  if (!p) return false;
+  if (state.laneMode !== 'middle' && orderTotalWeightLbs(orderForPiece(p)) > 0) return true;
+  return Number(p.weight) > 0;
+}
+
 function isPieceEmpty(p) {
   if (!p) return true;
   return ![
@@ -4990,9 +5074,9 @@ function pieceHasMeasurements(p) {
   const mode = pieceMode(p);
   if (mode === 'cf') return Number(p.cf) > 0;
   if (mode === 'pallet') {
-    return Number(p.weight) > 0 && palletLength(p) > 0 && palletWidth(p) > 0 && Number(p.H) > 0 && palletCount(p) > 0 && itemsPerPalletCount(p) > 0;
+    return pieceHasWeightSource(p) && palletLength(p) > 0 && palletWidth(p) > 0 && Number(p.H) > 0 && palletCount(p) > 0 && itemsPerPalletCount(p) > 0;
   }
-  return Number(p.weight) > 0 && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0;
+  return pieceHasWeightSource(p) && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0;
 }
 
 function pricedOrders() {
@@ -5030,24 +5114,25 @@ function localExtraLines() {
   return out;
 }
 
-function hasWhiteGloveOrder() {
-  return pricedOrders().some(order => normalizeServiceId(order.service) === 'whiteGlove') || normalizeServiceId(state.service) === 'whiteGlove';
-}
-
-function whiteGloveExtraLine() {
-  if (!hasWhiteGloveOrder()) return null;
-  const minutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(state.extraCharges && state.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES);
-  const extraMinutes = Math.max(0, minutes - WHITE_GLOVE_INCLUDED_MINUTES);
-  const blocks = Math.ceil(extraMinutes / WHITE_GLOVE_INTERVAL_MINUTES);
-  if (!blocks) return null;
-  return {
-    id: 'whiteGloveMinutes',
-    name: 'White Glove extra time',
-    qty: blocks,
-    rate: WHITE_GLOVE_INTERVAL_PRICE,
-    amount: blocks * WHITE_GLOVE_INTERVAL_PRICE,
-    detail: `${extraMinutes} min after included 45 min (${blocks} x 15 min)`,
-  };
+function whiteGloveExtraLines() {
+  const out = [];
+  const orders = pricedOrders();
+  orders.forEach((order, idx) => {
+    if (normalizeServiceId(order.service) !== 'whiteGlove') return;
+    const minutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(order.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES);
+    const extraMinutes = Math.max(0, minutes - WHITE_GLOVE_INCLUDED_MINUTES);
+    const blocks = Math.ceil(extraMinutes / WHITE_GLOVE_INTERVAL_MINUTES);
+    if (!blocks) return;
+    out.push({
+      id: 'whiteGloveMinutes:' + order.id,
+      name: `Order ${idx + 1} White Glove extra time`,
+      qty: blocks,
+      rate: WHITE_GLOVE_INTERVAL_PRICE,
+      amount: blocks * WHITE_GLOVE_INTERVAL_PRICE,
+      detail: `${extraMinutes} min after included 45 min (${blocks} x 15 min)`,
+    });
+  });
+  return out;
 }
 
 function normalizedPieceForSnapshot(p) {
@@ -5091,13 +5176,7 @@ function scheduleLaneQuoteRefresh() {
     CURRENT_LANE_QUOTE = null;
     return;
   }
-  // billable calc duplicated lightly from computeQuote - we just need a number
-  let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
-  for (const p of state.pieces) {
-    actualWtLbs += computePieceActualWeight(p);
-    cubicFt += computePieceCF(p) * volumetricCount(p);
-    linearFt += computePieceLinearFt(p);
-  }
+  const { actualWtLbs, cubicFt, linearFt } = computeShipmentMetrics();
   const dimWt = cubicFt * state.dimFactor;
   const linearWt = linearFt > 10 ? linearFt * 1000 : 0;
   const billable = Math.ceil(Math.max(actualWtLbs, dimWt, linearWt, 1));
@@ -5159,6 +5238,10 @@ function computePieceCF(p) {
 
 function computePieceActualWeight(p) {
   const weight = toLbs(Number(p.weight) || 0);
+  if (pieceMode(p) === 'pallet') {
+    const basis = p.weightBasis === 'box' ? 'box' : 'pallet';
+    return weight * (basis === 'box' ? piecesCount(p) : palletCount(p));
+  }
   return weight * volumetricCount(p);
 }
 
@@ -5170,6 +5253,37 @@ function computePieceLinearFt(p) {
   if (L <= 0 || W <= 0) return 0;
   const Lin = toInches(L), Win = toInches(W);
   return Math.ceil(((Lin * Win) / (96 * 12)) * 2) / 2 * volumetricCount(p);
+}
+
+function computeOrderActualWeight(order) {
+  const override = orderTotalWeightLbs(order);
+  if (override > 0) return override;
+  return orderPieces(order).reduce((sum, p) => sum + computePieceActualWeight(p), 0);
+}
+
+function computeShipmentMetrics() {
+  ensureOrders();
+  let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
+  if (state.laneMode === 'middle') {
+    for (const p of state.pieces) {
+      const vc = volumetricCount(p);
+      actualWtLbs += computePieceActualWeight(p);
+      cubicFt += computePieceCF(p) * vc;
+      linearFt += computePieceLinearFt(p);
+    }
+  } else {
+    for (const order of state.orders) {
+      const pieces = orderPieces(order);
+      if (!pieces.some(pieceHasMeasurements)) continue;
+      actualWtLbs += computeOrderActualWeight(order);
+      for (const p of pieces) {
+        const vc = volumetricCount(p);
+        cubicFt += computePieceCF(p) * vc;
+        linearFt += computePieceLinearFt(p);
+      }
+    }
+  }
+  return { actualWtLbs, cubicFt, linearFt };
 }
 
 function hasPricedItem() {
@@ -5266,22 +5380,16 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
 //   1. Compute billable weight = MAX(actual lbs, dim weight @ factor 10)
 //   2. Line-haul rate = lane table with deficit-weight rule
 //   3. Final-mile = service-level base price
-//   4. Extra pieces = $25 x (total pieces - 2)
+//   4. Extra boxes/items = $20 x (total pieces - 2)
 //   5. Accessorials = sum of selected
-//   6. Subtotal = line-haul + final-mile + extra pieces + accessorials
+//   6. Subtotal = line-haul + final-mile + extra boxes/items + accessorials
 //   7. FSC = subtotal x fscPct/100
 //   8. Total = subtotal + FSC
 // ============================================================
 function computeQuote() {
   ensureOrders();
   const tax = TAX_OPTIONS.find(t => t.id === state.taxId) || TAX_OPTIONS[0];
-  let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
-  for (const p of state.pieces) {
-    const vc = volumetricCount(p);
-    actualWtLbs += computePieceActualWeight(p);
-    cubicFt += computePieceCF(p) * vc;
-    linearFt += computePieceLinearFt(p);
-  }
+  const { actualWtLbs, cubicFt, linearFt } = computeShipmentMetrics();
   const dimWt = cubicFt * state.dimFactor;
   const linearWt = linearFt > 10 ? linearFt * 1000 : 0;
   const billable = Math.ceil(Math.max(actualWtLbs, dimWt, linearWt));
@@ -5301,7 +5409,6 @@ function computeQuote() {
       if (!svc) continue;
       const orderPcs = orderPieces(order).reduce((sum, p) => sum + piecesCount(p), 0);
       const servicePrice = Number(state.servicePrices && state.servicePrices[svc.id]) || svc.defaultPrice || 0;
-      const orderExtraPieces = Math.max(0, orderPcs - 2);
       baseFinalMile += servicePrice;
       orderBreakdown.push({
         id: order.id,
@@ -5309,16 +5416,16 @@ function computeQuote() {
         serviceName: svc.name,
         mode: order.mode,
         pieces: orderPcs,
+        actualWeight: computeOrderActualWeight(order),
+        totalWeightOverride: orderTotalWeightLbs(order) > 0,
         base: servicePrice,
-        extraPieces: orderExtraPieces,
-        extraPieceCharge: orderExtraPieces * state.extraPiece,
       });
     }
   }
 
-  // Extra pieces (final-mile concept; suppressed in middle-mile-only mode)
+  // Extra boxes/items (final-mile concept; suppressed in middle-mile-only mode)
   const totalPcs = totalPieceCount();
-  const extraPieces = middleOnly ? 0 : orderBreakdown.reduce((sum, order) => sum + order.extraPieces, 0);
+  const extraPieces = middleOnly ? 0 : Math.max(0, totalPcs - 2);
   const extraPieceCharge = extraPieces * state.extraPiece;
 
   // Accessorials are final-mile services in this calculator; middle-mile-only
@@ -5337,8 +5444,8 @@ function computeQuote() {
       }
     }
     const extraLines = localExtraLines();
-    const wgLine = whiteGloveExtraLine();
-    for (const line of wgLine ? [...extraLines, wgLine] : extraLines) {
+    const wgLines = whiteGloveExtraLines();
+    for (const line of [...extraLines, ...wgLines]) {
       accAmount += line.amount;
       accSelected.push({
         id: line.id,
@@ -5438,11 +5545,13 @@ function renderOrderBuilder() {
           </button>`
         : '';
       const label = mode === 'pallet' ? 'Pallet group' : 'Box group';
+      const weightBasis = p.weightBasis === 'box' ? 'box' : 'pallet';
       const inputsHtml = mode === 'pallet'
         ? `<div class="piece-grid pallet">
             <div class="field"><label class="field-label">Same pallets</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="pallets" value="${p.pallets ?? 1}" placeholder="1" /></div>
             <div class="field"><label class="field-label">Boxes / pallet</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="itemsPerPallet" value="${p.itemsPerPallet ?? 1}" placeholder="1" /></div>
-            <div class="field"><label class="field-label">Weight / pallet (${wtLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">Weight basis</label><select data-order-p="${globalIdx}" data-k="weightBasis"><option value="pallet" ${weightBasis === 'pallet' ? 'selected' : ''}>Per pallet</option><option value="box" ${weightBasis === 'box' ? 'selected' : ''}>Per box</option></select></div>
+            <div class="field"><label class="field-label">${weightBasis === 'box' ? 'Wt / box' : 'Wt / pallet'} (${wtLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
             <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="L" value="${p.L ?? palletDefaultLength()}" placeholder="${palletDefaultLength()}" /></div>
             <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="W" value="${p.W ?? palletDefaultWidth()}" placeholder="${palletDefaultWidth()}" /></div>
             <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="H" value="${p.H ?? ""}" placeholder="height" /></div>
@@ -5475,7 +5584,10 @@ function renderOrderBuilder() {
           <div class="order-title"><span class="order-num">${oi + 1}</span><span>Order ${oi + 1}</span></div>
           <div class="order-sub">${svc ? svc.name : 'Choose service'}${totalPcs ? ` - ${totalPcs} piece${totalPcs === 1 ? '' : 's'}` : ''}</div>
         </div>
-        ${state.orders.length > 1 ? `<button class="order-remove" type="button" data-order-remove="${order.id}">Remove order</button>` : ''}
+        <div class="order-actions">
+          <button class="order-duplicate" type="button" data-order-duplicate="${order.id}">Duplicate order</button>
+          ${state.orders.length > 1 ? `<button class="order-remove" type="button" data-order-remove="${order.id}">Remove order</button>` : ''}
+        </div>
       </div>
       <div class="order-service-grid">${orderServiceHtml}</div>
       <div class="order-mode-row">
@@ -5483,6 +5595,18 @@ function renderOrderBuilder() {
         <div class="seg seg-sm">
           <button class="seg-btn ${mode === 'dim' ? 'active' : ''}" type="button" data-order-mode="dim" data-order-id="${order.id}">Floor loaded boxes</button>
           <button class="seg-btn ${mode === 'pallet' ? 'active' : ''}" type="button" data-order-mode="pallet" data-order-id="${order.id}">Pallets</button>
+        </div>
+      </div>
+      <div class="order-options">
+        <div class="order-option-card">
+          <label class="field-label">Total order weight (${wtLabel})</label>
+          <input type="number" min="0" step="1" inputmode="decimal" data-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
+          <p>Use this when you know the order total. It replaces row weights for actual weight, while dimensions still calculate cube and linear feet.</p>
+        </div>
+        <div class="order-option-card white-glove-time" ${normalizeServiceId(order.service) === 'whiteGlove' ? '' : 'hidden'}>
+          <label class="field-label">White Glove time (${WHITE_GLOVE_INCLUDED_MINUTES} min included)</label>
+          <input type="number" min="${WHITE_GLOVE_INCLUDED_MINUTES}" step="${WHITE_GLOVE_INTERVAL_MINUTES}" inputmode="numeric" data-order-wg-minutes="${order.id}" value="${Number(order.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES}" />
+          <p>Adds ${fmt(WHITE_GLOVE_INTERVAL_PRICE)} per ${WHITE_GLOVE_INTERVAL_MINUTES} min after the included time for this order only.</p>
         </div>
       </div>
       <div class="order-lines">${linesHtml}</div>
@@ -5516,6 +5640,7 @@ function renderOrderBuilder() {
           p.cf = null;
           p.qty = null;
           p.piecesPerItem = null;
+          if (!p.weightBasis) p.weightBasis = 'pallet';
           if (!Number(p.pallets)) p.pallets = 1;
           if (!Number(p.itemsPerPallet)) p.itemsPerPallet = 1;
         } else {
@@ -5523,12 +5648,13 @@ function renderOrderBuilder() {
           p.pallets = null;
           p.itemsPerPallet = null;
           p.piecesPerItem = null;
+          p.weightBasis = null;
         }
       });
       render();
     });
   });
-  wrap.querySelectorAll('input[data-order-p]').forEach(inp => {
+  wrap.querySelectorAll('input[data-order-p], select[data-order-p]').forEach(inp => {
     inp.addEventListener('input', e => {
       const i = Number(e.target.dataset.orderP);
       const k = e.target.dataset.k;
@@ -5537,11 +5663,33 @@ function renderOrderBuilder() {
       if (k === 'itemType') {
         p.itemType = e.target.value;
         p.label = e.target.value;
+      } else if (k === 'weightBasis') {
+        p.weightBasis = e.target.value === 'box' ? 'box' : 'pallet';
+        renderPieces();
       } else {
         p[k] = e.target.value === "" ? null : Number(e.target.value);
       }
       updatePieceTags();
       updateOrderSubtitles();
+      renderAccessorials();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('input[data-order-total-weight]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const order = state.orders.find(o => o.id === e.target.dataset.orderTotalWeight);
+      if (!order) return;
+      order.totalWeight = e.target.value === "" ? null : Math.max(0, Number(e.target.value) || 0);
+      updatePieceTags();
+      updateOrderSubtitles();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('input[data-order-wg-minutes]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const order = state.orders.find(o => o.id === e.target.dataset.orderWgMinutes);
+      if (!order) return;
+      order.whiteGloveMinutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(e.target.value) || WHITE_GLOVE_INCLUDED_MINUTES);
       renderAccessorials();
       updateOutput();
     });
@@ -5570,6 +5718,27 @@ function renderOrderBuilder() {
       state.pieces.push(blankPiece(order.mode, order.id));
       renderPieces();
       updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-order-duplicate]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const source = state.orders.find(o => o.id === btn.dataset.orderDuplicate);
+      if (!source || state.orders.length >= 12) return;
+      const copy = newOrder(source.service, source.mode);
+      copy.totalWeight = source.totalWeight || null;
+      copy.whiteGloveMinutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(source.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES);
+      state.orders.push(copy);
+      const sourcePieces = orderPieces(source);
+      if (sourcePieces.length) {
+        sourcePieces.forEach(p => {
+          const cloned = JSON.parse(JSON.stringify(p));
+          cloned.orderId = copy.id;
+          state.pieces.push(cloned);
+        });
+      } else {
+        state.pieces.push(blankPiece(copy.mode, copy.id));
+      }
+      render();
     });
   });
   wrap.querySelectorAll('[data-order-remove]').forEach(btn => {
@@ -5621,25 +5790,25 @@ function renderPieces() {
     let inputsHtml = "";
     if (state.mode === 'dim') {
       inputsHtml = `<div class="piece-grid dim">
-        <div class="field"><label class="field-label">Same items</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Pieces / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Wt / item (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Pieces / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="H" value="${p.H ?? ""}" placeholder="0" /></div>
       </div>`;
     } else if (state.mode === 'cf') {
       inputsHtml = `<div class="piece-grid cf">
-        <div class="field"><label class="field-label">Same items</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Pieces / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Wt / item (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
-        <div class="field"><label class="field-label">Cubic feet / item</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Pieces / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="piecesPerItem" value="${p.piecesPerItem ?? ""}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Cubic feet / box</label><input type="text" inputmode="decimal" data-p="${i}" data-k="cf" value="${p.cf ?? ""}" placeholder="0" /></div>
       </div>`;
     } else if (state.mode === 'pallet') {
       inputsHtml = `<div class="piece-grid pallet">
         <div class="field"><label class="field-label"># Pallets</label><input type="text" inputmode="decimal" data-p="${i}" data-k="pallets" value="${p.pallets ?? 1}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Items / pallet</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemsPerPallet" value="${p.itemsPerPallet ?? 1}" placeholder="1" /></div>
-        <div class="field"><label class="field-label">Weight / pallet (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+        <div class="field"><label class="field-label">Boxes / pallet</label><input type="text" inputmode="decimal" data-p="${i}" data-k="itemsPerPallet" value="${p.itemsPerPallet ?? 1}" placeholder="1" /></div>
+        <div class="field"><label class="field-label">Wt / pallet (${wtLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
         <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="L" value="${p.L ?? palletDefaultLength()}" placeholder="${palletDefaultLength()}" /></div>
         <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="W" value="${p.W ?? palletDefaultWidth()}" placeholder="${palletDefaultWidth()}" /></div>
         <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-p="${i}" data-k="H" value="${p.H ?? ""}" placeholder="height" /></div>
@@ -5813,13 +5982,7 @@ function renderAccessorials() {
           </div>
         `).join('')}
       </div>
-      <div class="white-glove-time" ${hasWhiteGloveOrder() ? '' : 'hidden'}>
-        <div class="field">
-          <label class="field-label">White Glove extra time</label>
-          <input type="number" min="${WHITE_GLOVE_INCLUDED_MINUTES}" step="${WHITE_GLOVE_INTERVAL_MINUTES}" inputmode="numeric" data-extra-charge="whiteGloveMinutes" value="${Number(state.extraCharges && state.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES}" />
-        </div>
-        <p class="local-extra-note">First 45 min included for White Glove. After that, add $75 per 15 min.</p>
-      </div>
+      <p class="local-extra-note">White Glove extra time is set inside each White Glove order.</p>
     </div>`;
   list.innerHTML = accRows + extraRows;
 
@@ -5848,8 +6011,7 @@ function renderAccessorials() {
     inp.addEventListener('input', e => {
       const id = e.target.dataset.extraCharge;
       if (!state.extraCharges) state.extraCharges = {};
-      const min = id === 'whiteGloveMinutes' ? WHITE_GLOVE_INCLUDED_MINUTES : 0;
-      state.extraCharges[id] = Math.max(min, Number(e.target.value) || 0);
+      state.extraCharges[id] = Math.max(0, Number(e.target.value) || 0);
       updateAccCount();
       updateOutput();
     });
@@ -5865,7 +6027,7 @@ function renderTaxOptions() {
 }
 function updateAccCount() {
   const selectedCount = Object.values(state.accessorials).filter(a => a && a.selected).length;
-  const extraCount = state.laneMode === 'middle' ? 0 : localExtraLines().length + (whiteGloveExtraLine() ? 1 : 0);
+  const extraCount = state.laneMode === 'middle' ? 0 : localExtraLines().length + whiteGloveExtraLines().length;
   const count = selectedCount + extraCount;
   const el = $("accCount");
   el.textContent = count === 0 ? "0 selected" : `${count} selected`;
@@ -6099,8 +6261,10 @@ function applyQuoteSnapshot(snapshot) {
         id: o.id || ('order-' + (idx + 1)),
         service: normalizeServiceId(o.service || snapshot.service),
         mode: normalizeMode(o.mode || migratedMode) === 'cf' ? 'dim' : normalizeMode(o.mode || migratedMode),
+        totalWeight: Number(o.totalWeight) > 0 ? Number(o.totalWeight) : null,
+        whiteGloveMinutes: Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(o.whiteGloveMinutes) || Number(snapshot.extraCharges && snapshot.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES),
       }))
-    : [{ id: 'order-1', service: normalizeServiceId(snapshot.service), mode: migratedMode }];
+    : [{ id: 'order-1', service: normalizeServiceId(snapshot.service), mode: migratedMode, totalWeight: null, whiteGloveMinutes: Number(snapshot.extraCharges && snapshot.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES }];
   state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length
     ? snapshot.pieces
     : [blankPiece(state.orders[0].mode, state.orders[0].id)];
@@ -6363,7 +6527,7 @@ function startNewQuote() {
   state.lenUnit = 'in';
   state.wtUnit = 'lb';
   ORDER_SEQ = 1;
-  state.orders = [{ id: 'order-1', service: null, mode: 'dim' }];
+  state.orders = [{ id: 'order-1', service: null, mode: 'dim', totalWeight: null, whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES }];
   state.pieces = [blankPiece('dim', 'order-1')];
   state.accessorials = {};
   state.extraCharges = {
@@ -6373,7 +6537,6 @@ function startNewQuote() {
     blankets: 0,
     storageAfter24h: 0,
     crossDock: 0,
-    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
   };
   state.service = null;
   state.taxId = 'none';
@@ -6939,7 +7102,8 @@ function updateOutput(options = {}) {
       if (mode === 'pallet') {
         const pal = palletCount(p), ipp = itemsPerPalletCount(p);
         const L = palletLength(p), W = palletWidth(p), H = Number(p.H) || 0;
-        return `  ${i+1}. ${prefix}${type} - ${pal} pallet(s) x ${ipp} box(es)/pallet - ${L}x${W}x${H}" per pallet - ${Number(p.weight)||0} lbs/pallet`;
+        const basis = p.weightBasis === 'box' ? 'box' : 'pallet';
+        return `  ${i+1}. ${prefix}${type} - ${pal} pallet(s) x ${ipp} box(es)/pallet - ${L}x${W}x${H}" per pallet - ${Number(p.weight)||0} lbs/${basis}`;
       }
       if (mode === 'cf') {
         return `  ${i+1}. ${prefix}${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.cf)||0} ft3/item - ${Number(p.weight)||0} lbs/item`;
@@ -6947,7 +7111,7 @@ function updateOutput(options = {}) {
       return `  ${i+1}. ${prefix}${type} - ${itemCount} identical box(es) - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" per box - ${Number(p.weight)||0} lbs/box`;
     });
     const orderLines = (q.orderBreakdown || []).map((o, i) =>
-      `  ${i + 1}. ${o.serviceName} - ${o.pieces} piece${o.pieces === 1 ? '' : 's'} - base ${fmt(o.base)}${o.extraPieces ? ` - extra pieces ${fmt(o.extraPieceCharge)}` : ''}`
+      `  ${i + 1}. ${o.serviceName} - ${o.pieces} piece${o.pieces === 1 ? '' : 's'} - ${Math.round(o.actualWeight || 0).toLocaleString('en-CA')} lbs actual${o.totalWeightOverride ? ' (total order weight used)' : ''} - base ${fmt(o.base)}`
     );
     const summaryLines = [
       'Reference: ' + window._quoteRef,
@@ -6994,7 +7158,7 @@ function updateOutput(options = {}) {
       largeLinearSummary ? '  CUSTOM REVIEW REQUIRED: shipment exceeds 10 linear feet. Do not use instant calculator pricing.' : null,
       '  Middle-mile (line haul): ' + fmt(q.middleMileSell || 0),
       '  Final-mile base: ' + fmt(q.baseFinalMile || 0),
-      '  Extra pieces (' + (q.extraPieces || 0) + ' x ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
+      '  Extra boxes/items (' + (q.extraPieces || 0) + ' x ' + fmt(state.extraPiece) + '): ' + fmt(q.extraPieceCharge || 0),
       '  Accessorials total: ' + fmt(q.accAmount || 0),
       '  Subtotal: ' + fmt(q.subtotal || 0),
       '  Fuel surcharge (' + (state.fscPct || 0) + '%): ' + fmt(q.fscAmount || 0),
@@ -7491,7 +7655,7 @@ function setupActions() {
       `Service: ${svcName}`,
       `Billable weight: ${fmtW(q.billable)}`,
       largeLinear ? 'Status: Custom quote required - over 10 linear feet' : `Base delivery: ${fmt(q.baseFinalMile + q.middleMileSell)}`,
-      !largeLinear && q.extraPieceCharge > 0 ? `Extra items: ${fmt(q.extraPieceCharge)}` : null,
+      !largeLinear && q.extraPieceCharge > 0 ? `Extra boxes/items: ${fmt(q.extraPieceCharge)}` : null,
       !largeLinear && q.accAmount > 0 ? `Additional services: ${fmt(q.accAmount)}` : null,
       !largeLinear ? `Fuel surcharge: ${fmt(q.fscAmount)}` : null,
       !largeLinear ? `Total before tax: ${fmt(q.total)}` : null,
@@ -7553,7 +7717,7 @@ function setupActions() {
     try {
       const saved = await saveCurrentQuote(true, monteAuth.user() ? 'draft' : 'shared');
       if (!saved) return;
-      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved to dashboard' : 'Saved locally';
+      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved' : 'Saved locally';
     } catch (e) {
       if (label) label.textContent = 'Save failed';
     }

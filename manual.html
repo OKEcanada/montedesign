@@ -109,7 +109,7 @@
   }
   .hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, .44fr);
+    grid-template-columns: minmax(0, 1fr) minmax(360px, .44fr);
     gap: 22px;
     align-items: stretch;
     margin-bottom: 22px;
@@ -202,7 +202,7 @@
   .metric {
     border: 1px solid rgba(255,255,255,.12);
     border-radius: 14px;
-    padding: 12px;
+    padding: 10px;
     background: rgba(0,0,0,.26);
     min-height: 116px;
     min-width: 0;
@@ -215,15 +215,17 @@
     font-size: 17px;
     line-height: 1.18;
     letter-spacing: 0;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .metric span {
     display: block;
     margin-top: 7px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.36;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .hero-copy {
     display: flex;

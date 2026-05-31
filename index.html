@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-31-national-email-diagnostics-v1" />
+<meta name="oke-build" content="2026-05-31-national-booking-email-v1" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8342,6 +8342,8 @@ function setupActions() {
         quote_ref: saved.quote_ref,
         origin: saved.origin,
         destination: saved.destination,
+        requested_at: new Date().toISOString(),
+        pickup_date: saved.pickup_date || (($("pickupDate") && $("pickupDate").value) || ''),
         total: saved.total_after_tax,
         customer: body.p_contact_name,
         email: body.p_contact_email,

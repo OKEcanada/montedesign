@@ -85,10 +85,8 @@ async function resolveHandoff(signature: string) {
   const row = Array.isArray(rows) ? rows[0] : null;
   if (!row || !row.public_token) return json({ ok: true, token: null });
 
-  // Handoffs are one-time hints, not analytics. Remove the matching hint after use
-  // so normal visits to the embedded calculator do not keep reopening an old quote.
-  const cleanup = new URLSearchParams({ referrer: `eq.${referrer}` });
-  rest(`/rest/v1/quote_views?${cleanup.toString()}`, { method: "DELETE" }).catch(() => {});
+  // Keep the hint alive for the short TTL so a refresh or immediate paste of the
+  // visible Wix URL can still reopen the same quote in the same browser.
   return json({ ok: true, token: row.public_token });
 }
 

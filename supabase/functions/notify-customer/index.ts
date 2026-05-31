@@ -246,6 +246,29 @@ async function sendResend(to: string, subject: string, html: string, plain: stri
   return { provider: "resend", res };
 }
 
+async function deliverEmail(to: string, subject: string, html: string, plain: string) {
+  const attempt = await sendBrevo(to, subject, html, plain) || await sendResend(to, subject, html, plain);
+  if (!attempt) {
+    return { ok: false, error: "No email provider configured. Set BREVO_API_KEY or RESEND_API_KEY." };
+  }
+  const providerText = await attempt.res.text().catch(() => "");
+  let providerJson: Record<string, unknown> | null = null;
+  try { providerJson = providerText ? JSON.parse(providerText) : null; } catch (_) {}
+  if (!attempt.res.ok) {
+    return {
+      ok: false,
+      provider: attempt.provider,
+      status: attempt.res.status,
+      detail: providerJson || providerText,
+    };
+  }
+  return {
+    ok: true,
+    provider: attempt.provider,
+    message_id: providerJson?.messageId || providerJson?.id || null,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
   if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
@@ -253,6 +276,22 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const payload = (body.payload || {}) as MailPayload;
   const recipientType = text(payload.recipient_type || body.recipient_type).toLowerCase();
+  if (recipientType === "booking_pair") {
+    const customerEmail = text(body.email || body.to || payload.email || payload.customer_email);
+    const customerName = text(body.name || payload.customer || "there");
+    const internalEmail = buildInternalEmail({ ...payload, recipient_type: "internal", customer_email: customerEmail });
+    const internal = await deliverEmail(bookingNotifyTo(), internalEmail.subject, internalEmail.html, internalEmail.text);
+    const customerEmailBody = buildCustomerEmail(customerName, payload);
+    const customer = customerEmail && customerEmail.includes("@")
+      ? await deliverEmail(customerEmail, customerEmailBody.subject, customerEmailBody.html, customerEmailBody.text)
+      : { ok: false, skipped: true, error: "customer email missing" };
+    return json({
+      ok: !!internal.ok && (!!customer.ok || !!customer.skipped),
+      recipient_type: "booking_pair",
+      internal,
+      customer,
+    }, internal.ok ? 200 : 502);
+  }
   const isInternal = recipientType === "internal";
   const to = isInternal
     ? bookingNotifyTo()
@@ -262,20 +301,13 @@ Deno.serve(async (req) => {
   if (!to || !to.includes("@")) return json({ ok: false, error: "recipient email required" }, 400);
 
   const email = isInternal ? buildInternalEmail(payload) : buildCustomerEmail(name, payload);
-  const attempt = await sendBrevo(to, email.subject, email.html, email.text) || await sendResend(to, email.subject, email.html, email.text);
-  if (!attempt) return json({ ok: false, error: "No email provider configured. Set BREVO_API_KEY or RESEND_API_KEY." }, 500);
-
-  const providerText = await attempt.res.text().catch(() => "");
-  let providerJson: Record<string, unknown> | null = null;
-  try { providerJson = providerText ? JSON.parse(providerText) : null; } catch (_) {}
-  if (!attempt.res.ok) {
-    return json({ ok: false, provider: attempt.provider, status: attempt.res.status, detail: providerJson || providerText }, 502);
-  }
+  const sent = await deliverEmail(to, email.subject, email.html, email.text);
+  if (!sent.ok) return json(sent, sent.error && String(sent.error).includes("No email provider") ? 500 : 502);
 
   return json({
     ok: true,
-    provider: attempt.provider,
+    provider: sent.provider,
     recipient_type: isInternal ? "internal" : "customer",
-    message_id: providerJson?.messageId || providerJson?.id || null,
+    message_id: sent.message_id || null,
   });
 });

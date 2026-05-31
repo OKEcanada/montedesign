@@ -173,12 +173,15 @@ async function quoteHandoffSignature() {
     navigator.hardwareConcurrency || 0,
     navigator.maxTouchPoints || 0
   ].join("|");
-  try {
-    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(parts));
-    return Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, "0")).join("");
-  } catch (e) {
-    return btoa(unescape(encodeURIComponent(parts))).replace(/[^A-Za-z0-9]/g, "").slice(0, 96);
+  let h1 = 0x811c9dc5;
+  let h2 = 0x9e3779b9;
+  for (let i = 0; i < parts.length; i++) {
+    const c = parts.charCodeAt(i);
+    h1 ^= c;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 = (Math.imul(h2 ^ c, 0x85ebca6b) + i) >>> 0;
   }
+  return h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0");
 }
 
 async function createQuoteHandoff(token) {

@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<meta name="oke-build" content="2026-05-29-national-pricing-caps-audit" />
+<meta name="oke-build" content="2026-05-30-national-mixed-orders-extras" />
 <title>National Final Mile Calculator | One Kind Express</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3360,6 +3360,196 @@
   .intel-card .mini-action {
     border-radius: 10px !important;
   }
+  .orders-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 14px;
+    margin: 6px 0 12px;
+  }
+  .orders-head p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .add-order-btn,
+  .order-add-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 13px;
+    padding: 11px 14px;
+    background: linear-gradient(135deg, #11162f, #202a52);
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(17,22,47,0.16), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .add-order-btn svg,
+  .order-add-line svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+  .order-card {
+    border: 1px solid rgba(12,16,36,0.12);
+    border-radius: 16px;
+    background:
+      radial-gradient(600px 220px at 100% 0%, rgba(255,122,69,0.08), transparent 60%),
+      rgba(255,255,255,0.72);
+    padding: 15px;
+    margin-bottom: 14px;
+    box-shadow: 0 14px 34px rgba(12,16,36,0.07);
+  }
+  .order-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .order-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 900;
+    color: var(--ink);
+  }
+  .order-num {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: #11162f;
+    color: var(--accent-light);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    box-shadow: 0 10px 22px rgba(17,22,47,0.18);
+  }
+  .order-sub {
+    margin-top: 2px;
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+  .order-remove {
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.7);
+    color: var(--ink-muted);
+    padding: 8px 10px;
+    cursor: pointer;
+    font-weight: 800;
+  }
+  .order-service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .order-service {
+    border: 1px solid rgba(12,16,36,0.12);
+    border-radius: 13px;
+    background: rgba(255,255,255,0.72);
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    min-height: 72px;
+  }
+  .order-service b {
+    display: block;
+    color: var(--ink);
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .order-service span {
+    display: block;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    line-height: 1.25;
+  }
+  .order-service.active {
+    border-color: rgba(255,122,69,0.50);
+    background: linear-gradient(145deg, #11162f, #1f2850);
+    box-shadow: 0 12px 26px rgba(17,22,47,0.18);
+  }
+  .order-service.active b { color: #fff; }
+  .order-service.active span { color: rgba(250,248,241,0.62); }
+  .order-mode-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .order-mode-row .seg {
+    width: min(360px, 100%);
+  }
+  .order-lines {
+    display: grid;
+    gap: 10px;
+  }
+  .order-line {
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.84);
+    padding: 12px;
+  }
+  .order-line-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .order-line-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 850;
+    color: var(--ink);
+  }
+  .order-line-title span {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background: rgba(255,122,69,0.12);
+    color: var(--accent-deep);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .local-extra-panel {
+    margin-top: 14px;
+    border-top: 1px solid rgba(12,16,36,0.08);
+    padding-top: 14px;
+  }
+  .local-extra-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .local-extra-note {
+    margin: 8px 0 0;
+    color: var(--ink-muted);
+    font-size: 12.5px;
+  }
+  .white-glove-time {
+    margin-top: 12px;
+  }
+  .white-glove-time[hidden] {
+    display: none !important;
+  }
   html.is-embedded .modal.open {
     align-items: flex-start !important;
     justify-content: center !important;
@@ -3373,6 +3563,15 @@
     overflow-y: auto !important;
   }
   @media (max-width: 700px) {
+    .orders-head,
+    .order-mode-row {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    .order-service-grid,
+    .local-extra-grid {
+      grid-template-columns: 1fr;
+    }
     .r-tabs {
       border-radius: 16px !important;
       gap: 4px !important;
@@ -3451,10 +3650,12 @@
 
       <hr class="section-divider"/>
 
-      <div class="section-label">Service level</div>
-      <div class="svc-grid" id="svcGrid"></div>
+      <div class="legacy-quote-controls" id="legacyServiceBlock">
+        <div class="section-label">Service level</div>
+        <div class="svc-grid" id="svcGrid"></div>
+      </div>
 
-      <div class="measure-row">
+      <div class="measure-row legacy-quote-controls" id="legacyMeasureBlock">
         <div>
           <div class="section-label">Measurement</div>
           <div class="seg" id="modeToggle">
@@ -3481,12 +3682,23 @@
         </div>
       </div>
 
-      <div class="section-label" style="margin-top: 6px;">
+      <div class="orders-head" id="ordersHead">
+        <div>
+          <div class="section-label" style="margin-bottom:4px;">Orders</div>
+          <p>Each order can use its own final-mile service. Middle mile still prices the combined shipment.</p>
+        </div>
+        <button class="add-order-btn" id="addOrderBtn" type="button">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add order
+        </button>
+      </div>
+
+      <div class="section-label legacy-items-label" id="legacyItemsLabel" style="margin-top: 6px;">
         Items - <span style="text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-family: var(--font-body); font-weight: 500;">first 2 included - $25 each beyond</span>
       </div>
       <div class="pieces" id="piecesWrap"></div>
       <datalist id="itemTypeOptions"></datalist>
-      <button class="add-piece-btn" id="addPieceBtn">
+      <button class="add-piece-btn legacy-quote-controls" id="addPieceBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
@@ -4424,7 +4636,8 @@ function updateQuoteAdvisor(q, density, distKm) {
   const title = $("aiAdvisor"), sub = $("aiAdvisorSub");
   if (!title || !sub || !q) return;
   const weather = window._weatherRisk;
-  if (weather && weather.risk && weather.risk.level >= 2 && state.service !== 'whiteGlove') {
+  const serviceId = primaryServiceId();
+  if (weather && weather.risk && weather.risk.level >= 2 && serviceId !== 'whiteGlove') {
     title.textContent = 'Recommend indoor handoff';
     sub.textContent = `Weather risk near ${weather.city}. Suggest Threshold or White Glove to reduce exposure.`;
     return;
@@ -4444,12 +4657,12 @@ function updateQuoteAdvisor(q, density, distKm) {
     sub.textContent = 'Bulky freight is driving billable weight. Confirm dimensions and packaging.';
     return;
   }
-  if (q.totalPcs >= 4 && state.service === 'curbside') {
+  if (q.totalPcs >= 4 && serviceId === 'curbside') {
     title.textContent = 'Upsell Threshold';
     sub.textContent = 'Multiple pieces on curbside may create delivery friction. Threshold is the safer quote.';
     return;
   }
-  if (state.service === 'whiteGlove') {
+  if (serviceId === 'whiteGlove') {
     title.textContent = 'Premium service aligned';
     sub.textContent = 'White Glove is a strong fit for high-touch furniture and showroom deliveries.';
     return;
@@ -4461,7 +4674,7 @@ function updateQuoteAdvisor(q, density, distKm) {
 function updateJourneyDetail(key, q) {
   const detail = $("journeyDetail");
   if (!detail || !q) return;
-  const svc = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || 'selected service';
+  const svc = serviceSummary(q) || 'selected service';
   const lane = q.isLocal ? `${state.origin} local delivery` : `${state.origin} to ${state.destination}`;
   const weather = window._weatherRisk && window._weatherRisk.risk ? `${window._weatherRisk.risk.label} near ${window._weatherRisk.city}` : 'Forecast loading';
   const fuel = state.fscPct > 0 ? `${Number(state.fscPct).toFixed(1)}% fuel applied` : (window._suggestedFscPct > 0 ? `${window._suggestedFscPct.toFixed(1)}% fuel suggested` : 'Fuel loading');
@@ -4500,7 +4713,8 @@ function setupJourneyPanel() {
 function marketBenchmarks(q) {
   const oke = Number(q && q.totalAfterTax || 0);
   if (!(oke > 0)) return [];
-  const serviceFactor = state.service === 'whiteGlove' ? 1.12 : state.service === 'roomOfChoice' ? 1.07 : state.service === 'threshold' ? 1.03 : 1;
+  const serviceId = primaryServiceId();
+  const serviceFactor = serviceId === 'whiteGlove' ? 1.12 : serviceId === 'roc' ? 1.07 : serviceId === 'threshold' ? 1.03 : 1;
   const complexity = (q.linearWins ? 0.07 : 0) + (q.dimWins ? 0.04 : 0) + (q.totalPcs > 4 ? 0.04 : 0);
   const middleShare = q.middleMileSell && q.total ? Math.min(0.75, q.middleMileSell / q.total) : 0.45;
   const carriers = [
@@ -4572,6 +4786,18 @@ const ACCESSORIALS = [
   { id: 'extraMan',     name: 'Extra crew member (per hour)',          default: 75,  qty: true,  qtyLabel: 'hours' },
 ];
 
+const LOCAL_EXTRA_FIELDS = [
+  { id: 'palletCharge', label: 'Pallet charge', rate: 21, unit: 'pallet' },
+  { id: 'polystrap', label: 'Polystrap', rate: 15, unit: 'item' },
+  { id: 'shrinkwrap', label: 'Shrinkwrap', rate: 20, unit: 'item' },
+  { id: 'blankets', label: 'Blankets', rate: 25, unit: 'blanket' },
+  { id: 'storageAfter24h', label: 'Storage after free 24h per box/pallet', rate: 15, unit: 'month' },
+  { id: 'crossDock', label: 'Cross dock', rate: 280, unit: 'job' },
+];
+const WHITE_GLOVE_INCLUDED_MINUTES = 45;
+const WHITE_GLOVE_INTERVAL_MINUTES = 15;
+const WHITE_GLOVE_INTERVAL_PRICE = 75;
+
 const TAX_OPTIONS = [
   { id: 'none', label: 'No tax / exempt', rate: 0 },
   { id: 'gst5', label: 'GST 5% (AB, NT, NU, YT)', rate: 5 },
@@ -4623,7 +4849,8 @@ const state = {
   mode: 'dim',
   lenUnit: 'in',
   wtUnit: 'lb',
-  pieces: [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
+  orders: [{ id: 'order-1', service: null, mode: 'dim' }],
+  pieces: [{ orderId: 'order-1', mode: 'dim', itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }],
   fscPct: 0,
   taxId: 'none',
     dimFactor: 10,
@@ -4631,11 +4858,21 @@ const state = {
   servicePrices: {},
   accPrices: loadAccPrices(),
   accessorials: {}, // {id: {selected: true, qty: 2}}
+  extraCharges: {
+    palletCharge: 0,
+    polystrap: 0,
+    shrinkwrap: 0,
+    blankets: 0,
+    storageAfter24h: 0,
+    crossDock: 0,
+    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
+  },
 };
 
 for (const s of SERVICE_LEVELS) {
   state.servicePrices[s.id] = s.defaultPrice;
 }
+let ORDER_SEQ = 1;
 
 // ============================================================
 // HELPERS
@@ -4655,8 +4892,166 @@ const palletCount = p => Number(p && p.pallets) > 0 ? Number(p.pallets) : 1;
 const itemsPerPalletCount = p => Number(p && p.itemsPerPallet) > 0 ? Number(p.itemsPerPallet) : 1;
 const palletLength = p => Number(p && p.L) > 0 ? Number(p.L) : palletDefaultLength();
 const palletWidth = p => Number(p && p.W) > 0 ? Number(p.W) : palletDefaultWidth();
+const SERVICE_ID_ALIASES = { roomofchoice: 'roc', 'room-of-choice': 'roc', 'room_of_choice': 'roc' };
+
+function normalizeServiceId(id) {
+  if (!id) return null;
+  const sid = String(id);
+  const norm = SERVICE_ID_ALIASES[sid.toLowerCase()] || sid;
+  const svc = SERVICE_LEVELS.find(s => s.id === norm) || SERVICE_LEVELS.find(s => s.id.toLowerCase() === sid.toLowerCase());
+  return svc ? svc.id : null;
+}
+
+function serviceForId(id) {
+  const sid = normalizeServiceId(id);
+  return sid ? SERVICE_LEVELS.find(s => s.id === sid) : null;
+}
+
+function normalizeMode(mode) {
+  return ['dim', 'cf', 'pallet'].includes(mode) ? mode : 'dim';
+}
+
+function blankPiece(mode = 'dim', orderId = null) {
+  const m = normalizeMode(mode);
+  return {
+    orderId,
+    mode: m,
+    itemType: '',
+    itemCount: null,
+    piecesPerItem: null,
+    weight: null,
+    L: null,
+    W: null,
+    H: null,
+    cf: null,
+    qty: null,
+    pallets: m === 'pallet' ? 1 : null,
+    itemsPerPallet: m === 'pallet' ? 1 : null,
+  };
+}
+
+function newOrder(service = null, mode = 'dim') {
+  ORDER_SEQ += 1;
+  return { id: 'order-' + ORDER_SEQ, service: normalizeServiceId(service), mode: normalizeMode(mode) === 'cf' ? 'dim' : normalizeMode(mode) };
+}
+
+function syncPrimaryService() {
+  const first = (state.orders || []).find(o => normalizeServiceId(o.service));
+  state.service = first ? normalizeServiceId(first.service) : normalizeServiceId(state.service);
+}
+
+function ensureOrders() {
+  if (!Array.isArray(state.orders) || !state.orders.length) {
+    state.orders = [{ id: 'order-1', service: normalizeServiceId(state.service), mode: normalizeMode(state.mode) === 'cf' ? 'dim' : normalizeMode(state.mode) }];
+  }
+  state.orders.forEach((order, idx) => {
+    if (!order.id) order.id = 'order-' + (idx + 1);
+    order.service = normalizeServiceId(order.service);
+    order.mode = normalizeMode(order.mode) === 'cf' ? 'dim' : normalizeMode(order.mode);
+    const m = String(order.id).match(/order-(\d+)/);
+    if (m) ORDER_SEQ = Math.max(ORDER_SEQ, Number(m[1]));
+  });
+  if (!Array.isArray(state.pieces) || !state.pieces.length) {
+    const first = state.orders[0];
+    state.pieces = [blankPiece(first.mode, first.id)];
+  }
+  state.pieces.forEach(p => {
+    if (!p.orderId || !state.orders.some(o => o.id === p.orderId)) p.orderId = state.orders[0].id;
+    const order = state.orders.find(o => o.id === p.orderId) || state.orders[0];
+    if (!p.mode) p.mode = order.mode || normalizeMode(state.mode);
+    if (p.label && !p.itemType) p.itemType = p.label;
+  });
+  syncPrimaryService();
+}
+
+function orderForPiece(p) {
+  ensureOrders();
+  return state.orders.find(o => o.id === p.orderId) || state.orders[0];
+}
+
+function pieceMode(p) {
+  if (state.laneMode === 'middle') return normalizeMode(state.mode);
+  return normalizeMode((p && p.mode) || (orderForPiece(p || {}).mode) || state.mode);
+}
+
+function orderPieces(order) {
+  ensureOrders();
+  return state.pieces.filter(p => p.orderId === order.id);
+}
+
+function isPieceEmpty(p) {
+  if (!p) return true;
+  return ![
+    p.itemType, p.label, p.itemCount, p.piecesPerItem, p.weight, p.L, p.W, p.H, p.cf, p.qty, p.pallets, p.itemsPerPallet
+  ].some(v => v !== null && v !== undefined && String(v).trim() !== '');
+}
+
+function pieceHasMeasurements(p) {
+  const mode = pieceMode(p);
+  if (mode === 'cf') return Number(p.cf) > 0;
+  if (mode === 'pallet') {
+    return Number(p.weight) > 0 && palletLength(p) > 0 && palletWidth(p) > 0 && Number(p.H) > 0 && palletCount(p) > 0 && itemsPerPalletCount(p) > 0;
+  }
+  return Number(p.weight) > 0 && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0;
+}
+
+function pricedOrders() {
+  if (state.laneMode === 'middle') return [];
+  ensureOrders();
+  return state.orders.filter(order => orderPieces(order).some(pieceHasMeasurements));
+}
+
+function primaryServiceId() {
+  ensureOrders();
+  return normalizeServiceId((pricedOrders()[0] || state.orders[0] || {}).service) || normalizeServiceId(state.service);
+}
+
+function serviceSummary(q) {
+  const orders = q && q.orderBreakdown && q.orderBreakdown.length ? q.orderBreakdown : [];
+  const services = [...new Set(orders.map(o => o.serviceName).filter(Boolean))];
+  if (!services.length && state.laneMode !== 'middle') {
+    const svc = serviceForId(primaryServiceId());
+    return svc ? svc.name : '-';
+  }
+  if (services.length === 1) return services[0];
+  return services.length ? 'Mixed services' : '-';
+}
+
+function localExtraLines() {
+  const out = [];
+  const values = state.extraCharges || {};
+  for (const field of LOCAL_EXTRA_FIELDS) {
+    const qty = Math.max(0, Number(values[field.id]) || 0);
+    if (!qty) continue;
+    const amount = qty * field.rate;
+    const unit = qty === 1 ? field.unit : field.unit + 's';
+    out.push({ id: field.id, name: field.label, qty, rate: field.rate, amount, detail: `${qty} ${unit} x ${fmt(field.rate)}` });
+  }
+  return out;
+}
+
+function hasWhiteGloveOrder() {
+  return pricedOrders().some(order => normalizeServiceId(order.service) === 'whiteGlove') || normalizeServiceId(state.service) === 'whiteGlove';
+}
+
+function whiteGloveExtraLine() {
+  if (!hasWhiteGloveOrder()) return null;
+  const minutes = Math.max(WHITE_GLOVE_INCLUDED_MINUTES, Number(state.extraCharges && state.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES);
+  const extraMinutes = Math.max(0, minutes - WHITE_GLOVE_INCLUDED_MINUTES);
+  const blocks = Math.ceil(extraMinutes / WHITE_GLOVE_INTERVAL_MINUTES);
+  if (!blocks) return null;
+  return {
+    id: 'whiteGloveMinutes',
+    name: 'White Glove extra time',
+    qty: blocks,
+    rate: WHITE_GLOVE_INTERVAL_PRICE,
+    amount: blocks * WHITE_GLOVE_INTERVAL_PRICE,
+    detail: `${extraMinutes} min after included 45 min (${blocks} x 15 min)`,
+  };
+}
+
 function normalizedPieceForSnapshot(p) {
-  if (state.mode !== 'pallet') return p;
+  if (pieceMode(p) !== 'pallet') return p;
   return {
     ...p,
     pallets: palletCount(p),
@@ -4731,9 +5126,9 @@ function piecesPerItemCount(p) {
 }
 
 function piecesCount(p) {
-  if (state.mode === 'pallet') {
-    const sets = sameItemCount(p);
-    return sets * palletCount(p) * itemsPerPalletCount(p);
+  if (!pieceHasMeasurements(p)) return 0;
+  if (pieceMode(p) === 'pallet') {
+    return palletCount(p) * itemsPerPalletCount(p);
   }
   return sameItemCount(p) * piecesPerItemCount(p);
 }
@@ -4742,17 +5137,18 @@ function piecesCount(p) {
 // Pieces per item affects handling count, not cube/weight, because the row's
 // dimensions and weight describe the whole item/set being quoted.
 function volumetricCount(p) {
-  const sets = sameItemCount(p);
-  if (state.mode === 'pallet') {
-    return sets * palletCount(p);
+  if (!pieceHasMeasurements(p)) return 0;
+  if (pieceMode(p) === 'pallet') {
+    return palletCount(p);
   }
-  return sets;
+  return sameItemCount(p);
 }
 
 function computePieceCF(p) {
-  if (state.mode === 'cf') return Number(p.cf) || 0;
-  const L = state.mode === 'pallet' ? palletLength(p) : (Number(p.L) || 0);
-  const W = state.mode === 'pallet' ? palletWidth(p) : (Number(p.W) || 0);
+  const mode = pieceMode(p);
+  if (mode === 'cf') return Number(p.cf) || 0;
+  const L = mode === 'pallet' ? palletLength(p) : (Number(p.L) || 0);
+  const W = mode === 'pallet' ? palletWidth(p) : (Number(p.W) || 0);
   const H = Number(p.H) || 0;
   if (L > 0 && W > 0 && H > 0) {
     const Lin = toInches(L), Win = toInches(W), Hin = toInches(H);
@@ -4767,20 +5163,18 @@ function computePieceActualWeight(p) {
 }
 
 function computePieceLinearFt(p) {
-  if (state.mode === 'cf') return 0;
-  const L = state.mode === 'pallet' ? palletLength(p) : (Number(p.L) || 0);
-  const W = state.mode === 'pallet' ? palletWidth(p) : (Number(p.W) || 0);
+  const mode = pieceMode(p);
+  if (mode === 'cf') return 0;
+  const L = mode === 'pallet' ? palletLength(p) : (Number(p.L) || 0);
+  const W = mode === 'pallet' ? palletWidth(p) : (Number(p.W) || 0);
   if (L <= 0 || W <= 0) return 0;
   const Lin = toInches(L), Win = toInches(W);
   return Math.ceil(((Lin * Win) / (96 * 12)) * 2) / 2 * volumetricCount(p);
 }
 
 function hasPricedItem() {
-  return state.pieces.some(p => {
-    if (state.mode === 'cf') return Number(p.cf) > 0;
-    if (state.mode === 'pallet') return Number(p.weight) > 0 && palletLength(p) > 0 && palletWidth(p) > 0 && Number(p.H) > 0 && palletCount(p) > 0 && itemsPerPalletCount(p) > 0;
-    return Number(p.weight) > 0 && Number(p.L) > 0 && Number(p.W) > 0 && Number(p.H) > 0;
-  });
+  ensureOrders();
+  return state.pieces.some(pieceHasMeasurements);
 }
 
 function totalPieceCount() {
@@ -4879,6 +5273,7 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
 //   8. Total = subtotal + FSC
 // ============================================================
 function computeQuote() {
+  ensureOrders();
   const tax = TAX_OPTIONS.find(t => t.id === state.taxId) || TAX_OPTIONS[0];
   let actualWtLbs = 0, cubicFt = 0, linearFt = 0;
   for (const p of state.pieces) {
@@ -4895,26 +5290,35 @@ function computeQuote() {
 
   // Final-mile base - suppressed entirely in middle-mile-only mode
   const middleOnly = state.laneMode === 'middle';
-  // Robust service lookup: tolerate legacy ids like 'roomOfChoice' (now 'roc')
-  // and any casing mismatch so a stale saved quote can't silently zero the price.
-  const SERVICE_ID_ALIASES = { roomofchoice: 'roc', 'room-of-choice': 'roc', 'room_of_choice': 'roc' };
-  let svc = null;
-  if (!middleOnly && state.service) {
-    const sid = String(state.service);
-    const norm = SERVICE_ID_ALIASES[sid.toLowerCase()] || sid;
-    svc = SERVICE_LEVELS.find(s => s.id === norm) || SERVICE_LEVELS.find(s => s.id.toLowerCase() === sid.toLowerCase());
-    if (svc && state.service !== svc.id) {
-      console.warn('[oke] normalized service id', state.service, '->', svc.id);
-      state.service = svc.id;
+  let baseFinalMile = 0;
+  let orderBreakdown = [];
+  let hasService = middleOnly;
+  if (!middleOnly) {
+    const ordersWithFreight = pricedOrders();
+    hasService = ordersWithFreight.length ? ordersWithFreight.every(order => !!serviceForId(order.service)) : !!serviceForId(primaryServiceId());
+    for (const order of ordersWithFreight) {
+      const svc = serviceForId(order.service);
+      if (!svc) continue;
+      const orderPcs = orderPieces(order).reduce((sum, p) => sum + piecesCount(p), 0);
+      const servicePrice = Number(state.servicePrices && state.servicePrices[svc.id]) || svc.defaultPrice || 0;
+      const orderExtraPieces = Math.max(0, orderPcs - 2);
+      baseFinalMile += servicePrice;
+      orderBreakdown.push({
+        id: order.id,
+        serviceId: svc.id,
+        serviceName: svc.name,
+        mode: order.mode,
+        pieces: orderPcs,
+        base: servicePrice,
+        extraPieces: orderExtraPieces,
+        extraPieceCharge: orderExtraPieces * state.extraPiece,
+      });
     }
   }
-  const hasService = middleOnly || !!svc;
-  // Always fall back to the SERVICE_LEVELS default price even if servicePrices was cleared by a stale snapshot load
-  const baseFinalMile = svc ? (Number(state.servicePrices && state.servicePrices[svc.id]) || svc.defaultPrice || 0) : 0;
 
   // Extra pieces (final-mile concept; suppressed in middle-mile-only mode)
   const totalPcs = totalPieceCount();
-  const extraPieces = middleOnly ? 0 : Math.max(0, totalPcs - 2);
+  const extraPieces = middleOnly ? 0 : orderBreakdown.reduce((sum, order) => sum + order.extraPieces, 0);
   const extraPieceCharge = extraPieces * state.extraPiece;
 
   // Accessorials are final-mile services in this calculator; middle-mile-only
@@ -4931,6 +5335,19 @@ function computeQuote() {
         accAmount += amount;
         accSelected.push({ ...a, qty, amount });
       }
+    }
+    const extraLines = localExtraLines();
+    const wgLine = whiteGloveExtraLine();
+    for (const line of wgLine ? [...extraLines, wgLine] : extraLines) {
+      accAmount += line.amount;
+      accSelected.push({
+        id: line.id,
+        name: line.name,
+        qty: line.qty,
+        amount: line.amount,
+        detail: line.detail,
+        localExtra: true,
+      });
     }
   }
 
@@ -4973,7 +5390,7 @@ function computeQuote() {
     rates, hasLane: hasLocation, hasMeasurements: hasPricedItem(), hasService, isLocal: effectiveLocal,
     laneNotPriced,
     baseFinalMile, middleMileSell, middleMileMarkup: MIDDLE_MILE_TABLE_MARKUP, finalMileMarkup: FINAL_MILE_AGENT_MARKUP,
-    totalPcs, extraPieces, extraPieceCharge,
+    totalPcs, extraPieces, extraPieceCharge, orderBreakdown,
     accAmount, accSelected,
     subtotal, fscAmount, total,
     tax, taxAmount, totalAfterTax,
@@ -4983,7 +5400,210 @@ function computeQuote() {
 // ============================================================
 // RENDER PIECES
 // ============================================================
+function renderOrderBuilder() {
+  const wrap = $("piecesWrap");
+  if (!wrap) return;
+  ensureOrders();
+  wrap.innerHTML = "";
+  const dl = $("itemTypeOptions");
+  if (dl && !dl.dataset.ready) {
+    dl.innerHTML = ITEM_TYPE_OPTIONS.map(v => `<option value="${htmlEsc(v)}"></option>`).join('');
+    dl.dataset.ready = '1';
+  }
+  const lenLabel = state.lenUnit.toUpperCase();
+  const wtLabel = state.wtUnit.toUpperCase();
+
+  state.orders.forEach((order, oi) => {
+    if (!orderPieces(order).length) state.pieces.push(blankPiece(order.mode, order.id));
+    const pieces = orderPieces(order);
+    const totalPcs = pieces.reduce((sum, p) => sum + piecesCount(p), 0);
+    const svc = serviceForId(order.service);
+    const div = document.createElement("div");
+    div.className = "order-card";
+    div.dataset.orderId = order.id;
+    const mode = normalizeMode(order.mode) === 'pallet' ? 'pallet' : 'dim';
+    const orderServiceHtml = SERVICE_LEVELS.map(s => `
+      <button class="order-service ${svc && svc.id === s.id ? 'active' : ''}" type="button" data-order-svc="${s.id}" data-order-id="${order.id}">
+        <b>${s.name}</b>
+        <span>${s.desc}</span>
+      </button>
+    `).join('');
+    const linesHtml = pieces.map((p, lineIdx) => {
+      const globalIdx = state.pieces.indexOf(p);
+      const removeBtn = pieces.length > 1
+        ? `<button class="piece-remove" data-order-line-remove="${globalIdx}" aria-label="Remove line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+            </svg>
+          </button>`
+        : '';
+      const label = mode === 'pallet' ? 'Pallet group' : 'Box group';
+      const inputsHtml = mode === 'pallet'
+        ? `<div class="piece-grid pallet">
+            <div class="field"><label class="field-label">Same pallets</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="pallets" value="${p.pallets ?? 1}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Boxes / pallet</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="itemsPerPallet" value="${p.itemsPerPallet ?? 1}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Weight / pallet (${wtLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="L" value="${p.L ?? palletDefaultLength()}" placeholder="${palletDefaultLength()}" /></div>
+            <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="W" value="${p.W ?? palletDefaultWidth()}" placeholder="${palletDefaultWidth()}" /></div>
+            <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="H" value="${p.H ?? ""}" placeholder="height" /></div>
+          </div>`
+        : `<div class="piece-grid dim">
+            <div class="field"><label class="field-label">Same boxes</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="itemCount" value="${p.itemCount ?? p.qty ?? ""}" placeholder="1" /></div>
+            <div class="field"><label class="field-label">Wt / box (${wtLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="weight" value="${p.weight ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">L (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="L" value="${p.L ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">W (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="W" value="${p.W ?? ""}" placeholder="0" /></div>
+            <div class="field"><label class="field-label">H (${lenLabel})</label><input type="text" inputmode="decimal" data-order-p="${globalIdx}" data-k="H" value="${p.H ?? ""}" placeholder="0" /></div>
+          </div>`;
+      return `<div class="order-line">
+        <div class="order-line-head">
+          <div class="order-line-title"><span>${lineIdx + 1}</span>${label} ${lineIdx + 1}</div>
+          <div class="piece-controls">
+            <label class="piece-type">
+              <span>Item type</span>
+              <input type="text" list="itemTypeOptions" data-order-p="${globalIdx}" data-k="itemType" value="${htmlEsc(p.itemType || p.label || '')}" placeholder="${mode === 'pallet' ? 'Palletized product' : 'Boxes, cartons...'}" autocomplete="off" />
+            </label>
+            ${removeBtn}
+          </div>
+        </div>
+        ${inputsHtml}
+        <div class="piece-meta" data-meta="${globalIdx}"></div>
+      </div>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="order-top">
+        <div>
+          <div class="order-title"><span class="order-num">${oi + 1}</span><span>Order ${oi + 1}</span></div>
+          <div class="order-sub">${svc ? svc.name : 'Choose service'}${totalPcs ? ` - ${totalPcs} piece${totalPcs === 1 ? '' : 's'}` : ''}</div>
+        </div>
+        ${state.orders.length > 1 ? `<button class="order-remove" type="button" data-order-remove="${order.id}">Remove order</button>` : ''}
+      </div>
+      <div class="order-service-grid">${orderServiceHtml}</div>
+      <div class="order-mode-row">
+        <div class="section-label" style="margin-bottom:0;">Freight type</div>
+        <div class="seg seg-sm">
+          <button class="seg-btn ${mode === 'dim' ? 'active' : ''}" type="button" data-order-mode="dim" data-order-id="${order.id}">Floor loaded boxes</button>
+          <button class="seg-btn ${mode === 'pallet' ? 'active' : ''}" type="button" data-order-mode="pallet" data-order-id="${order.id}">Pallets</button>
+        </div>
+      </div>
+      <div class="order-lines">${linesHtml}</div>
+      <button class="order-add-line" type="button" data-order-add-line="${order.id}">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add ${mode === 'pallet' ? 'pallet group' : 'box group'}
+      </button>
+    `;
+    wrap.appendChild(div);
+  });
+
+  wrap.querySelectorAll('[data-order-svc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const order = state.orders.find(o => o.id === btn.dataset.orderId);
+      if (!order) return;
+      order.service = btn.dataset.orderSvc;
+      syncPrimaryService();
+      renderPieces();
+      renderAccessorials();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-order-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const order = state.orders.find(o => o.id === btn.dataset.orderId);
+      if (!order) return;
+      order.mode = btn.dataset.orderMode;
+      orderPieces(order).forEach(p => {
+        p.mode = order.mode;
+        if (order.mode === 'pallet') {
+          p.cf = null;
+          p.qty = null;
+          p.piecesPerItem = null;
+          if (!Number(p.pallets)) p.pallets = 1;
+          if (!Number(p.itemsPerPallet)) p.itemsPerPallet = 1;
+        } else {
+          p.cf = null;
+          p.pallets = null;
+          p.itemsPerPallet = null;
+          p.piecesPerItem = null;
+        }
+      });
+      render();
+    });
+  });
+  wrap.querySelectorAll('input[data-order-p]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = Number(e.target.dataset.orderP);
+      const k = e.target.dataset.k;
+      const p = state.pieces[i];
+      if (!p) return;
+      if (k === 'itemType') {
+        p.itemType = e.target.value;
+        p.label = e.target.value;
+      } else {
+        p[k] = e.target.value === "" ? null : Number(e.target.value);
+      }
+      updatePieceTags();
+      updateOrderSubtitles();
+      renderAccessorials();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-order-line-remove]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = Number(e.currentTarget.dataset.orderLineRemove);
+      const p = state.pieces[idx];
+      if (!p) return;
+      const order = orderForPiece(p);
+      const pieces = orderPieces(order);
+      if (pieces.length <= 1) {
+        state.pieces[idx] = blankPiece(order.mode, order.id);
+      } else {
+        state.pieces.splice(idx, 1);
+      }
+      renderPieces();
+      renderAccessorials();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-order-add-line]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const order = state.orders.find(o => o.id === btn.dataset.orderAddLine);
+      if (!order || state.pieces.length >= 40) return;
+      state.pieces.push(blankPiece(order.mode, order.id));
+      renderPieces();
+      updateOutput();
+    });
+  });
+  wrap.querySelectorAll('[data-order-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (state.orders.length <= 1) return;
+      const id = btn.dataset.orderRemove;
+      state.orders = state.orders.filter(o => o.id !== id);
+      state.pieces = state.pieces.filter(p => p.orderId !== id);
+      ensureOrders();
+      render();
+    });
+  });
+
+  updatePieceTags();
+  updateOrderSubtitles();
+}
+
+function updateOrderSubtitles() {
+  if (state.laneMode === 'middle' || !Array.isArray(state.orders)) return;
+  state.orders.forEach(order => {
+    const card = document.querySelector(`.order-card[data-order-id="${order.id}"]`);
+    const sub = card && card.querySelector('.order-sub');
+    if (!sub) return;
+    const svc = serviceForId(order.service);
+    const totalPcs = orderPieces(order).reduce((sum, p) => sum + piecesCount(p), 0);
+    sub.textContent = `${svc ? svc.name : 'Choose service'}${totalPcs ? ` - ${totalPcs} piece${totalPcs === 1 ? '' : 's'}` : ''}`;
+  });
+}
+
 function renderPieces() {
+  if (state.laneMode !== 'middle') {
+    renderOrderBuilder();
+    return;
+  }
   const wrap = $("piecesWrap");
   wrap.innerHTML = "";
   const dl = $("itemTypeOptions");
@@ -5072,6 +5692,7 @@ function renderPieces() {
         state.pieces[i][k] = e.target.value === "" ? null : Number(e.target.value);
       }
       updatePieceTags();
+      updateOrderSubtitles();
       renderAccessorials();
       updateOutput();
     });
@@ -5101,6 +5722,7 @@ function renderPieces() {
 
 function updatePieceTags() {
   state.pieces.forEach((p, i) => {
+    const mode = pieceMode(p);
     const qty = piecesCount(p);
     const itemCount = sameItemCount(p);
     const piecesEach = piecesPerItemCount(p);
@@ -5118,13 +5740,13 @@ function updatePieceTags() {
     const parts = [];
     if (cfTotal > 0) parts.push(`<span class="tag">${cfTotal.toFixed(2)} ft3 total</span>`);
     if (linearFt > 0) parts.push(`<span class="tag">${linearFt.toFixed(1)} linear ft</span>`);
-    if (state.mode === 'pallet') {
+    if (mode === 'pallet') {
       if (vc > 0) parts.push(`<span class="tag">${vc} pallet${vc>1?'s':''}</span>`);
       if (qty > vc) parts.push(`<span class="tag">${qty} item${qty>1?'s':''} total</span>`);
     } else if (qty > 1 && piecesEach <= 1) {
       parts.push(`<span class="tag">x${qty}</span>`);
     }
-    if (state.mode !== 'pallet' && piecesEach > 1) {
+    if (mode !== 'pallet' && piecesEach > 1) {
       if (itemCount > 1) parts.push(`<span class="tag">${itemCount} same item${itemCount>1?'s':''}</span>`);
       parts.push(`<span class="tag">${qty} handling pieces</span>`);
     }
@@ -5160,7 +5782,7 @@ function renderServiceLevels() {
 // ============================================================
 function renderAccessorials() {
   const list = $("accList");
-  list.innerHTML = ACCESSORIALS.map(a => {
+  const accRows = ACCESSORIALS.map(a => {
     const sel = state.accessorials[a.id] || {};
     const checked = !!sel.selected;
     const qty = sel.qty || 1;
@@ -5180,6 +5802,26 @@ function renderAccessorials() {
       <span class="acc-price">${priceLabel}</span>
     </div>`;
   }).join('');
+  const extraRows = state.laneMode === 'middle' ? '' : `
+    <div class="local-extra-panel">
+      <div class="section-label" style="margin-bottom:10px;">Extra charges</div>
+      <div class="local-extra-grid">
+        ${LOCAL_EXTRA_FIELDS.map(field => `
+          <div class="field">
+            <label class="field-label">${field.label}</label>
+            <input type="number" min="0" step="1" inputmode="numeric" data-extra-charge="${field.id}" value="${Number(state.extraCharges && state.extraCharges[field.id]) || 0}" />
+          </div>
+        `).join('')}
+      </div>
+      <div class="white-glove-time" ${hasWhiteGloveOrder() ? '' : 'hidden'}>
+        <div class="field">
+          <label class="field-label">White Glove extra time</label>
+          <input type="number" min="${WHITE_GLOVE_INCLUDED_MINUTES}" step="${WHITE_GLOVE_INTERVAL_MINUTES}" inputmode="numeric" data-extra-charge="whiteGloveMinutes" value="${Number(state.extraCharges && state.extraCharges.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES}" />
+        </div>
+        <p class="local-extra-note">First 45 min included for White Glove. After that, add $75 per 15 min.</p>
+      </div>
+    </div>`;
+  list.innerHTML = accRows + extraRows;
 
   list.querySelectorAll('[data-acc]').forEach(el => {
     el.addEventListener('click', e => {
@@ -5202,6 +5844,16 @@ function renderAccessorials() {
       updateOutput();
     });
   });
+  list.querySelectorAll('input[data-extra-charge]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const id = e.target.dataset.extraCharge;
+      if (!state.extraCharges) state.extraCharges = {};
+      const min = id === 'whiteGloveMinutes' ? WHITE_GLOVE_INCLUDED_MINUTES : 0;
+      state.extraCharges[id] = Math.max(min, Number(e.target.value) || 0);
+      updateAccCount();
+      updateOutput();
+    });
+  });
   updateAccCount();
 }
 
@@ -5212,7 +5864,9 @@ function renderTaxOptions() {
   select.value = state.taxId;
 }
 function updateAccCount() {
-  const count = Object.values(state.accessorials).filter(a => a && a.selected).length;
+  const selectedCount = Object.values(state.accessorials).filter(a => a && a.selected).length;
+  const extraCount = state.laneMode === 'middle' ? 0 : localExtraLines().length + (whiteGloveExtraLine() ? 1 : 0);
+  const count = selectedCount + extraCount;
   const el = $("accCount");
   el.textContent = count === 0 ? "0 selected" : `${count} selected`;
   el.classList.toggle('has', count > 0);
@@ -5233,6 +5887,7 @@ function makePublicToken() {
 }
 
 function quoteStateSnapshot() {
+  ensureOrders();
   const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
   const pieces = (state.pieces || []).map(p => normalizedPieceForSnapshot({ ...p }));
   return {
@@ -5240,6 +5895,7 @@ function quoteStateSnapshot() {
     destination: state.destination,
     laneMode: state.laneMode,
     service: state.service,
+    orders: JSON.parse(JSON.stringify(state.orders || [])),
     mode: state.mode,
     lenUnit: state.lenUnit,
     wtUnit: state.wtUnit,
@@ -5247,6 +5903,7 @@ function quoteStateSnapshot() {
     fscPct: state.fscPct,
     taxId: state.taxId,
     accessorials: JSON.parse(JSON.stringify(state.accessorials || {})),
+    extraCharges: JSON.parse(JSON.stringify(state.extraCharges || {})),
     pickupDate
   };
 }
@@ -5258,7 +5915,8 @@ function buildQuoteRecord(q) {
     window._quoteRef = 'OKE-' + base + '-' + rnd;
   }
   if (!window._publicToken) window._publicToken = makePublicToken();
-  const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+  const svc = serviceForId(primaryServiceId());
+  const mixedServices = q.orderBreakdown && new Set(q.orderBreakdown.map(o => o.serviceId)).size > 1;
   const tax = q.tax || TAX_OPTIONS[0];
   const snapshot = quoteStateSnapshot();
   return {
@@ -5268,8 +5926,8 @@ function buildQuoteRecord(q) {
     lane_mode: state.laneMode,
     origin: state.origin,
     destination: q.isLocal ? null : state.destination,
-    service_id: svc ? svc.id : null,
-    service_name: svc ? svc.name : null,
+    service_id: mixedServices ? 'mixed' : (svc ? svc.id : null),
+    service_name: mixedServices ? 'Mixed services' : (svc ? svc.name : null),
     pickup_date: snapshot.pickupDate || null,
     measurement_mode: state.mode,
     total_pcs: q.totalPcs || 0,
@@ -5298,6 +5956,7 @@ function buildQuoteRecord(q) {
         linearWins: q.linearWins,
         linearFt: q.linearFt,
         rateColumn: q.rates ? q.rates.cwtCol : null,
+        orderBreakdown: q.orderBreakdown || [],
         bookingSummary: window._bookingSummary || '',
         bookingEmailBody: window._bookingEmailBody || ''
       }
@@ -5430,15 +6089,40 @@ function applyQuoteSnapshot(snapshot) {
   if (snapshot.laneMode === 'local' && state.origin && !state.destination) {
     state.destination = state.origin;
   }
-  state.service = snapshot.service || null;
+  state.service = normalizeServiceId(snapshot.service) || null;
   state.mode = snapshot.mode || 'dim';
   state.lenUnit = snapshot.lenUnit || 'in';
   state.wtUnit = snapshot.wtUnit || 'lb';
-  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length ? snapshot.pieces : [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  const migratedMode = normalizeMode(snapshot.mode || 'dim') === 'cf' ? 'dim' : normalizeMode(snapshot.mode || 'dim');
+  state.orders = Array.isArray(snapshot.orders) && snapshot.orders.length
+    ? snapshot.orders.map((o, idx) => ({
+        id: o.id || ('order-' + (idx + 1)),
+        service: normalizeServiceId(o.service || snapshot.service),
+        mode: normalizeMode(o.mode || migratedMode) === 'cf' ? 'dim' : normalizeMode(o.mode || migratedMode),
+      }))
+    : [{ id: 'order-1', service: normalizeServiceId(snapshot.service), mode: migratedMode }];
+  state.pieces = Array.isArray(snapshot.pieces) && snapshot.pieces.length
+    ? snapshot.pieces
+    : [blankPiece(state.orders[0].mode, state.orders[0].id)];
   state.pieces.forEach(p => { if (p && p.label && !p.itemType) p.itemType = p.label; });
+  state.pieces.forEach(p => {
+    if (!p.orderId) p.orderId = state.orders[0].id;
+    if (!p.mode) p.mode = (state.orders.find(o => o.id === p.orderId) || state.orders[0]).mode;
+  });
+  ensureOrders();
   state.fscPct = Number(snapshot.fscPct) || 0;
   state.taxId = snapshot.taxId || 'none';
   state.accessorials = snapshot.accessorials || {};
+  state.extraCharges = {
+    palletCharge: 0,
+    polystrap: 0,
+    shrinkwrap: 0,
+    blankets: 0,
+    storageAfter24h: 0,
+    crossDock: 0,
+    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
+    ...(snapshot.extraCharges || {}),
+  };
   // Re-seed service prices so loading a snapshot can never leave state.servicePrices empty
   // (root cause of the "0 everywhere" bug: a stale snapshot would clear service price map).
   if (!state.servicePrices) state.servicePrices = {};
@@ -5678,8 +6362,19 @@ function startNewQuote() {
   state.mode = 'dim';
   state.lenUnit = 'in';
   state.wtUnit = 'lb';
-  state.pieces = [{ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null }];
+  ORDER_SEQ = 1;
+  state.orders = [{ id: 'order-1', service: null, mode: 'dim' }];
+  state.pieces = [blankPiece('dim', 'order-1')];
   state.accessorials = {};
+  state.extraCharges = {
+    palletCharge: 0,
+    polystrap: 0,
+    shrinkwrap: 0,
+    blankets: 0,
+    storageAfter24h: 0,
+    crossDock: 0,
+    whiteGloveMinutes: WHITE_GLOVE_INCLUDED_MINUTES,
+  };
   state.service = null;
   state.taxId = 'none';
   state.fscPct = 0;
@@ -5846,9 +6541,11 @@ function updateOutput(options = {}) {
   window.__okeDebug = () => ({
     showResult,
     hasLane: q.hasLane, hasMeasurements: q.hasMeasurements, hasService: q.hasService,
-    laneMode: state.laneMode, origin: state.origin, destination: state.destination, service: state.service,
+    laneMode: state.laneMode, origin: state.origin, destination: state.destination, service: primaryServiceId(), orders: state.orders,
     subtotal: q.subtotal, total: q.totalAfterTax, billable: q.billable,
     middleMileSell: q.middleMileSell, baseFinalMile: q.baseFinalMile,
+    totalPcs: q.totalPcs, extraPieces: q.extraPieces, extraPieceCharge: q.extraPieceCharge,
+    accAmount: q.accAmount, accSelected: q.accSelected, orderBreakdown: q.orderBreakdown,
     currentLaneQuote: typeof CURRENT_LANE_QUOTE !== 'undefined' ? CURRENT_LANE_QUOTE : null,
   });
 
@@ -5912,7 +6609,7 @@ function updateOutput(options = {}) {
       setItem('dest',   destDone,   'Destination city', isLocal);
       setItem('service', serviceDone, 'Service level', isMiddleOnly);
       setItem('items',  itemsDone,
-        state.mode === 'cf' ? 'Cubic feet per item' : 'Item weight & dimensions',
+        isMiddleOnly && state.mode === 'cf' ? 'Cubic feet per item' : 'Item weight & dimensions',
         false);
 
       // Mark first un-done step as "next"
@@ -5935,8 +6632,8 @@ function updateOutput(options = {}) {
   if (largeLinearQuote) window.__cancelMoneyTween('#grandTotal2', 'Custom quote');
   else window.__tweenMoney('#grandTotal2', q.total);
 
-  const svc = SERVICE_LEVELS.find(s => s.id === state.service);
-  $("svcPill").textContent = svc ? svc.name : '-';
+  const svc = serviceForId(primaryServiceId());
+  $("svcPill").textContent = serviceSummary(q);
 
   if (q.isLocal) {
     $("laneLabel").textContent = `${cityDisplayName(state.origin)} - local delivery`;
@@ -6024,7 +6721,7 @@ function updateOutput(options = {}) {
       const reasons = [];
       if (!state.origin) reasons.push('origin city');
       if (!state.destination && state.laneMode !== 'local') reasons.push('destination city');
-      if (!state.service && state.laneMode !== 'middle') reasons.push('service level');
+      if (!q.hasService && state.laneMode !== 'middle') reasons.push('service level');
       if (!q.hasMeasurements) reasons.push('item weight + dimensions');
       if (!q.isLocal && !q.middleMileSell && state.laneMode !== 'local') reasons.push('lane rates (loading...)');
       const wrap = $("totalAfterTaxOut").closest('.b-row');
@@ -6117,10 +6814,11 @@ function updateOutput(options = {}) {
   else if (distKm < 2500){ baseDayMin = 3; baseDayMax = 5; }
   else                   { baseDayMin = 5; baseDayMax = 8; }
   // Service-level adjustment (white glove a bit slower, curbside a bit faster)
+  const etaServiceId = primaryServiceId();
   const svcOffset = {
     curbside: -0, threshold: 0, tailgate: 0,
-    roomOfChoice: 1, whiteGlove: 1
-  }[state.service] || 0;
+    roomOfChoice: 1, roc: 1, whiteGlove: 1
+  }[etaServiceId] || 0;
   baseDayMax += svcOffset;
   const etaText = baseDayMin === baseDayMax ? `${baseDayMin} day${baseDayMin>1?'s':''}` : `${baseDayMin}-${baseDayMax} days`;
 
@@ -6210,19 +6908,22 @@ function updateOutput(options = {}) {
 
   // Build booking summary and prime modal action links
   {
-    const svcName = (SERVICE_LEVELS.find(s => s.id === state.service) || {}).name || '';
+    const svcName = serviceSummary(q);
     const lane = q.isLocal ? cityDisplayName(state.origin) + ' (local)' : cityDisplayName(state.origin) + ' -> ' + cityDisplayName(state.destination);
     const largeLinearSummary = Number(q.linearFt || 0) > 10;
     const pieceLines = (state.pieces || []).map((p, i) => {
-      const type = (p.itemType || p.label || 'Item').trim();
-      if (state.mode === 'pallet') {
+      const mode = pieceMode(p);
+      const order = state.laneMode === 'middle' ? null : orderForPiece(p);
+      const orderSvc = order ? serviceForId(order.service) : null;
+      const prefix = order ? `Order ${state.orders.indexOf(order) + 1} - ${orderSvc ? orderSvc.name : 'service pending'} - ` : '';
+      if (mode === 'pallet') {
         const pal = palletCount(p), ipp = itemsPerPalletCount(p);
         const L = palletLength(p), W = palletWidth(p), H = Number(p.H)||0;
-        return `  ${i+1}. ${pal} pallet(s) x ${ipp} item(s) - ${L}x${W}x${H}" - ${Number(p.weight)||0} lbs/pallet`;
-      } else if (state.mode === 'cf') {
-        return `  ${i+1}. Qty ${sameItemCount(p)} - ${Number(p.cf)||0} ft3 each - ${Number(p.weight)||0} lbs/item`;
+        return `  ${i+1}. ${prefix}${pal} pallet(s) x ${ipp} box(es) - ${L}x${W}x${H}" - ${Number(p.weight)||0} lbs/pallet`;
+      } else if (mode === 'cf') {
+        return `  ${i+1}. ${prefix}Qty ${sameItemCount(p)} - ${Number(p.cf)||0} ft3 each - ${Number(p.weight)||0} lbs/item`;
       }
-      return `  ${i+1}. Qty ${sameItemCount(p)} - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" - ${Number(p.weight)||0} lbs/item`;
+      return `  ${i+1}. ${prefix}Qty ${sameItemCount(p)} - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" - ${Number(p.weight)||0} lbs/box`;
     });
     const itemTypeLines = (state.pieces || [])
       .map((p, i) => (p.itemType || p.label || '').trim() ? `  ${i+1}. Type: ${(p.itemType || p.label || '').trim()}` : null)
@@ -6231,16 +6932,23 @@ function updateOutput(options = {}) {
       const type = (p.itemType || p.label || 'Item').trim();
       const itemCount = sameItemCount(p);
       const piecesEach = piecesPerItemCount(p);
-      if (state.mode === 'pallet') {
+      const mode = pieceMode(p);
+      const order = state.laneMode === 'middle' ? null : orderForPiece(p);
+      const orderSvc = order ? serviceForId(order.service) : null;
+      const prefix = order ? `Order ${state.orders.indexOf(order) + 1} / ${orderSvc ? orderSvc.name : 'service pending'} - ` : '';
+      if (mode === 'pallet') {
         const pal = palletCount(p), ipp = itemsPerPalletCount(p);
         const L = palletLength(p), W = palletWidth(p), H = Number(p.H) || 0;
-        return `  ${i+1}. ${type} - ${pal} pallet(s) x ${ipp} item(s)/pallet - ${L}x${W}x${H}" per pallet - ${Number(p.weight)||0} lbs/pallet`;
+        return `  ${i+1}. ${prefix}${type} - ${pal} pallet(s) x ${ipp} box(es)/pallet - ${L}x${W}x${H}" per pallet - ${Number(p.weight)||0} lbs/pallet`;
       }
-      if (state.mode === 'cf') {
-        return `  ${i+1}. ${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.cf)||0} ft3/item - ${Number(p.weight)||0} lbs/item`;
+      if (mode === 'cf') {
+        return `  ${i+1}. ${prefix}${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.cf)||0} ft3/item - ${Number(p.weight)||0} lbs/item`;
       }
-      return `  ${i+1}. ${type} - ${itemCount} identical item(s), ${piecesEach} piece(s)/item - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" per item - ${Number(p.weight)||0} lbs/item`;
+      return `  ${i+1}. ${prefix}${type} - ${itemCount} identical box(es) - ${Number(p.L)||0}x${Number(p.W)||0}x${Number(p.H)||0}" per box - ${Number(p.weight)||0} lbs/box`;
     });
+    const orderLines = (q.orderBreakdown || []).map((o, i) =>
+      `  ${i + 1}. ${o.serviceName} - ${o.pieces} piece${o.pieces === 1 ? '' : 's'} - base ${fmt(o.base)}${o.extraPieces ? ` - extra pieces ${fmt(o.extraPieceCharge)}` : ''}`
+    );
     const summaryLines = [
       'Reference: ' + window._quoteRef,
       'Lane: ' + lane,
@@ -6249,7 +6957,7 @@ function updateOutput(options = {}) {
       'Preferred pickup: ' + (pkEl ? pkEl.value : '-'),
       'Total: ' + (largeLinearSummary ? 'Custom review required' : fmt(q.totalAfterTax))
     ];
-    const accLines = (q.accSelected || []).map(a => '  - ' + a.label + (a.qty > 1 ? ' x ' + a.qty : '') + ' - ' + fmt(a.amount));
+    const accLines = (q.accSelected || []).map(a => '  - ' + (a.name || a.label || a.id) + (a.detail ? ' (' + a.detail + ')' : (a.qty > 1 ? ' x ' + a.qty : '')) + ' - ' + fmt(a.amount));
     const fullLines = [
       '=== Booking Request ===',
       'Quote ID: ' + window._quoteRef,
@@ -6260,12 +6968,13 @@ function updateOutput(options = {}) {
       '',
       'SERVICE LEVEL',
       '  ' + svcName,
+      ...(orderLines.length > 1 ? ['', 'ORDER SERVICES', ...orderLines] : []),
       '',
       'PREFERRED PICKUP DATE',
       '  ' + (pkEl && pkEl.value ? pkEl.value : 'Not specified'),
       '',
       'SHIPMENT DETAILS',
-      '  Measurement mode: ' + (state.mode === 'pallet' ? 'Pallets' : state.mode === 'cf' ? 'Cubic feet' : 'Dimensions (LxWxH)'),
+      '  Measurement mode: ' + (state.laneMode === 'middle' ? (state.mode === 'pallet' ? 'Pallets' : state.mode === 'cf' ? 'Cubic feet' : 'Dimensions (LxWxH)') : 'Mixed order rows'),
       '  Length unit: ' + (state.lenUnit || 'in').toUpperCase(),
       '  Weight unit: ' + (state.wtUnit || 'lb').toUpperCase(),
       '  Total pieces: ' + (q.totalPcs || 0),
@@ -6456,7 +7165,19 @@ function setupUnits() {
 function setupPieces() {
   $("addPieceBtn").addEventListener('click', () => {
     if (state.pieces.length >= 20) return;
-    state.pieces.push({ itemType: '', itemCount: null, piecesPerItem: null, weight: null, L: null, W: null, H: null, cf: null, qty: null, pallets: null, itemsPerPallet: null });
+    state.pieces.push(blankPiece(state.mode, state.orders && state.orders[0] ? state.orders[0].id : 'order-1'));
+    render();
+  });
+}
+function setupOrders() {
+  const btn = $("addOrderBtn");
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    if (state.orders && state.orders.length >= 12) return;
+    ensureOrders();
+    const order = newOrder(null, 'dim');
+    state.orders.push(order);
+    state.pieces.push(blankPiece(order.mode, order.id));
     render();
   });
 }
@@ -6474,7 +7195,7 @@ function setupLaneMode() {
       btn.classList.add('active');
       state.laneMode = btn.dataset.lh;
       applyLaneMode();
-      updateOutput();
+      render();
     });
   });
   applyLaneMode();
@@ -6525,19 +7246,28 @@ function applyLaneMode() {
       $("destInput").placeholder = "SELECT ORIGIN FIRST";
     }
   }
-  // Show / hide service-level section in middle-mile-only mode
+  // Full quote now uses per-order service cards. Middle-mile keeps the legacy
+  // measurement rows and suppresses all final-mile-only controls.
+  const legacyServiceBlock = $("legacyServiceBlock");
+  const legacyMeasureBlock = $("legacyMeasureBlock");
+  const ordersHead = $("ordersHead");
+  const legacyItemsLabel = $("legacyItemsLabel");
+  const addPieceBtn = $("addPieceBtn");
+  if (legacyServiceBlock) legacyServiceBlock.style.display = 'none';
+  if (legacyMeasureBlock) legacyMeasureBlock.style.display = isMiddle ? '' : 'none';
+  if (ordersHead) ordersHead.style.display = isMiddle ? 'none' : 'flex';
+  if (legacyItemsLabel) legacyItemsLabel.style.display = isMiddle ? '' : 'none';
+  if (addPieceBtn) addPieceBtn.style.display = isMiddle ? '' : 'none';
+  const accToggle = $("accToggle");
+  const accContent = $("accContent");
+  if (accToggle) accToggle.style.display = isMiddle ? 'none' : '';
+  if (accContent) accContent.style.display = isMiddle ? 'none' : '';
+
   const svcGrid = $("svcGrid");
   if (svcGrid) {
     const svcLabel = svcGrid.previousElementSibling; // the "Service level" section-label
-    if (isMiddle) {
-      svcGrid.style.display = 'none';
-      if (svcLabel) svcLabel.style.display = 'none';
-      // Middle-mile pricing ignores service in computeQuote(); keep the
-      // selection so returning to full quote restores the previous service.
-    } else {
-      svcGrid.style.display = '';
-      if (svcLabel) svcLabel.style.display = '';
-    }
+    svcGrid.style.display = 'none';
+    if (svcLabel) svcLabel.style.display = 'none';
   }
 }
 function setupStepper() {
@@ -6555,7 +7285,7 @@ function setupStepper() {
     if (serviceDot) serviceDot.style.display = isMiddle ? 'none' : '';
     const has = {
       lane: !!(state.origin && (state.laneMode === 'local' || state.destination)),
-      service: isMiddle ? true : !!state.service, // auto-pass in middle mode
+      service: isMiddle ? true : !!(q && q.hasService), // auto-pass in middle mode
       items: q && q.hasMeasurements,
       book: q && q.hasLane && q.hasMeasurements && q.hasService
     };
@@ -6752,13 +7482,13 @@ function setupActions() {
   copyBtn.addEventListener('click', async () => {
     const q = computeQuote();
     if (!q.hasLane || !q.hasMeasurements || !q.hasService) return;
-    const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+    const svcName = serviceSummary(q);
     const lane = q.isLocal ? `${cityDisplayName(state.origin)} local delivery` : `${cityDisplayName(state.origin)} to ${cityDisplayName(state.destination)}`;
     const largeLinear = Number(q.linearFt || 0) > 10;
     const text = [
       'OKE Canada delivery quote',
       `Lane: ${lane}`,
-      `Service: ${svc ? svc.name : ''}`,
+      `Service: ${svcName}`,
       `Billable weight: ${fmtW(q.billable)}`,
       largeLinear ? 'Status: Custom quote required - over 10 linear feet' : `Base delivery: ${fmt(q.baseFinalMile + q.middleMileSell)}`,
       !largeLinear && q.extraPieceCharge > 0 ? `Extra items: ${fmt(q.extraPieceCharge)}` : null,
@@ -6791,10 +7521,10 @@ function setupActions() {
       if (label) label.textContent = original;
       return;
     }
-    const svc = SERVICE_LEVELS.find(s => s.id === state.service);
+    const svcName = serviceSummary(q);
     const lane = q.isLocal ? `${cityDisplayName(state.origin)} local` : `${cityDisplayName(state.origin)} -> ${cityDisplayName(state.destination)}`;
     const link = window._lastQuoteShareUrl ? `\n${window._lastQuoteShareUrl}` : '';
-    const summary = `OKE Canada quote - ${lane} - ${svc ? svc.name : ''} - ${Number(q.linearFt || 0) > 10 ? 'Custom quote' : fmt(q.totalAfterTax)}${link}`;
+    const summary = `OKE Canada quote - ${lane} - ${svcName} - ${Number(q.linearFt || 0) > 10 ? 'Custom quote' : fmt(q.totalAfterTax)}${link}`;
     let shared = false;
     try {
       if (navigator.share) { await navigator.share({ title: 'OKE Canada Delivery Quote', text: summary }); shared = true; }
@@ -7211,14 +7941,22 @@ function setupAiUpload() {
   function addAiItem(it) {
     const itemType = normalizeItemType(it.itemType || it.name);
     const isPallet = /pallet|skid/i.test(`${it.itemType || ''} ${it.name || ''} ${it.notes || ''} ${it.evidence || ''}`);
-    state.mode = isPallet ? 'pallet' : 'dim';
-    document.querySelectorAll('#modeToggle .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+    ensureOrders();
+    const targetMode = isPallet ? 'pallet' : 'dim';
+    if (state.laneMode === 'middle') {
+      state.mode = targetMode;
+      document.querySelectorAll('#modeToggle .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+    } else {
+      state.orders[0].mode = targetMode;
+    }
     if (state.lenUnit !== 'in') state.lenUnit = 'in';
     if (state.wtUnit !== 'lb') state.wtUnit = 'lb';
     const sess = window.__aiSession;
     const srcIdx = typeof it.sourceIndex === 'number' ? it.sourceIndex : it.imageIdx;
     const imgRef = (typeof srcIdx === 'number' && sess.images[srcIdx]) ? sess.images[srcIdx] : null;
     const row = {
+      orderId: state.laneMode === 'middle' ? (state.orders[0] && state.orders[0].id) : state.orders[0].id,
+      mode: targetMode,
       itemType,
       itemCount: isPallet ? 1 : (it.qty || 1),
       piecesPerItem: Number(it.piecesPerItem) > 0 ? Number(it.piecesPerItem) : 1,
@@ -7409,6 +8147,7 @@ async function init() {
     setupMode();
     setupUnits();
     setupPieces();
+    setupOrders();
     setupAccordion();
     setupActions();
     setupHistory();

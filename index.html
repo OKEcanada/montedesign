@@ -3893,7 +3893,7 @@
       <div class="lane-row" id="laneRow">
         <div class="field autocomplete">
           <label class="field-label" id="originLabel">Origin city</label>
-          <input type="text" id="originInput" class="mono" placeholder="START TYPING..." autocomplete="off" />
+          <input type="text" id="originInput" class="mono" placeholder="TYPE OR SELECT ORIGIN..." autocomplete="off" />
           <div class="autocomplete-list" id="originList"></div>
         </div>
         <div class="lane-arrow" id="laneArrow">
@@ -3903,7 +3903,7 @@
         </div>
         <div class="field autocomplete" id="destField">
           <label class="field-label">Destination city</label>
-          <input type="text" id="destInput" class="mono" placeholder="SELECT ORIGIN FIRST" autocomplete="off" disabled />
+          <input type="text" id="destInput" class="mono" placeholder="SELECT OR TYPE ORIGIN FIRST" autocomplete="off" disabled />
           <div class="autocomplete-list" id="destList"></div>
         </div>
       </div>
@@ -5217,6 +5217,24 @@ const fmt = n => "$" + n.toLocaleString("en-CA", { minimumFractionDigits: 2, max
 const fmtW = n => Math.round(n).toLocaleString("en-CA") + " lbs";
 const fmtCF = n => n.toFixed(2) + " ft3";
 const cityDisplayName = v => (v || '').toString().toUpperCase();
+function cityLookupKey(v) {
+  return String(v || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+function resolveTypedCity(raw, items) {
+  const key = cityLookupKey(raw);
+  if (!key) return null;
+  const labels = (items || []).map(it => it && it.label).filter(Boolean);
+  const exact = labels.find(label => cityLookupKey(label) === key || cityLookupKey(cityDisplayName(label)) === key);
+  if (exact) return exact;
+  const cityOnlyMatches = labels.filter(label => cityLookupKey(cityOnly(label)) === key);
+  return cityOnlyMatches.length === 1 ? cityOnlyMatches[0] : null;
+}
 const cmToIn = v => v / 2.54;
 const kgToLb = v => v / 0.45359237;
 const toInches = v => state.lenUnit === 'cm' ? cmToIn(v) : v;
@@ -5578,6 +5596,7 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
   const list = $(listId);
   let activeIdx = -1;
   let currentItems = [];
+  let lastCommitted = '';
 
   function render(query) {
     if (inputId === 'destInput' && state.origin && !DEST_CACHE[state.origin]) {
@@ -5626,7 +5645,18 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
     const it = currentItems[idx];
     input.value = cityDisplayName(it.label);
     list.classList.remove('open');
+    lastCommitted = it.label;
     onSelect(it.label);
+  }
+  function commitTypedExact() {
+    const match = resolveTypedCity(input.value, getItems());
+    if (!match) return false;
+    if (lastCommitted === match && cityLookupKey(input.value) === cityLookupKey(match)) return true;
+    input.value = cityDisplayName(match);
+    list.classList.remove('open');
+    lastCommitted = match;
+    onSelect(match);
+    return true;
   }
   function updateActive() {
     list.querySelectorAll('.ac-item').forEach((el, i) => {
@@ -5634,14 +5664,21 @@ function setupAutocomplete(inputId, listId, getItems, onSelect) {
       if (i === activeIdx) el.scrollIntoView({ block: 'nearest' });
     });
   }
-  input.addEventListener('input', e => render(e.target.value));
+  input.addEventListener('input', e => {
+    lastCommitted = '';
+    render(e.target.value);
+    commitTypedExact();
+  });
   input.addEventListener('focus', e => render(e.target.value));
-  input.addEventListener('blur', () => setTimeout(() => list.classList.remove('open'), 160));
+  input.addEventListener('blur', () => {
+    commitTypedExact();
+    setTimeout(() => list.classList.remove('open'), 160);
+  });
   input.addEventListener('keydown', e => {
     const items = list.querySelectorAll('.ac-item');
     if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, items.length-1); updateActive(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); updateActive(); }
-    else if (e.key === 'Enter') { e.preventDefault(); if (activeIdx>=0) pick(activeIdx); else if (currentItems.length===1) pick(0); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (activeIdx>=0) pick(activeIdx); else if (currentItems.length===1) pick(0); else commitTypedExact(); }
     else if (e.key === 'Escape') list.classList.remove('open'); 
   });
 }
@@ -7173,7 +7210,7 @@ function startNewQuote() {
   if ($("destInput")) {
     $("destInput").value = "";
     $("destInput").disabled = true;
-    $("destInput").placeholder = "SELECT ORIGIN FIRST";
+    $("destInput").placeholder = "SELECT OR TYPE ORIGIN FIRST";
   }
   $("lhToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.lh === 'line'));
   $("modeToggle").querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'dim'));
@@ -8018,7 +8055,7 @@ function applyLaneMode() {
   const isMiddle = state.laneMode === 'middle';
   $("laneRow").classList.toggle('local', isLocal);
   $("originLabel").textContent = isLocal ? "City" : "Origin city";
-  $("originInput").placeholder = isLocal ? "PICK A CITY..." : "START TYPING...";
+  $("originInput").placeholder = isLocal ? "TYPE OR SELECT CITY..." : "TYPE OR SELECT ORIGIN...";
   if (isLocal) {
     // Final-mile-only hides destination from pricing, but keeps the last lane
     // intact so switching back to full/middle-mile does not wipe the quote.
@@ -8029,7 +8066,7 @@ function applyLaneMode() {
     if (state.origin) {
       if (DEST_CACHE[state.origin]) {
         $("destInput").disabled = false;
-        $("destInput").placeholder = "START TYPING DESTINATION...";
+        $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
       } else {
         $("destInput").disabled = true;
         $("destInput").placeholder = "LOADING DESTINATIONS...";
@@ -8037,7 +8074,7 @@ function applyLaneMode() {
           .then(() => {
             if (state.laneMode !== 'local' && state.origin) {
               $("destInput").disabled = false;
-              $("destInput").placeholder = "START TYPING DESTINATION...";
+              $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
               if (document.activeElement === $("destInput")) {
                 $("destInput").dispatchEvent(new Event('input', { bubbles: true }));
               }
@@ -8052,7 +8089,7 @@ function applyLaneMode() {
       }
     } else {
       $("destInput").disabled = true;
-      $("destInput").placeholder = "SELECT ORIGIN FIRST";
+      $("destInput").placeholder = "SELECT OR TYPE ORIGIN FIRST";
     }
   }
   // Full quote now uses per-order service cards. Middle-mile keeps the legacy
@@ -8989,13 +9026,13 @@ async function init() {
           const destInput = $("destInput");
           destInput.value = "";
           destInput.disabled = true;
-          $("destInput").placeholder = "START TYPING DESTINATION...";
+          $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
           destInput.placeholder = "LOADING DESTINATIONS...";
           fetchDestinations(label)
             .then(() => {
               if (state.origin !== label || state.laneMode === 'local') return;
               destInput.disabled = false;
-              destInput.placeholder = "START TYPING DESTINATION...";
+              destInput.placeholder = "TYPE OR SELECT DESTINATION...";
               destInput.focus();
               destInput.dispatchEvent(new Event('input', { bubbles: true }));
             })

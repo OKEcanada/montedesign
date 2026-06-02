@@ -5085,7 +5085,7 @@ function marketBenchmarks(q) {
   const middleShare = q.middleMileSell && q.total ? Math.min(0.75, q.middleMileSell / q.total) : 0.45;
   const carriers = [
     { name: 'OKE', low: 1, high: 1, actual: true },
-    { name: 'Day & Ross', low: 1.06 + middleShare * 0.10, high: 1.28 + complexity },
+    { name: 'Regional line-haul carrier', low: 1.06 + middleShare * 0.10, high: 1.28 + complexity },
     { name: 'RXO', low: 1.02, high: 1.34 + serviceFactor * 0.05 + complexity },
     { name: 'Manitoulin', low: 1.09 + middleShare * 0.06, high: 1.38 + complexity },
     { name: 'Apps Cargo', low: 0.98 + serviceFactor * 0.04, high: 1.27 + complexity },
@@ -5152,7 +5152,7 @@ const ACCESSORIALS = [
   { id: 'extraMan',     name: 'Extra crew member (per hour)',          default: 75,  qty: true,  qtyLabel: 'hours' },
 ];
 
-const DAY_ROSS_ACCESSORIALS = [
+const CARRIER_ACCESSORIALS = [
   { id: 'appointment', label: 'Appointment / call before delivery', note: 'Flat service charge', type: 'flat', amount: 25 },
   { id: 'residential', label: 'Residential or limited access', note: 'Pickup or delivery', type: 'flat', amount: 90 },
   { id: 'inside', label: 'Inside pickup or delivery', note: 'Rated per CWT, minimum applies', type: 'cwt', rate: 5.05, min: 65 },
@@ -5213,7 +5213,7 @@ function normalizeItemType(name) {
   return name || '';
 }
 
-// Middle-mile remains Day & Ross x 35%; final-mile agent sell prices use 40%.
+// Middle-mile prices are returned by the server as OKE sell prices; final-mile agent sell prices use 40%.
 const MIDDLE_MILE_TABLE_MARKUP = 1.35;
 const FINAL_MILE_AGENT_MARKUP = 1.40;
 
@@ -5451,7 +5451,7 @@ function localExtraLines() {
   return out;
 }
 
-function dayRossAccessorialAmount(def, billable, lineHaul) {
+function carrierAccessorialAmount(def, billable, lineHaul) {
   const picked = state.accessorials[def.id] || {};
   const cwt = Math.max(1, Number(billable) || 0) / 100;
   const sell = MIDDLE_MILE_TABLE_MARKUP;
@@ -5461,20 +5461,20 @@ function dayRossAccessorialAmount(def, billable, lineHaul) {
   let detail = '';
   if (def.type === 'flat') {
     amount = sellMin(def.amount);
-    detail = `Day & Ross ${fmt(def.amount)} + OKE 35%`;
+    detail = 'Flat line-haul accessorial';
   } else if (def.type === 'cwt') {
     amount = cwt * def.rate * sell;
     if (def.min) amount = Math.max(sellMin(def.min), amount);
     if (def.max) amount = Math.min(sellMin(def.max), amount);
-    detail = `${fmt(def.rate * sell)}/CWT incl. 35%${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}${def.max ? `, max ${fmt(sellMin(def.max))}` : ''}`;
+    detail = `${fmt(def.rate * sell)}/CWT${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}${def.max ? `, max ${fmt(sellMin(def.max))}` : ''}`;
   } else if (def.type === 'percentSubtotal') {
     amount = (Number(lineHaul) || 0) * (def.pct / 100);
     if (def.min) amount = Math.max(sellMin(def.min), amount);
-    detail = `${def.pct}% of marked-up middle-mile line haul${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}`;
+    detail = `${def.pct}% of line-haul service${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}`;
   } else if (def.type === 'qtyRate') {
     qty = Math.max(Number(picked.qty) || def.defaultQty || 1, def.minQty || 0);
     amount = qty * def.rate * sell;
-    detail = `${qty} ${def.unit || 'units'} x ${fmt(def.rate * sell)} incl. 35%`;
+    detail = `${qty} ${def.unit || 'units'} x ${fmt(def.rate * sell)}`;
   } else if (def.type === 'qtyCharge') {
     qty = Math.max(Number(picked.qty) || def.defaultQty || 1, 0);
     amount = qty * def.rate * sell;
@@ -5484,11 +5484,11 @@ function dayRossAccessorialAmount(def, billable, lineHaul) {
   return { amount, qty, detail };
 }
 
-function dayRossAccessorialLines(billable, lineHaul) {
-  return DAY_ROSS_ACCESSORIALS
+function carrierAccessorialLines(billable, lineHaul) {
+  return CARRIER_ACCESSORIALS
     .filter(def => state.accessorials[def.id] && state.accessorials[def.id].selected)
     .map(def => {
-      const priced = dayRossAccessorialAmount(def, billable, lineHaul);
+      const priced = carrierAccessorialAmount(def, billable, lineHaul);
       return {
         id: def.id,
         name: def.label,
@@ -5498,7 +5498,7 @@ function dayRossAccessorialLines(billable, lineHaul) {
         qty: priced.qty,
         amount: priced.amount,
         detail: priced.detail || def.note,
-        group: 'Carrier / Day & Ross'
+        group: 'Line-haul accessorials'
       };
     });
 }
@@ -5865,11 +5865,10 @@ function computeQuote() {
   }
 
   // Carrier accessorials are available in Full Quote and Middle Mile Only.
-  // They use the Day & Ross charge basis, then apply the same 35% OKE sell margin.
   // Final-mile extras remain Full Quote only.
   let accAmount = 0;
   const accSelected = [];
-  const carrierLines = dayRossAccessorialLines(billable, middleMileSell);
+  const carrierLines = carrierAccessorialLines(billable, middleMileSell);
   for (const line of carrierLines) {
     accAmount += line.amount;
     accSelected.push(line);
@@ -6577,7 +6576,7 @@ function renderAccessorials() {
     const sel = state.accessorials[a.id] || {};
     const checked = !!sel.selected;
     const qty = sel.qty || a.defaultQty || 1;
-    const priced = dayRossAccessorialAmount(a, q.billable || 0, q.middleMileSell || 0);
+    const priced = carrierAccessorialAmount(a, q.billable || 0, q.middleMileSell || 0);
     const priceLabel = hasPricedItem() || a.type === 'flat'
       ? fmt(priced.amount)
       : (a.type === 'cwt' ? `${fmt(a.rate * MIDDLE_MILE_TABLE_MARKUP)}/CWT` : 'Select');
@@ -6618,7 +6617,7 @@ function renderAccessorials() {
       <span class="acc-price">${priceLabel}</span>
     </div>`;
   };
-  const carrierRows = DAY_ROSS_ACCESSORIALS.map(renderCarrierRow).join('');
+  const carrierRows = CARRIER_ACCESSORIALS.map(renderCarrierRow).join('');
   const finalRows = state.laneMode === 'middle' ? '' : ACCESSORIALS.map(renderFinalMileRow).join('');
   const extraRows = state.laneMode === 'middle' ? '' : `
     <div class="local-extra-panel">
@@ -6636,7 +6635,7 @@ function renderAccessorials() {
   list.innerHTML = `
     <section class="acc-group">
       <div class="acc-group-head">
-        <div><b>Carrier / Day & Ross services</b><span>Available in Full Quote and Middle Mile Only. Prices include the 35% OKE margin.</span></div>
+        <div><b>Line-haul accessorials</b><span>Available in Full Quote and Middle Mile Only for special pickup, delivery, or freight-handling requirements.</span></div>
         <em>Middle mile</em>
       </div>
       <div class="acc-group-grid">${carrierRows}</div>
@@ -6658,7 +6657,7 @@ function renderAccessorials() {
       // Don't toggle when clicking the qty input
       if (e.target.matches('input[data-acc-qty]')) return;
       const id = el.dataset.acc;
-      const carrierDef = DAY_ROSS_ACCESSORIALS.find(a => a.id === id);
+      const carrierDef = CARRIER_ACCESSORIALS.find(a => a.id === id);
       if (!state.accessorials[id]) state.accessorials[id] = { qty: carrierDef && carrierDef.defaultQty ? carrierDef.defaultQty : 1 };
       state.accessorials[id].selected = !state.accessorials[id].selected;
       renderAccessorials();
@@ -6671,7 +6670,7 @@ function renderAccessorials() {
     inp.addEventListener('input', e => {
       const id = e.target.dataset.accQty;
       if (!state.accessorials[id]) state.accessorials[id] = { selected: false };
-      const carrierDef = DAY_ROSS_ACCESSORIALS.find(a => a.id === id);
+      const carrierDef = CARRIER_ACCESSORIALS.find(a => a.id === id);
       const min = carrierDef && carrierDef.minQty ? carrierDef.minQty : 1;
       state.accessorials[id].qty = Math.max(min, Number(e.target.value) || min);
       e.target.value = state.accessorials[id].qty;
@@ -6697,7 +6696,7 @@ function renderTaxOptions() {
   select.value = state.taxId;
 }
 function updateAccCount() {
-  const carrierIds = new Set(DAY_ROSS_ACCESSORIALS.map(a => a.id));
+  const carrierIds = new Set(CARRIER_ACCESSORIALS.map(a => a.id));
   const finalIds = new Set(ACCESSORIALS.map(a => a.id));
   const selectedCount = Object.entries(state.accessorials).filter(([id, a]) => {
     if (!a || !a.selected) return false;
@@ -7188,7 +7187,7 @@ function renderCostDetails(q, largeLinearQuote) {
 
   const finalLines = [
     costDetailLine('Subtotal', q.subtotal || 0, 'Before fuel surcharge and tax.'),
-    state.fscPct > 0 ? costDetailLine(`Fuel surcharge (${state.fscPct}%)`, q.fscAmount || 0, 'Calculated from subtotal.') : null,
+    state.fscPct > 0 ? costDetailLine(`Fuel surcharge (${state.fscPct}%)`, q.fscAmount || 0, 'Calculated after line-haul, delivery, handling, and selected services.') : null,
     q.tax && q.tax.rate > 0 ? costDetailLine(`Tax (${q.tax.label})`, q.taxAmount || 0, `${q.tax.rate}%`) : null,
   ].filter(Boolean);
   lineCount += finalLines.length;
@@ -8047,7 +8046,7 @@ function updateOutput(options = {}) {
     const expedite = middleTotal > 0 ? middleTotal * 1.58 : 0;
     const rows = [
       { name: 'OKE middle-mile', price: middleTotal, badge: 'Selected' },
-      { name: `Day & Ross table ${laneQuote && laneQuote.cwtCol ? '(' + laneQuote.cwtCol + ')' : ''}`, price: weightCharge || middleTotal, badge: laneQuote && laneQuote.cwtRate ? `${laneQuote.cwtRate.toFixed(2)}/CWT` : 'rate loading' },
+      { name: `Line-haul rate table ${laneQuote && laneQuote.cwtCol ? '(' + laneQuote.cwtCol + ')' : ''}`, price: weightCharge || middleTotal, badge: laneQuote && laneQuote.cwtRate ? `${laneQuote.cwtRate.toFixed(2)}/CWT` : 'rate loading' },
       { name: 'Minimum charge guard', price: minCharge, badge: 'floor' },
       { name: 'Typical broker LTL range', range: marketLow && marketHigh ? `${moneyShort(marketLow)}-${moneyShort(marketHigh)}` : 'Loading', price: marketHigh, badge: 'estimate' },
       { name: 'Expedited / special handling', price: expedite, badge: 'estimate' }
@@ -8070,7 +8069,7 @@ function updateOutput(options = {}) {
     const advisor = $("cmpAdvisor");
     if (advisor) {
       const rateLine = laneQuote && laneQuote.cwtCol
-        ? `Resolved against the ${laneQuote.cwtCol} column, with Day & Ross x ${(MIDDLE_MILE_TABLE_MARKUP * 100).toFixed(0)}% already baked into the lane table.`
+        ? `Resolved against the ${laneQuote.cwtCol} column for this lane.`
         : 'Lane rate is still loading from Supabase.';
       advisor.innerHTML = `<b>Middle-mile comparison only</b><em>${htmlEsc(rateLine)} Competitor ranges here are planning estimates, not live final-mile offers.</em>`;
     }

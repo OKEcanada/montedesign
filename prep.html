@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freight Prep Checklist | One Kind Express</title>
+<meta name="theme-color" content="#07091a">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000;
+    --ink: #fafafa;
+    --muted: #a8adbd;
+    --line: rgba(255,255,255,.13);
+    --panel: rgba(9,12,27,.84);
+    --panel2: rgba(17,24,39,.78);
+    --brand: #ff6a00;
+    --brand2: #ff9b66;
+    --cool: #42e8d4;
+    --good: #42d392;
+    --warn: #f6bd60;
+    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 15px/1.55 var(--font);
+    background:
+      radial-gradient(860px 520px at 82% -12%, rgba(255,106,0,.20), transparent 58%),
+      radial-gradient(760px 520px at 8% 100%, rgba(66,232,212,.14), transparent 62%),
+      #000;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .24;
+    background:
+      linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 88px 88px;
+    -webkit-mask-image: linear-gradient(to bottom, #000, transparent 82%);
+    mask-image: linear-gradient(to bottom, #000, transparent 82%);
+  }
+  a { color: inherit; }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px clamp(16px, 4vw, 34px);
+    background: rgba(0,0,0,.74);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(18px);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.02em; }
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 38px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--brand), #f04418);
+    box-shadow: 0 16px 34px rgba(255,106,0,.28);
+  }
+  nav { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+  nav a, .btn {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0 13px;
+    background: rgba(255,255,255,.055);
+    color: var(--ink);
+    text-decoration: none;
+    font: 850 13px/1 var(--font);
+  }
+  nav a.primary, .btn.primary {
+    border-color: rgba(255,106,0,.55);
+    background: linear-gradient(135deg, var(--brand), #f04418);
+    box-shadow: 0 14px 34px rgba(255,106,0,.24);
+  }
+  main { position: relative; width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0 70px; }
+  .kicker {
+    color: var(--brand2);
+    font: 850 11px/1 var(--mono);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .58fr);
+    gap: 22px;
+    align-items: stretch;
+    margin-bottom: 22px;
+  }
+  h1 {
+    margin: 10px 0 16px;
+    max-width: 820px;
+    font-size: clamp(42px, 7vw, 82px);
+    line-height: .94;
+    letter-spacing: -.06em;
+  }
+  .lead { max-width: 780px; margin: 0; color: var(--muted); font-size: 18px; }
+  .hero-card, .panel, .checklist, .cta {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background:
+      radial-gradient(420px 260px at 100% 0%, rgba(255,106,0,.16), transparent 62%),
+      radial-gradient(360px 240px at 0% 100%, rgba(66,232,212,.12), transparent 62%),
+      var(--panel);
+    box-shadow: 0 26px 80px rgba(0,0,0,.38);
+  }
+  .hero-card { padding: 22px; display: grid; align-content: space-between; gap: 18px; min-height: 330px; }
+  .score {
+    width: 120px;
+    height: 120px;
+    display: grid;
+    place-items: center;
+    border-radius: 34px;
+    background: linear-gradient(145deg, rgba(255,106,0,.22), rgba(66,232,212,.12));
+    border: 1px solid rgba(255,255,255,.13);
+    font: 900 34px/1 var(--mono);
+    color: var(--cool);
+  }
+  .hero-card h2 { margin: 0; font-size: 26px; line-height: 1.02; letter-spacing: -.035em; }
+  .hero-card p { margin: 0; color: var(--muted); }
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .quick div {
+    min-height: 132px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+    padding: 15px;
+  }
+  .quick b { display: block; margin-bottom: 7px; font-size: 15px; }
+  .quick span { color: var(--muted); font-size: 13px; }
+  .section { margin-top: 22px; }
+  .section h2 { margin: 8px 0 14px; font-size: clamp(28px, 4vw, 46px); line-height: .98; letter-spacing: -.045em; }
+  .grid { display: grid; grid-template-columns: minmax(0, .78fr) minmax(340px, .42fr); gap: 18px; align-items: start; }
+  .panel { padding: 22px; }
+  .panel h3 { margin: 0 0 12px; font-size: 22px; letter-spacing: -.025em; }
+  .list { display: grid; gap: 10px; }
+  .item {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 15px;
+    background: rgba(255,255,255,.045);
+  }
+  .item strong {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: rgba(255,106,0,.16);
+    color: var(--brand2);
+    font: 900 12px/1 var(--mono);
+  }
+  .item b { display: block; margin-bottom: 2px; }
+  .item span { color: var(--muted); font-size: 13px; }
+  .checklist { padding: 18px; }
+  .checklist-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .checklist-head h3 { margin: 0; font-size: 22px; letter-spacing: -.025em; }
+  .checklist-head span { color: var(--muted); font-size: 13px; }
+  .check-row {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    padding: 11px 0;
+    border-top: 1px solid rgba(255,255,255,.10);
+  }
+  .check-row:first-of-type { border-top: 0; }
+  .check-row input { width: 18px; height: 18px; accent-color: var(--brand); margin-top: 2px; }
+  .check-row b { display: block; font-size: 14px; }
+  .check-row span { display: block; color: var(--muted); font-size: 12.5px; }
+  .check-row.done b { color: var(--cool); }
+  .progress {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+    margin: 12px 0 0;
+  }
+  .progress i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand), var(--cool)); transition: width .25s ease; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  button.btn { cursor: pointer; }
+  .cta {
+    margin-top: 22px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .cta h2 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 44px); line-height: 1; letter-spacing: -.045em; }
+  .cta p { margin: 0; color: var(--muted); }
+  footer { margin-top: 24px; color: rgba(255,255,255,.42); font-size: 12px; text-align: center; }
+  @media (max-width: 900px) {
+    header, .cta { align-items: flex-start; flex-direction: column; }
+    .hero, .grid, .quick { grid-template-columns: 1fr; }
+    .hero-card { min-height: 260px; }
+  }
+  @media (max-width: 560px) {
+    main { width: min(100% - 22px, 1180px); padding-top: 28px; }
+    h1 { font-size: 43px; }
+    .quick div { min-height: auto; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="mark">OKE</span><span>Freight Prep Checklist</span></div>
+  <nav>
+    <a href="https://calculator.onekindexpress.com/">Calculator</a>
+    <a href="https://quote.onekindexpress.com/manual.html">Manual</a>
+    <a href="mailto:info@onekindexpress.com">Email</a>
+    <a class="primary" href="tel:18336535777">Call OKE</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <div class="kicker">Before you book</div>
+      <h1>Prepare a freight quote that is easy to confirm.</h1>
+      <p class="lead">Use this page before submitting a booking request. It helps collect the details that keep pricing clear, reduce back-and-forth, and make the saved quote easier for OKE to review.</p>
+    </div>
+    <aside class="hero-card">
+      <div class="score" id="score">0%</div>
+      <div>
+        <h2>Booking confidence checklist</h2>
+        <p>Check off the items as you prepare. Your progress is saved in this browser.</p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="quick">
+    <div><b>Measure once</b><span>Use actual outside dimensions after packaging, not product-only dimensions.</span></div>
+    <div><b>Know the access</b><span>Dock, liftgate, stairs, elevator, residential access, and appointment needs affect handling.</span></div>
+    <div><b>Share photos</b><span>Photos of freight, labels, stairs, dock, or access points help confirm the right service.</span></div>
+    <div><b>Keep notes ready</b><span>Add timing restrictions, contact names, phone numbers, and delivery instructions.</span></div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <div class="kicker">Quote package</div>
+      <h3>What to have ready</h3>
+      <div class="list">
+        <div class="item"><strong>01</strong><div><b>Lane and contacts</b><span>Origin city, destination city, pickup contact, delivery contact, phone numbers, and email.</span></div></div>
+        <div class="item"><strong>02</strong><div><b>Freight rows</b><span>For each box group or pallet group, prepare quantity, weight, length, width, height, and item type.</span></div></div>
+        <div class="item"><strong>03</strong><div><b>Service level</b><span>Choose curbside, threshold, room of choice, or White Glove based on what the delivery actually needs.</span></div></div>
+        <div class="item"><strong>04</strong><div><b>Accessorials</b><span>Flag appointment, liftgate, inside pickup or delivery, residential access, stairs, door removal, disposal, or special handling.</span></div></div>
+        <div class="item"><strong>05</strong><div><b>Timing</b><span>Preferred pickup date, delivery constraints, business hours, receiving windows, and urgent deadlines.</span></div></div>
+      </div>
+    </div>
+
+    <aside class="checklist">
+      <div class="checklist-head">
+        <div>
+          <div class="kicker">Interactive</div>
+          <h3>Ready-to-submit checklist</h3>
+          <span id="scoreText">0 of 9 ready</span>
+        </div>
+      </div>
+      <label class="check-row"><input type="checkbox" data-check="lane"><span><b>Origin and destination are confirmed</b><span>City, province, and any address restrictions are known.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="contact"><span><b>Pickup and delivery contacts are ready</b><span>Name, phone, email, and backup contact if available.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="dims"><span><b>Dimensions are measured after packaging</b><span>Length, width, height, cube, and linear feet are based on the final freight.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="weight"><span><b>Weights are known</b><span>Use per-box, per-pallet, or total order weight when that is what you have.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="service"><span><b>Service level is clear</b><span>Different orders can use different final-mile service levels in the calculator.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="access"><span><b>Access needs are noted</b><span>Dock, liftgate, stairs, elevator, residential access, appointment, or limited access.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="photos"><span><b>Useful photos can be shared</b><span>Freight, labels, access route, stairs, dock, and any unusual handling areas.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="date"><span><b>Preferred pickup date is selected</b><span>Include schedule restrictions in the booking notes.</span></span></label>
+      <label class="check-row"><input type="checkbox" data-check="notes"><span><b>Special notes are written</b><span>Anything that OKE should know before confirming the booking.</span></span></label>
+      <div class="progress"><i id="progressBar"></i></div>
+      <div class="tools">
+        <button class="btn" id="copyBtn" type="button">Copy checklist</button>
+        <button class="btn" id="resetBtn" type="button">Reset</button>
+      </div>
+    </aside>
+  </section>
+
+  <section class="section">
+    <div class="kicker">Why it helps</div>
+    <h2>Better details create faster confirmations.</h2>
+    <div class="quick">
+      <div><b>Fewer revisions</b><span>Clear dimensions and access notes reduce pricing changes after review.</span></div>
+      <div><b>Cleaner handoff</b><span>Contacts, timing, and delivery notes make dispatch follow-up easier.</span></div>
+      <div><b>Better service fit</b><span>The right service level prevents underquoting room placement, White Glove, or special handling.</span></div>
+      <div><b>Saved quote link</b><span>After booking request, the saved quote can be reviewed, printed, copied, or reopened in the calculator.</span></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div>
+      <h2>Ready to build the quote?</h2>
+      <p>Open the calculator with this checklist ready, then submit the booking request when the quote looks complete.</p>
+    </div>
+    <div class="tools">
+      <a class="btn primary" href="https://calculator.onekindexpress.com/">Open Calculator</a>
+      <a class="btn" href="https://quote.onekindexpress.com/manual.html">Read Manual</a>
+    </div>
+  </section>
+
+  <footer>One Kind Express public prep guide. Final service details are confirmed by OKE before booking.</footer>
+</main>
+
+<script>
+  const key = "oke-prep-checklist-v1";
+  const boxes = Array.from(document.querySelectorAll("[data-check]"));
+  const saved = JSON.parse(localStorage.getItem(key) || "{}");
+  boxes.forEach(box => {
+    box.checked = !!saved[box.dataset.check];
+    box.addEventListener("change", update);
+  });
+  function update() {
+    const state = {};
+    boxes.forEach(box => {
+      state[box.dataset.check] = box.checked;
+      box.closest(".check-row").classList.toggle("done", box.checked);
+    });
+    localStorage.setItem(key, JSON.stringify(state));
+    const done = boxes.filter(box => box.checked).length;
+    const pct = Math.round(done / boxes.length * 100);
+    document.getElementById("score").textContent = pct + "%";
+    document.getElementById("scoreText").textContent = done + " of " + boxes.length + " ready";
+    document.getElementById("progressBar").style.width = pct + "%";
+  }
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const lines = boxes.map(box => (box.checked ? "[x] " : "[ ] ") + box.closest(".check-row").querySelector("b").textContent);
+    const text = "One Kind Express freight prep checklist\n" + lines.join("\n");
+    try { await navigator.clipboard.writeText(text); } catch (_) {}
+    document.getElementById("copyBtn").textContent = "Copied";
+    setTimeout(() => document.getElementById("copyBtn").textContent = "Copy checklist", 1300);
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    boxes.forEach(box => box.checked = false);
+    update();
+  });
+  update();
+</script>
+</body>
+</html>

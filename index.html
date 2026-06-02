@@ -1025,10 +1025,35 @@
     to { opacity: 1; transform: translateY(0); }
   }
   .acc-list {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    grid-auto-rows: auto;
+    display: flex; flex-direction: column; gap: 14px;
   }
-  @media (max-width: 600px) { .acc-list { grid-template-columns: 1fr; grid-auto-rows: auto; } }
+  .acc-group {
+    border: 1px solid rgba(12,16,36,0.08);
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.74), rgba(255,250,244,0.46));
+    padding: 12px;
+  }
+  .acc-group-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 12px; margin-bottom: 10px;
+  }
+  .acc-group-head b {
+    display: block; color: var(--ink); font-size: 13.5px; font-weight: 700;
+  }
+  .acc-group-head span {
+    display: block; color: var(--ink-muted); font-size: 11.5px; line-height: 1.35; margin-top: 2px;
+  }
+  .acc-group-head em {
+    font-family: var(--font-mono); font-size: 10px; font-style: normal; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-deep); background: rgba(255,122,69,0.10);
+    border: 1px solid rgba(255,122,69,0.18);
+    border-radius: 999px; padding: 4px 8px; white-space: nowrap;
+  }
+  .acc-group-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  @media (max-width: 600px) { .acc-group-grid { grid-template-columns: 1fr; } }
   .acc-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 14px; border-radius: var(--radius-sm);
@@ -1041,6 +1066,11 @@
   .acc-row.checked { background: linear-gradient(180deg, rgba(255,230,214,0.88), rgba(255,240,229,0.76)); border-color: rgba(255,122,69,0.42); }
   .acc-row .acc-label { font-size: 12.5px; font-weight: 500; color: var(--ink-soft); }
   .acc-row.checked .acc-label { color: var(--ink); font-weight: 600; }
+  .acc-row .acc-note {
+    display: block; margin-top: 3px;
+    font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted);
+    letter-spacing: 0.04em; line-height: 1.25;
+  }
   .acc-row .acc-price { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); white-space: nowrap; }
   .acc-row.checked .acc-price { color: var(--accent-deep); font-weight: 700; }
   .acc-row .acc-check {
@@ -5122,6 +5152,22 @@ const ACCESSORIALS = [
   { id: 'extraMan',     name: 'Extra crew member (per hour)',          default: 75,  qty: true,  qtyLabel: 'hours' },
 ];
 
+const DAY_ROSS_ACCESSORIALS = [
+  { id: 'appointment', label: 'Appointment / call before delivery', note: 'Flat service charge', type: 'flat', amount: 25 },
+  { id: 'residential', label: 'Residential or limited access', note: 'Pickup or delivery', type: 'flat', amount: 90 },
+  { id: 'inside', label: 'Inside pickup or delivery', note: 'Rated per CWT, minimum applies', type: 'cwt', rate: 5.05, min: 65 },
+  { id: 'tailgate', label: 'Power tailgate', note: 'Liftgate service', type: 'flat', amount: 30 },
+  { id: 'dangerousGoods', label: 'Dangerous goods', note: 'Documentation and handling', type: 'flat', amount: 35 },
+  { id: 'protective', label: 'Protective service', note: '20% of line-haul, minimum applies', type: 'percentSubtotal', pct: 20, min: 40 },
+  { id: 'reweigh', label: 'Reweigh fee', note: 'Applies if requested/required', type: 'flat', amount: 20 },
+  { id: 'reconsignment', label: 'Reconsignment', note: 'Rated per CWT with min/max', type: 'cwt', rate: 7, min: 80, max: 300 },
+  { id: 'afterHours', label: 'After hours service', note: 'Metro service window', type: 'flat', amount: 200 },
+  { id: 'weekend', label: 'Weekend / holiday', note: 'Hours, 4 hour minimum', type: 'qtyRate', unit: 'hrs', rate: 75, defaultQty: 4, minQty: 4 },
+  { id: 'tradeshow', label: 'Tradeshow delivery', note: 'Rated per CWT, minimum applies', type: 'cwt', rate: 4.15, min: 170 },
+  { id: 'extraLabour', label: 'Extra labour / lumper', note: 'Person-hours, minimum applies', type: 'qtyCharge', unit: 'hrs', rate: 50, defaultQty: 4, min: 200 },
+  { id: 'nlFerry', label: 'NL ferry surcharge', note: 'LTL ferry service', type: 'flat', amount: 24.78 }
+];
+
 const LOCAL_EXTRA_FIELDS = [
   { id: 'palletCharge', label: 'Pallet charge', rate: 21, unit: 'pallet' },
   { id: 'polystrap', label: 'Polystrap', rate: 15, unit: 'item' },
@@ -5403,6 +5449,58 @@ function localExtraLines() {
     out.push({ id: field.id, name: field.label, qty, rate: field.rate, amount, detail: `${qty} ${unit} x ${fmt(field.rate)}` });
   }
   return out;
+}
+
+function dayRossAccessorialAmount(def, billable, lineHaul) {
+  const picked = state.accessorials[def.id] || {};
+  const cwt = Math.max(1, Number(billable) || 0) / 100;
+  const sell = MIDDLE_MILE_TABLE_MARKUP;
+  const sellMin = v => Number(v || 0) * sell;
+  let amount = 0;
+  let qty = picked.qty;
+  let detail = '';
+  if (def.type === 'flat') {
+    amount = sellMin(def.amount);
+    detail = `Day & Ross ${fmt(def.amount)} + OKE 35%`;
+  } else if (def.type === 'cwt') {
+    amount = cwt * def.rate * sell;
+    if (def.min) amount = Math.max(sellMin(def.min), amount);
+    if (def.max) amount = Math.min(sellMin(def.max), amount);
+    detail = `${fmt(def.rate * sell)}/CWT incl. 35%${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}${def.max ? `, max ${fmt(sellMin(def.max))}` : ''}`;
+  } else if (def.type === 'percentSubtotal') {
+    amount = (Number(lineHaul) || 0) * (def.pct / 100);
+    if (def.min) amount = Math.max(sellMin(def.min), amount);
+    detail = `${def.pct}% of marked-up middle-mile line haul${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}`;
+  } else if (def.type === 'qtyRate') {
+    qty = Math.max(Number(picked.qty) || def.defaultQty || 1, def.minQty || 0);
+    amount = qty * def.rate * sell;
+    detail = `${qty} ${def.unit || 'units'} x ${fmt(def.rate * sell)} incl. 35%`;
+  } else if (def.type === 'qtyCharge') {
+    qty = Math.max(Number(picked.qty) || def.defaultQty || 1, 0);
+    amount = qty * def.rate * sell;
+    if (def.min) amount = Math.max(sellMin(def.min), amount);
+    detail = `${qty} ${def.unit || 'units'} x ${fmt(def.rate * sell)}${def.min ? `, min ${fmt(sellMin(def.min))}` : ''}`;
+  }
+  return { amount, qty, detail };
+}
+
+function dayRossAccessorialLines(billable, lineHaul) {
+  return DAY_ROSS_ACCESSORIALS
+    .filter(def => state.accessorials[def.id] && state.accessorials[def.id].selected)
+    .map(def => {
+      const priced = dayRossAccessorialAmount(def, billable, lineHaul);
+      return {
+        id: def.id,
+        name: def.label,
+        label: def.label,
+        note: def.note,
+        type: def.type,
+        qty: priced.qty,
+        amount: priced.amount,
+        detail: priced.detail || def.note,
+        group: 'Carrier / Day & Ross'
+      };
+    });
 }
 
 function whiteGloveExtraLines() {
@@ -5738,36 +5836,6 @@ function computeQuote() {
   const extraPieces = middleOnly ? 0 : Math.max(0, totalPcs - 2);
   const extraPieceCharge = extraPieces * state.extraPiece;
 
-  // Accessorials are final-mile services in this calculator; middle-mile-only
-  // stays pure dock-to-dock for clean Day & Ross rate comparisons.
-  let accAmount = 0;
-  const accSelected = [];
-  if (!middleOnly) {
-    for (const a of ACCESSORIALS) {
-      const sel = state.accessorials[a.id];
-      if (sel && sel.selected) {
-        const qty = a.qty ? Math.max(1, Number(sel.qty) || 1) : 1;
-        const price = state.accPrices[a.id] || a.default;
-        const amount = price * qty;
-        accAmount += amount;
-        accSelected.push({ ...a, qty, amount });
-      }
-    }
-    const extraLines = localExtraLines();
-    const wgLines = whiteGloveExtraLines();
-    for (const line of [...extraLines, ...wgLines]) {
-      accAmount += line.amount;
-      accSelected.push({
-        id: line.id,
-        name: line.name,
-        qty: line.qty,
-        amount: line.amount,
-        detail: line.detail,
-        localExtra: true,
-      });
-    }
-  }
-
   // Middle-mile (full quote and middle-mile-only both use the marked-up lane table)
   let middleMileSell = 0;
   let rates = null;
@@ -5793,6 +5861,49 @@ function computeQuote() {
         hasLocation = true;
         laneNotPriced = !!CURRENT_LANE_QUOTE === false ? false : true;
       }
+    }
+  }
+
+  // Carrier accessorials are available in Full Quote and Middle Mile Only.
+  // They use the Day & Ross charge basis, then apply the same 35% OKE sell margin.
+  // Final-mile extras remain Full Quote only.
+  let accAmount = 0;
+  const accSelected = [];
+  const carrierLines = dayRossAccessorialLines(billable, middleMileSell);
+  for (const line of carrierLines) {
+    accAmount += line.amount;
+    accSelected.push(line);
+  }
+  if (!middleOnly) {
+    for (const a of ACCESSORIALS) {
+      const sel = state.accessorials[a.id];
+      if (sel && sel.selected) {
+        const qty = a.qty ? Math.max(1, Number(sel.qty) || 1) : 1;
+        const price = state.accPrices[a.id] || a.default;
+        const amount = price * qty;
+        accAmount += amount;
+        accSelected.push({
+          ...a,
+          qty,
+          amount,
+          detail: a.qty ? `${qty} ${a.qtyLabel || 'units'} x ${fmt(price)}` : 'Flat final-mile service',
+          group: 'Final-mile delivery'
+        });
+      }
+    }
+    const extraLines = localExtraLines();
+    const wgLines = whiteGloveExtraLines();
+    for (const line of [...extraLines, ...wgLines]) {
+      accAmount += line.amount;
+      accSelected.push({
+        id: line.id,
+        name: line.name,
+        qty: line.qty,
+        amount: line.amount,
+        detail: line.detail,
+        localExtra: true,
+        group: line.id && line.id.startsWith('whiteGloveMinutes:') ? 'White Glove time' : 'Manual extra charges',
+      });
     }
   }
 
@@ -6460,26 +6571,55 @@ function renderServiceLevels() {
 // ============================================================
 function renderAccessorials() {
   const list = $("accList");
-  const accRows = ACCESSORIALS.map(a => {
+  if (!list) return;
+  const q = computeQuote();
+  const renderCarrierRow = a => {
+    const sel = state.accessorials[a.id] || {};
+    const checked = !!sel.selected;
+    const qty = sel.qty || a.defaultQty || 1;
+    const priced = dayRossAccessorialAmount(a, q.billable || 0, q.middleMileSell || 0);
+    const priceLabel = hasPricedItem() || a.type === 'flat'
+      ? fmt(priced.amount)
+      : (a.type === 'cwt' ? `${fmt(a.rate * MIDDLE_MILE_TABLE_MARKUP)}/CWT` : 'Select');
+    const needsQty = a.type === 'qtyRate' || a.type === 'qtyCharge';
+    const qtyHtml = needsQty
+      ? `<input type="number" min="${a.minQty || 1}" class="acc-qty" data-acc-qty="${a.id}" value="${qty}" aria-label="${a.label} quantity" />`
+      : '';
+    return `<div class="acc-row ${checked ? 'checked' : ''}" data-acc="${a.id}">
+      <div class="acc-row-inner">
+        <span class="acc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="acc-row-text">
+          <div class="acc-label">${a.label}</div>
+          <span class="acc-note">${a.note}</span>
+        </div>
+      </div>
+      ${qtyHtml}
+      <span class="acc-price">${priceLabel}</span>
+    </div>`;
+  };
+  const renderFinalMileRow = a => {
     const sel = state.accessorials[a.id] || {};
     const checked = !!sel.selected;
     const qty = sel.qty || 1;
     const price = state.accPrices[a.id] || a.default;
-    const priceLabel = hasPricedItem() ? `$${price}` : 'Select';
+    const priceLabel = fmt(price).replace('.00', '');
     const qtyHtml = a.qty
-      ? `<input type="number" min="1" class="acc-qty" data-acc-qty="${a.id}" value="${qty}" />`
+      ? `<input type="number" min="1" class="acc-qty" data-acc-qty="${a.id}" value="${qty}" aria-label="${a.name} quantity" />`
       : '';
     return `<div class="acc-row ${checked ? 'checked' : ''}" data-acc="${a.id}">
       <div class="acc-row-inner">
         <span class="acc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
         <div class="acc-row-text">
           <div class="acc-label">${a.name}</div>
+          <span class="acc-note">${a.qty ? `Per ${a.qtyLabel || 'unit'}` : 'Flat final-mile charge'}</span>
         </div>
       </div>
       ${qtyHtml}
       <span class="acc-price">${priceLabel}</span>
     </div>`;
-  }).join('');
+  };
+  const carrierRows = DAY_ROSS_ACCESSORIALS.map(renderCarrierRow).join('');
+  const finalRows = state.laneMode === 'middle' ? '' : ACCESSORIALS.map(renderFinalMileRow).join('');
   const extraRows = state.laneMode === 'middle' ? '' : `
     <div class="local-extra-panel">
       <div class="section-label" style="margin-bottom:10px;">Extra charges</div>
@@ -6493,14 +6633,33 @@ function renderAccessorials() {
       </div>
       <p class="local-extra-note">White Glove extra time is set inside each White Glove order.</p>
     </div>`;
-  list.innerHTML = accRows + extraRows;
+  list.innerHTML = `
+    <section class="acc-group">
+      <div class="acc-group-head">
+        <div><b>Carrier / Day & Ross services</b><span>Available in Full Quote and Middle Mile Only. Prices include the 35% OKE margin.</span></div>
+        <em>Middle mile</em>
+      </div>
+      <div class="acc-group-grid">${carrierRows}</div>
+    </section>
+    ${state.laneMode === 'middle' ? '' : `
+      <section class="acc-group">
+        <div class="acc-group-head">
+          <div><b>Final-mile delivery services</b><span>Use these for crew, in-home handling, appointment, removal, and delivery extras.</span></div>
+          <em>Full quote</em>
+        </div>
+        <div class="acc-group-grid">${finalRows}</div>
+      </section>
+      ${extraRows}
+    `}
+  `;
 
   list.querySelectorAll('[data-acc]').forEach(el => {
     el.addEventListener('click', e => {
       // Don't toggle when clicking the qty input
       if (e.target.matches('input[data-acc-qty]')) return;
       const id = el.dataset.acc;
-      if (!state.accessorials[id]) state.accessorials[id] = { qty: 1 };
+      const carrierDef = DAY_ROSS_ACCESSORIALS.find(a => a.id === id);
+      if (!state.accessorials[id]) state.accessorials[id] = { qty: carrierDef && carrierDef.defaultQty ? carrierDef.defaultQty : 1 };
       state.accessorials[id].selected = !state.accessorials[id].selected;
       renderAccessorials();
       updateAccCount();
@@ -6512,7 +6671,10 @@ function renderAccessorials() {
     inp.addEventListener('input', e => {
       const id = e.target.dataset.accQty;
       if (!state.accessorials[id]) state.accessorials[id] = { selected: false };
-      state.accessorials[id].qty = Math.max(1, Number(e.target.value) || 1);
+      const carrierDef = DAY_ROSS_ACCESSORIALS.find(a => a.id === id);
+      const min = carrierDef && carrierDef.minQty ? carrierDef.minQty : 1;
+      state.accessorials[id].qty = Math.max(min, Number(e.target.value) || min);
+      e.target.value = state.accessorials[id].qty;
       updateOutput();
     });
   });
@@ -6535,7 +6697,13 @@ function renderTaxOptions() {
   select.value = state.taxId;
 }
 function updateAccCount() {
-  const selectedCount = Object.values(state.accessorials).filter(a => a && a.selected).length;
+  const carrierIds = new Set(DAY_ROSS_ACCESSORIALS.map(a => a.id));
+  const finalIds = new Set(ACCESSORIALS.map(a => a.id));
+  const selectedCount = Object.entries(state.accessorials).filter(([id, a]) => {
+    if (!a || !a.selected) return false;
+    if (carrierIds.has(id)) return true;
+    return state.laneMode !== 'middle' && finalIds.has(id);
+  }).length;
   const extraCount = state.laneMode === 'middle' ? 0 : localExtraLines().length + whiteGloveExtraLines().length;
   const count = selectedCount + extraCount;
   const el = $("accCount");
@@ -7003,13 +7171,20 @@ function renderCostDetails(q, largeLinearQuote) {
   lineCount += handlingLines.length;
   if (handlingLines.length) sections.push(`<div class="cost-section"><h4>Handling</h4>${handlingLines.join('')}</div>`);
 
-  const accLines = (q.accSelected || []).map(a => costDetailLine(
-    a.name || a.label || a.id,
-    a.amount,
-    a.detail || (a.qty > 1 ? `${a.qty} selected` : 'Selected additional service')
-  ));
-  lineCount += accLines.length;
-  if (accLines.length) sections.push(`<div class="cost-section"><h4>Additional services</h4>${accLines.join('')}</div>`);
+  const accGroups = {};
+  (q.accSelected || []).forEach(a => {
+    const group = a.group || 'Additional services';
+    if (!accGroups[group]) accGroups[group] = [];
+    accGroups[group].push(costDetailLine(
+      a.name || a.label || a.id,
+      a.amount,
+      a.detail || (a.qty > 1 ? `${a.qty} selected` : 'Selected additional service')
+    ));
+  });
+  Object.entries(accGroups).forEach(([group, lines]) => {
+    lineCount += lines.length;
+    sections.push(`<div class="cost-section"><h4>${htmlEsc(group)}</h4>${lines.join('')}</div>`);
+  });
 
   const finalLines = [
     costDetailLine('Subtotal', q.subtotal || 0, 'Before fuel surcharge and tax.'),
@@ -8125,8 +8300,8 @@ function applyLaneMode() {
   if (addPieceBtn) addPieceBtn.style.display = isMiddle && state.mode === 'pallet' ? '' : 'none';
   const accToggle = $("accToggle");
   const accContent = $("accContent");
-  if (accToggle) accToggle.style.display = isMiddle ? 'none' : '';
-  if (accContent) accContent.style.display = isMiddle ? 'none' : '';
+  if (accToggle) accToggle.style.display = '';
+  if (accContent) accContent.style.display = '';
 
   const svcGrid = $("svcGrid");
   if (svcGrid) {

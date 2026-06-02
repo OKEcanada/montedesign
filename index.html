@@ -2731,6 +2731,109 @@
     letter-spacing: 0.06em; text-transform: uppercase;
   }
 
+  .quote-coach {
+    margin: 0 0 14px;
+    padding: 13px;
+    border: 1px solid rgba(250,248,241,0.13);
+    border-radius: 15px;
+    background:
+      radial-gradient(220px 110px at 100% 0%, rgba(255,122,69,0.16), transparent 62%),
+      radial-gradient(180px 120px at 0% 100%, rgba(79,209,197,0.13), transparent 60%),
+      rgba(250,248,241,0.045);
+  }
+  .quote-coach-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .quote-coach-title b {
+    display: block;
+    color: var(--paper);
+    font: 800 13px/1.2 var(--font-body);
+  }
+  .quote-coach-title span {
+    display: block;
+    margin-top: 3px;
+    color: rgba(250,248,241,0.50);
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+  .quote-coach-score {
+    flex: 0 0 auto;
+    min-width: 72px;
+    text-align: center;
+    padding: 6px 8px;
+    border: 1px solid rgba(79,209,197,0.24);
+    border-radius: 999px;
+    color: var(--cool);
+    background: rgba(79,209,197,0.10);
+    font: 850 11px/1 var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .quote-coach-list {
+    display: grid;
+    gap: 7px;
+  }
+  .coach-item {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 9px;
+    border: 1px solid rgba(250,248,241,0.10);
+    border-radius: 11px;
+    background: rgba(6,8,22,0.22);
+  }
+  .coach-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    background: rgba(250,248,241,0.08);
+    color: rgba(250,248,241,0.54);
+    font: 900 11px/1 var(--font-mono);
+  }
+  .coach-item.ok .coach-dot {
+    color: #061320;
+    background: var(--cool);
+  }
+  .coach-item.warn .coach-dot {
+    color: #160c04;
+    background: var(--accent-light);
+  }
+  .coach-text b {
+    display: block;
+    color: rgba(250,248,241,0.88);
+    font-size: 12px;
+    line-height: 1.25;
+  }
+  .coach-text span {
+    display: block;
+    margin-top: 2px;
+    color: rgba(250,248,241,0.45);
+    font-size: 10.8px;
+    line-height: 1.32;
+  }
+  .coach-action {
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,122,69,0.34);
+    border-radius: 999px;
+    background: rgba(255,122,69,0.12);
+    color: #ffd8c2;
+    font: 850 10.5px/1 var(--font-body);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .coach-action:hover {
+    background: rgba(255,122,69,0.20);
+    transform: translateY(-1px);
+  }
+
   .r-book {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     margin-top: 16px; padding: 14px 18px;
@@ -3352,6 +3455,22 @@
     .r-density-scale {
       gap: 8px !important;
     }
+    .quote-coach-head {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    .quote-coach-score {
+      width: fit-content !important;
+    }
+    .coach-item {
+      grid-template-columns: 20px minmax(0, 1fr) !important;
+      align-items: flex-start !important;
+    }
+    .coach-action {
+      grid-column: 2 !important;
+      width: fit-content !important;
+      margin-top: 4px !important;
+    }
     .b-row,
     .r-row {
       align-items: flex-start !important;
@@ -3891,6 +4010,10 @@
         <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
         Manual
       </a>
+      <a class="history-btn manual-link" href="https://quote.onekindexpress.com/prep.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+        Prep
+      </a>
       <div class="topbar-badge">Powered by One Kind Express</div>
     </div>
   </header>
@@ -4090,6 +4213,17 @@
             </div>
             <div class="r-density-bar"><div class="r-density-fill" id="densityFill" style="width: 0%;"></div></div>
             <div class="r-density-scale"><span>Light - dim weight</span><span>Dense</span></div>
+          </div>
+
+          <div class="quote-coach" id="quoteCoach" aria-live="polite">
+            <div class="quote-coach-head">
+              <div class="quote-coach-title">
+                <b>Quote Coach</b>
+                <span>Live checks and useful suggestions for a cleaner booking request.</span>
+              </div>
+              <div class="quote-coach-score" id="quoteCoachScore">0%</div>
+            </div>
+            <div class="quote-coach-list" id="quoteCoachList"></div>
           </div>
 
           <div class="r-pane active" id="pane-breakdown">
@@ -7197,6 +7331,126 @@ function renderCostDetails(q, largeLinearQuote) {
   if (count) count.textContent = `${lineCount} lines`;
 }
 
+function selectedAccessorial(id) {
+  return !!(state.accessorials && state.accessorials[id] && state.accessorials[id].selected);
+}
+
+function setAccessorialSelected(id) {
+  const carrierDef = CARRIER_ACCESSORIALS.find(a => a.id === id);
+  const finalDef = ACCESSORIALS.find(a => a.id === id);
+  const def = carrierDef || finalDef;
+  if (!def) return;
+  if (!state.accessorials) state.accessorials = {};
+  state.accessorials[id] = {
+    ...(state.accessorials[id] || {}),
+    selected: true,
+    qty: state.accessorials[id] && state.accessorials[id].qty
+      ? state.accessorials[id].qty
+      : (def.defaultQty || 1)
+  };
+}
+
+function quoteCoachSuggestions(q, largeLinearQuote) {
+  const suggestions = [];
+  const middleOnly = state.laneMode === 'middle';
+  const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
+  const whiteGloveOrders = (state.orders || []).filter(o => normalizeServiceId(o.service) === 'whiteGlove');
+  const anyHeavyPiece = (state.pieces || []).some(p => pieceHasMeasurements(p) && toLbs(Number(p.weight) || 0) >= 200);
+  const anyPallets = (state.pieces || []).some(p => pieceHasMeasurements(p) && pieceMode(p) === 'pallet');
+  const destProv = provinceOf(state.destination);
+
+  if (largeLinearQuote) {
+    suggestions.push({ tone: 'warn', title: 'Custom review required', text: `${(q.linearFt || 0).toFixed(1)} linear feet is above instant-pricing limits. Send the quote so OKE can confirm equipment and capacity.` });
+  }
+  if (!pickupDate) {
+    suggestions.push({ tone: 'warn', title: 'Add a preferred pickup date', text: 'A pickup date helps OKE confirm route timing and capacity.', action: 'pickup', label: 'Add date' });
+  } else {
+    suggestions.push({ tone: 'ok', title: 'Pickup date included', text: `Preferred pickup is ${pickupDate}.` });
+  }
+  if ((anyPallets || q.actualWt >= 1200 || anyHeavyPiece) && !selectedAccessorial('tailgate')) {
+    suggestions.push({ tone: 'warn', title: 'Confirm liftgate need', text: 'Heavy freight or pallets often need power tailgate service if no dock or forklift is available.', acc: 'tailgate', label: 'Add liftgate' });
+  }
+  if ((q.totalPcs >= 6 || whiteGloveOrders.length > 0) && !selectedAccessorial('appointment')) {
+    suggestions.push({ tone: 'warn', title: 'Consider appointment timing', text: 'Multi-piece or in-home deliveries are smoother when the delivery window is confirmed.', acc: 'appointment', label: 'Add appointment' });
+  }
+  if (destProv === 'NL' && !selectedAccessorial('nlFerry')) {
+    suggestions.push({ tone: 'warn', title: 'Newfoundland ferry check', text: 'NL lanes may require ferry handling. Add this when it applies to the shipment.', acc: 'nlFerry', label: 'Add ferry' });
+  }
+  if (!middleOnly && whiteGloveOrders.some(o => (Number(o.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES) <= WHITE_GLOVE_INCLUDED_MINUTES)) {
+    suggestions.push({ tone: 'warn', title: 'White Glove time buffer', text: 'If assembly or debris removal may take longer than 45 minutes, add a 15 minute buffer to that order.', action: 'wg-time', label: 'Add 15 min' });
+  }
+  if (q.dimWins) {
+    suggestions.push({ tone: 'warn', title: 'Dimensional weight applies', text: 'The freight is bulky for its weight. Double-check L x W x H before submitting.' });
+  }
+  if (!q.accSelected.length) {
+    suggestions.push({ tone: 'warn', title: 'Review accessorials', text: 'Open additional services if there is residential access, liftgate, inside pickup, appointment, or special handling.', action: 'services', label: 'Review' });
+  }
+  suggestions.push({ tone: 'ok', title: middleOnly ? 'Middle-mile pricing mode' : 'Quote package ready', text: middleOnly ? 'No final-mile service or extra box charge is applied in Middle Mile Only.' : 'Saved quote, copy, print, and booking request tools are ready.' });
+  suggestions.push({ tone: 'ok', title: 'Prep checklist available', text: 'Use the prep guide to collect addresses, contacts, photos, access notes, and delivery constraints.', action: 'prep', label: 'Open prep' });
+  return suggestions;
+}
+
+function updateQuoteCoach(q, largeLinearQuote) {
+  const box = $("quoteCoachList");
+  const scoreEl = $("quoteCoachScore");
+  if (!box || !q) return;
+  const pickupDone = !!($("pickupDate") && $("pickupDate").value);
+  const checks = [
+    !!state.origin && (state.laneMode === 'local' || !!state.destination),
+    state.laneMode === 'middle' || q.hasService,
+    q.hasMeasurements,
+    pickupDone,
+    !largeLinearQuote
+  ];
+  const suggestions = quoteCoachSuggestions(q, largeLinearQuote).slice(0, 5);
+  const warningCount = suggestions.filter(item => item.tone === 'warn').length;
+  const baseScore = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  const score = Math.max(0, baseScore - Math.min(32, warningCount * 7));
+  if (scoreEl) scoreEl.textContent = `${score}%`;
+  box.innerHTML = suggestions.map((item, idx) => `
+    <div class="coach-item ${item.tone || 'ok'}">
+      <span class="coach-dot">${item.tone === 'warn' ? '!' : 'OK'}</span>
+      <span class="coach-text"><b>${htmlEsc(item.title)}</b><span>${htmlEsc(item.text)}</span></span>
+      ${item.acc ? `<button class="coach-action" type="button" data-coach-acc="${htmlEsc(item.acc)}">${htmlEsc(item.label || 'Add')}</button>` : ''}
+      ${item.action ? `<button class="coach-action" type="button" data-coach-action="${htmlEsc(item.action)}">${htmlEsc(item.label || 'Open')}</button>` : ''}
+    </div>
+  `).join('');
+  box.querySelectorAll('[data-coach-acc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setAccessorialSelected(btn.dataset.coachAcc);
+      renderAccessorials();
+      updateAccCount();
+      updateOutput();
+    });
+  });
+  box.querySelectorAll('[data-coach-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.coachAction;
+      if (action === 'pickup' && $("pickupDate")) {
+        $("pickupDate").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $("pickupDate").focus();
+      } else if (action === 'services') {
+        const toggle = $("accToggle");
+        const content = $("accContent");
+        if (toggle && content && !content.classList.contains('open')) toggle.click();
+        if (toggle) toggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (action === 'wg-time') {
+        (state.orders || []).forEach(order => {
+          if (normalizeServiceId(order.service) === 'whiteGlove') {
+            const current = Number(order.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES;
+            order.whiteGloveMinutes = Math.max(current + WHITE_GLOVE_INTERVAL_MINUTES, WHITE_GLOVE_INCLUDED_MINUTES + WHITE_GLOVE_INTERVAL_MINUTES);
+          }
+        });
+        renderPieces();
+        renderAccessorials();
+        updateOutput();
+      } else if (action === 'prep') {
+        window.open('https://quote.onekindexpress.com/prep.html', '_blank', 'noopener');
+      }
+    });
+  });
+}
+
 function dateShort(v) {
   return v ? new Date(v).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 }
@@ -7686,6 +7940,7 @@ function updateOutput(options = {}) {
   $("accBreakdownRow").style.display = q.accAmount > 0 ? "flex" : "none";
   $("accAmountOut").textContent = largeLinearQuote ? 'Reviewed manually' : fmt(q.accAmount);
   renderCostDetails(q, largeLinearQuote);
+  updateQuoteCoach(q, largeLinearQuote);
 
   $("subtotalOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.subtotal);
   $("fscAmountOut").textContent = largeLinearQuote ? 'Custom' : fmt(q.fscAmount);

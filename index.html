@@ -3842,7 +3842,51 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 10px;
-    margin: 0 0 12px;
+    margin: 12px 0 0;
+  }
+  .order-support {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+    align-items: start;
+  }
+  .order-weight-details {
+    border: 1px solid rgba(12,16,36,0.10);
+    border-radius: 13px;
+    background: rgba(255,255,255,0.52);
+    overflow: hidden;
+  }
+  .order-weight-details summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 12px 13px;
+    color: var(--ink);
+    font-weight: 850;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .order-weight-details summary::-webkit-details-marker { display: none; }
+  .order-weight-details summary::after {
+    content: "+";
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: var(--accent-deep);
+    background: rgba(255,122,69,0.12);
+    font-family: var(--font-mono);
+    transition: transform var(--transition);
+  }
+  .order-weight-details[open] summary::after { transform: rotate(45deg); }
+  .order-weight-details .order-option-card {
+    border: 0;
+    border-top: 1px solid rgba(12,16,36,0.08);
+    border-radius: 0;
+    background: rgba(255,255,255,0.70);
   }
   .order-option-card {
     border: 1px solid rgba(12,16,36,0.10);
@@ -3890,6 +3934,7 @@
     }
     .order-service-grid,
     .order-options,
+    .order-support,
     .local-extra-grid {
       grid-template-columns: 1fr;
     }
@@ -6151,23 +6196,26 @@ function renderOrderBuilder() {
           <button class="seg-btn ${mode === 'pallet' ? 'active' : ''}" type="button" data-order-mode="pallet" data-order-id="${order.id}">Pallets</button>
         </div>
       </div>
-      <div class="order-options">
-        <div class="order-option-card">
-          <label class="field-label">Total order weight (${wtLabel})</label>
-          <input type="number" min="0" step="1" inputmode="decimal" data-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
-          <p>Use this when you know the order total. It replaces row weights for actual weight, while dimensions still calculate cube and linear feet.</p>
-        </div>
+      <div class="order-lines">${linesHtml}</div>
+      <button class="order-add-line" type="button" data-order-add-line="${order.id}">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add ${mode === 'pallet' ? 'pallet group' : 'box group'}
+      </button>
+      <div class="order-support">
+        <details class="order-weight-details" ${Number(order.totalWeight) > 0 ? 'open' : ''}>
+          <summary>Only have total order weight?</summary>
+          <div class="order-option-card">
+            <label class="field-label">Total order weight (${wtLabel})</label>
+            <input type="number" min="0" step="1" inputmode="decimal" data-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
+            <p>Use this only when you do not have reliable per-box or per-pallet weights. Dimensions are still required for cube, dim weight, and linear feet.</p>
+          </div>
+        </details>
         <div class="order-option-card white-glove-time" ${normalizeServiceId(order.service) === 'whiteGlove' ? '' : 'hidden'}>
           <label class="field-label">White Glove time (${WHITE_GLOVE_INCLUDED_MINUTES} min included)</label>
           <input type="number" min="${WHITE_GLOVE_INCLUDED_MINUTES}" step="${WHITE_GLOVE_INTERVAL_MINUTES}" inputmode="numeric" data-order-wg-minutes="${order.id}" value="${Number(order.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES}" />
           <p>Adds ${fmt(WHITE_GLOVE_INTERVAL_PRICE)} per ${WHITE_GLOVE_INTERVAL_MINUTES} min after the included time for this order only.</p>
         </div>
       </div>
-      <div class="order-lines">${linesHtml}</div>
-      <button class="order-add-line" type="button" data-order-add-line="${order.id}">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add ${mode === 'pallet' ? 'pallet group' : 'box group'}
-      </button>
     `;
     wrap.appendChild(div);
   });
@@ -6387,18 +6435,21 @@ function renderMiddleMileOrderBuilder() {
           ${state.orders.length > 1 ? `<button class="order-remove" type="button" data-mid-order-remove="${order.id}">Remove order</button>` : ''}
         </div>
       </div>
-      <div class="order-options middle-options">
-        <div class="order-option-card">
-          <label class="field-label">Total order weight (${wtLabel})</label>
-          <input type="number" min="0" step="1" inputmode="decimal" data-mid-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
-          <p>Use this when the order total is known. Dimensions still calculate cube, dim weight, and linear feet.</p>
-        </div>
-      </div>
       <div class="order-lines">${linesHtml}</div>
       <button class="order-add-line" type="button" data-mid-order-add-line="${order.id}">
         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add box group
       </button>
+      <div class="order-support middle-options">
+        <details class="order-weight-details" ${Number(order.totalWeight) > 0 ? 'open' : ''}>
+          <summary>Only have total order weight?</summary>
+          <div class="order-option-card">
+            <label class="field-label">Total order weight (${wtLabel})</label>
+            <input type="number" min="0" step="1" inputmode="decimal" data-mid-order-total-weight="${order.id}" value="${order.totalWeight ?? ''}" placeholder="Optional" />
+            <p>Use this only when you do not have reliable per-box weights. Dimensions still calculate cube, dim weight, and linear feet.</p>
+          </div>
+        </details>
+      </div>
     `;
     wrap.appendChild(div);
   });

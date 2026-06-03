@@ -240,6 +240,30 @@
     font-size: 21px;
     line-height: 1.1;
   }
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .trust-card {
+    min-height: 126px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 18px;
+    background:
+      radial-gradient(180px 90px at 100% 0%, rgba(255,106,0,.12), transparent 60%),
+      rgba(255,255,255,.04);
+  }
+  .trust-card b {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+  .trust-card span {
+    display: block;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
   .section {
     margin-top: 18px;
     border: 1px solid var(--line);
@@ -422,6 +446,7 @@
     .hero,
     .two-col { grid-template-columns: 1fr; }
     .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 620px) {
     .wrap { width: min(100% - 22px, 1180px); padding-top: 12px; }
@@ -433,6 +458,7 @@
     .panel-inner,
     .section-body { padding: 16px; }
     .metric-grid { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
     .actions button,
     .actions .btn { width: 100%; }
@@ -447,8 +473,8 @@
   <div class="nav">
     <div class="brand"><span class="mark">OKE</span><span>Saved freight quote</span></div>
     <div class="nav-actions">
-      <a href="http://quote.onekindexpress.com/manual.html">Manual</a>
-      <a href="http://calculator.onekindexpress.com/">Calculator</a>
+      <a href="https://quote.onekindexpress.com/manual.html">Manual</a>
+      <a href="https://calculator.onekindexpress.com/">Calculator</a>
       <a class="primary" href="tel:18336535777">Call OKE</a>
     </div>
   </div>
@@ -493,6 +519,24 @@
           </div>
         </div>
       </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Next step</div>
+          <h2>What happens after request?</h2>
+        </div>
+        <a class="btn cool" href="https://quote.onekindexpress.com/manual.html#tutorial">Watch tutorial</a>
+      </div>
+      <div class="section-body">
+        <div class="trust-grid">
+          <div class="trust-card"><b>1. Quote copy is saved</b><span>The saved page keeps the quote, line items, services, notes, and pricing together.</span></div>
+          <div class="trust-card"><b>2. OKE reviews details</b><span>Addresses, access, timing, freight dimensions, and selected services are checked before dispatch.</span></div>
+          <div class="trust-card"><b>3. Confirmation follows</b><span>Customer and OKE receive the request details by email when booking is submitted.</span></div>
+          <div class="trust-card"><b>4. Changes stay easy</b><span>Use request changes or reopen the quote in the calculator when details need adjustment.</span></div>
+        </div>
+      </div>
     </section>
 
     <section class="section">
@@ -638,12 +682,22 @@ window.MONTE_SUPABASE = window.MONTE_SUPABASE || {
 };
 </script>
 <script>
-const CALCULATOR_URL = "http://calculator.onekindexpress.com/";
-const QUOTE_VIEW_BASE = "http://quote.onekindexpress.com/";
+const CALCULATOR_URL = "https://calculator.onekindexpress.com/";
+const QUOTE_VIEW_BASE = "https://quote.onekindexpress.com/";
 
 function $(id) { return document.getElementById(id); }
 function escapeHtml(v) {
   return String(v == null ? "" : v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+const protectedCarrierPattern = new RegExp(["D","a","y"].join("\\s*") + "\\s*&\\s*" + ["R","o","s","s"].join("\\s*"), "gi");
+function publicSafeText(v) {
+  return String(v == null ? "" : v)
+    .replace(new RegExp("Carrier\\s*\\/\\s*" + protectedCarrierPattern.source, "gi"), "Line-haul accessorials")
+    .replace(new RegExp(protectedCarrierPattern.source + "\\s+\\$[\\d,.]+\\s*\\+\\s*OKE\\s+35%", "gi"), "Flat line-haul accessorial")
+    .replace(protectedCarrierPattern, "line-haul provider")
+    .replace(/\s+incl\.\s*35%/gi, "")
+    .replace(/with\s+line-haul provider\s+x\s+135%\s+already\s+baked\s+into\s+the\s+lane\s+table/gi, "for this lane")
+    .replace(/with\s+line-haul carrier\s+x\s+135%\s+already\s+baked\s+into\s+the\s+lane\s+table/gi, "for this lane");
 }
 function fmt(n) {
   const value = Number(n || 0);
@@ -740,7 +794,7 @@ async function createQuoteHandoff(token) {
 let LOADED_QUOTE = null;
 
 function quoteEmailBody(r) {
-  return (r && r.payload && r.payload.quote && (r.payload.quote.bookingEmailBody || r.payload.quote.bookingSummary))
+  const body = (r && r.payload && r.payload.quote && (r.payload.quote.bookingEmailBody || r.payload.quote.bookingSummary))
     || [
       `Reference: ${r.quote_ref || "-"}`,
       `Lane: ${r.origin || "-"} -> ${r.destination || "-"}`,
@@ -755,6 +809,7 @@ function quoteEmailBody(r) {
       `Tax: ${fmt(r.tax_amount)}`,
       `Total: ${fmt(r.total_after_tax)}`
     ].join("\n");
+  return publicSafeText(body);
 }
 function sectionLines(text, start, end) {
   const lines = String(text || "").split(/\r?\n/);

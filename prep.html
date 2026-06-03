@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Freight Prep Checklist | One Kind Express</title>
+<title>Quote Brief Builder | One Kind Express</title>
 <meta name="theme-color" content="#07091a">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -205,6 +205,168 @@
   .progress i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand), var(--cool)); transition: width .25s ease; }
   .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   button.btn { cursor: pointer; }
+  .brief-builder {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(340px, .58fr);
+    gap: 18px;
+    align-items: start;
+    margin: 22px 0;
+  }
+  .builder-card, .brief-output {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background:
+      radial-gradient(420px 260px at 100% 0%, rgba(255,106,0,.16), transparent 62%),
+      radial-gradient(360px 240px at 0% 100%, rgba(66,232,212,.12), transparent 62%),
+      var(--panel);
+    box-shadow: 0 26px 80px rgba(0,0,0,.34);
+    padding: 22px;
+  }
+  .builder-card h2, .brief-output h2 {
+    margin: 8px 0 8px;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: .98;
+    letter-spacing: -.045em;
+  }
+  .builder-card p, .brief-output p { margin: 0; color: var(--muted); }
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .field-full { grid-column: 1 / -1; }
+  label.field {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font: 800 10.5px/1 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  label.field input,
+  label.field select,
+  label.field textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 13px;
+    background: rgba(255,255,255,.075);
+    color: var(--ink);
+    padding: 11px 12px;
+    font: 600 14px/1.25 var(--font);
+    outline: none;
+  }
+  label.field textarea { min-height: 92px; resize: vertical; line-height: 1.4; }
+  label.field input:focus,
+  label.field select:focus,
+  label.field textarea:focus {
+    border-color: rgba(255,106,0,.54);
+    box-shadow: 0 0 0 4px rgba(255,106,0,.12);
+  }
+  .builder-subhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 10px;
+  }
+  .builder-subhead h3 { margin: 0; font-size: 21px; letter-spacing: -.025em; }
+  .freight-rows { display: grid; gap: 10px; }
+  .freight-row {
+    display: grid;
+    grid-template-columns: 1.15fr .55fr .62fr .62fr .62fr .72fr 34px;
+    gap: 8px;
+    align-items: end;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 16px;
+    background: rgba(255,255,255,.045);
+  }
+  .freight-row label { min-width: 0; }
+  .row-remove {
+    min-height: 42px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    background: rgba(255,255,255,.05);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .access-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .access-option {
+    min-height: 66px;
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    padding: 11px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 15px;
+    background: rgba(255,255,255,.045);
+    cursor: pointer;
+  }
+  .access-option input { margin-top: 2px; accent-color: var(--brand); }
+  .access-option b { display: block; font-size: 13px; line-height: 1.2; }
+  .access-option span { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .brief-output {
+    position: sticky;
+    top: 84px;
+  }
+  .brief-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin: 14px 0;
+  }
+  .brief-metric {
+    min-height: 84px;
+    padding: 13px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 16px;
+    background: rgba(255,255,255,.045);
+  }
+  .brief-metric span {
+    display: block;
+    color: var(--muted);
+    font: 850 10px/1 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .brief-metric b { display: block; margin-top: 8px; font-size: 21px; line-height: 1.05; }
+  .brief-alerts {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .brief-alert {
+    border: 1px solid rgba(246,189,96,.26);
+    border-radius: 14px;
+    background: rgba(246,189,96,.10);
+    color: #ffe6a6;
+    padding: 10px 11px;
+    font-size: 12.5px;
+  }
+  .brief-alert.ok {
+    border-color: rgba(66,232,212,.22);
+    background: rgba(66,232,212,.09);
+    color: #c9fffa;
+  }
+  .brief-text {
+    max-height: 360px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 16px;
+    background: rgba(0,0,0,.24);
+    color: rgba(250,250,250,.82);
+    font: 12.5px/1.5 var(--mono);
+  }
   .cta {
     margin-top: 22px;
     padding: 22px;
@@ -218,19 +380,27 @@
   footer { margin-top: 24px; color: rgba(255,255,255,.42); font-size: 12px; text-align: center; }
   @media (max-width: 900px) {
     header, .cta { align-items: flex-start; flex-direction: column; }
-    .hero, .grid, .quick { grid-template-columns: 1fr; }
+    .hero, .grid, .quick, .brief-builder { grid-template-columns: 1fr; }
     .hero-card { min-height: 260px; }
+    .brief-output { position: static; }
+    .access-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 560px) {
     main { width: min(100% - 22px, 1180px); padding-top: 28px; }
     h1 { font-size: 43px; }
     .quick div { min-height: auto; }
+    .field-grid,
+    .access-grid,
+    .brief-metrics { grid-template-columns: 1fr; }
+    .freight-row { grid-template-columns: 1fr 1fr; }
+    .freight-row .field:first-child { grid-column: 1 / -1; }
+    .row-remove { grid-column: 1 / -1; }
   }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><span class="mark">OKE</span><span>Freight Prep Checklist</span></div>
+  <div class="brand"><span class="mark">OKE</span><span>Quote Brief Builder</span></div>
   <nav>
     <a href="https://calculator.onekindexpress.com/">Calculator</a>
     <a href="https://quote.onekindexpress.com/manual.html">Manual</a>
@@ -243,14 +413,14 @@
   <section class="hero">
     <div>
       <div class="kicker">Before you book</div>
-      <h1>Prepare a freight quote that is easy to confirm.</h1>
-      <p class="lead">Use this page before submitting a booking request. It helps collect the details that keep pricing clear, reduce back-and-forth, and make the saved quote easier for OKE to review.</p>
+      <h1>Build a quote brief that is easy to price and confirm.</h1>
+      <p class="lead">Use this page before submitting a booking request. It calculates useful freight signals, catches missing details, and creates a clean summary you can copy into notes, email, or the calculator.</p>
     </div>
     <aside class="hero-card">
       <div class="score" id="score">0%</div>
       <div>
-        <h2>Booking confidence checklist</h2>
-        <p>Check off the items as you prepare. Your progress is saved in this browser.</p>
+        <h2>Brief readiness score</h2>
+        <p>Use the builder and checklist to reduce missing information before requesting a booking.</p>
       </div>
     </aside>
   </section>
@@ -260,6 +430,74 @@
     <div><b>Know the access</b><span>Dock, liftgate, stairs, elevator, residential access, and appointment needs affect handling.</span></div>
     <div><b>Share photos</b><span>Photos of freight, labels, stairs, dock, or access points help confirm the right service.</span></div>
     <div><b>Keep notes ready</b><span>Add timing restrictions, contact names, phone numbers, and delivery instructions.</span></div>
+  </section>
+
+  <section class="brief-builder" id="briefBuilder">
+    <div class="builder-card">
+      <div class="kicker">Prospect tool</div>
+      <h2>Build a quote brief before submitting.</h2>
+      <p>Enter the details you know. This does not replace the calculator price, but it creates a clean shipment brief that can be copied into notes, email, or used while filling out the calculator.</p>
+
+      <div class="field-grid">
+        <label class="field">Origin city <input id="briefOrigin" placeholder="Calgary, AB"></label>
+        <label class="field">Destination city <input id="briefDest" placeholder="Ajax, ON"></label>
+        <label class="field">Preferred pickup <input id="briefPickup" type="date"></label>
+        <label class="field">Service needed
+          <select id="briefService">
+            <option value="">Not sure yet</option>
+            <option>Curbside</option>
+            <option>Threshold</option>
+            <option>Room of Choice</option>
+            <option>White Glove</option>
+            <option>Middle mile only</option>
+          </select>
+        </label>
+        <label class="field">Contact name <input id="briefName" placeholder="Name"></label>
+        <label class="field">Phone / email <input id="briefContact" placeholder="Phone or email"></label>
+      </div>
+
+      <div class="builder-subhead">
+        <h3>Freight rows</h3>
+        <button class="btn" id="briefAddRow" type="button">Add row</button>
+      </div>
+      <div class="freight-rows" id="briefRows"></div>
+
+      <div class="builder-subhead">
+        <h3>Access and handling</h3>
+      </div>
+      <div class="access-grid" id="briefAccess">
+        <label class="access-option"><input type="checkbox" value="Appointment / call before delivery"><span><b>Appointment</b><span>Delivery or pickup window should be confirmed.</span></span></label>
+        <label class="access-option"><input type="checkbox" value="Residential or limited access"><span><b>Residential / limited access</b><span>Home, condo, gated, or restricted site.</span></span></label>
+        <label class="access-option"><input type="checkbox" value="Power tailgate / liftgate"><span><b>Liftgate</b><span>No dock or forklift available.</span></span></label>
+        <label class="access-option"><input type="checkbox" value="Inside pickup or delivery"><span><b>Inside handoff</b><span>Freight needs to cross the door.</span></span></label>
+        <label class="access-option"><input type="checkbox" value="Stairs / elevator / room access"><span><b>Stairs or elevator</b><span>Interior access may affect crew and timing.</span></span></label>
+        <label class="access-option"><input type="checkbox" value="Photos available"><span><b>Photos available</b><span>Freight, label, access route, dock, stairs, or room path.</span></span></label>
+      </div>
+
+      <div class="field-grid">
+        <label class="field field-full">Special notes
+          <textarea id="briefNotes" placeholder="Business hours, receiving instructions, stairs, elevator, packaging condition, delivery deadline, contact preferences..."></textarea>
+        </label>
+      </div>
+    </div>
+
+    <aside class="brief-output">
+      <div class="kicker">Live brief</div>
+      <h2>Ready for review.</h2>
+      <p>Use this as a clean handoff summary before requesting a booking.</p>
+      <div class="brief-metrics">
+        <div class="brief-metric"><span>Pieces</span><b id="briefPieces">0</b></div>
+        <div class="brief-metric"><span>Cube</span><b id="briefCube">0 ft3</b></div>
+        <div class="brief-metric"><span>Actual weight</span><b id="briefActual">0 lbs</b></div>
+        <div class="brief-metric"><span>Dim / linear</span><b id="briefDimLinear">0 lbs / 0 ft</b></div>
+      </div>
+      <div class="brief-alerts" id="briefAlerts"></div>
+      <pre class="brief-text" id="briefText"></pre>
+      <div class="tools">
+        <button class="btn primary" id="copyBriefBtn" type="button">Copy quote brief</button>
+        <a class="btn" href="https://calculator.onekindexpress.com/">Open calculator</a>
+      </div>
+    </aside>
   </section>
 
   <section class="grid">
@@ -357,7 +595,152 @@
     boxes.forEach(box => box.checked = false);
     update();
   });
+
+  const briefKey = "oke-prep-brief-v1";
+  const briefRows = document.getElementById("briefRows");
+  const briefFieldIds = ["briefOrigin", "briefDest", "briefPickup", "briefService", "briefName", "briefContact", "briefNotes"];
+  const savedBrief = JSON.parse(localStorage.getItem(briefKey) || "{}");
+
+  function n(v) { return Math.max(0, Number(v) || 0); }
+  function rowTemplate(row = {}) {
+    const el = document.createElement("div");
+    el.className = "freight-row";
+    el.innerHTML = `
+      <label class="field">Item type <input data-brief-row="type" value="${escapeAttr(row.type || "")}" placeholder="Sofa, cartons, pallet..."></label>
+      <label class="field">Qty <input data-brief-row="qty" type="number" min="0" step="1" value="${row.qty ?? 1}"></label>
+      <label class="field">L in <input data-brief-row="L" type="number" min="0" step="1" value="${row.L ?? ""}"></label>
+      <label class="field">W in <input data-brief-row="W" type="number" min="0" step="1" value="${row.W ?? ""}"></label>
+      <label class="field">H in <input data-brief-row="H" type="number" min="0" step="1" value="${row.H ?? ""}"></label>
+      <label class="field">Lb each <input data-brief-row="weight" type="number" min="0" step="1" value="${row.weight ?? ""}"></label>
+      <button class="row-remove" type="button" aria-label="Remove row">x</button>
+    `;
+    el.querySelectorAll("input").forEach(input => input.addEventListener("input", updateBrief));
+    el.querySelector(".row-remove").addEventListener("click", () => {
+      if (briefRows.children.length > 1) el.remove();
+      else el.querySelectorAll("input").forEach(input => input.value = input.dataset.briefRow === "qty" ? "1" : "");
+      updateBrief();
+    });
+    briefRows.appendChild(el);
+  }
+  function escapeAttr(v) {
+    return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+  function collectBriefRows() {
+    return Array.from(briefRows.querySelectorAll(".freight-row")).map(row => {
+      const get = key => row.querySelector(`[data-brief-row="${key}"]`).value;
+      return {
+        type: get("type").trim(),
+        qty: n(get("qty")),
+        L: n(get("L")),
+        W: n(get("W")),
+        H: n(get("H")),
+        weight: n(get("weight"))
+      };
+    });
+  }
+  function collectBriefState() {
+    const fields = {};
+    briefFieldIds.forEach(id => fields[id] = document.getElementById(id).value);
+    return {
+      fields,
+      rows: collectBriefRows(),
+      access: Array.from(document.querySelectorAll("#briefAccess input:checked")).map(input => input.value)
+    };
+  }
+  function restoreBrief() {
+    briefFieldIds.forEach(id => {
+      if (savedBrief.fields && savedBrief.fields[id] != null) document.getElementById(id).value = savedBrief.fields[id];
+      document.getElementById(id).addEventListener("input", updateBrief);
+      document.getElementById(id).addEventListener("change", updateBrief);
+    });
+    document.querySelectorAll("#briefAccess input").forEach(input => {
+      input.checked = Array.isArray(savedBrief.access) && savedBrief.access.includes(input.value);
+      input.addEventListener("change", updateBrief);
+    });
+    const rows = Array.isArray(savedBrief.rows) && savedBrief.rows.length ? savedBrief.rows : [{ qty: 1 }];
+    rows.forEach(rowTemplate);
+  }
+  function briefMetrics(rows) {
+    let pieces = 0, cube = 0, actual = 0, linear = 0;
+    rows.forEach(row => {
+      const qty = row.qty || 0;
+      pieces += qty;
+      actual += qty * row.weight;
+      if (row.L > 0 && row.W > 0 && row.H > 0 && qty > 0) {
+        cube += qty * row.L * row.W * row.H / 1728;
+        linear += Math.ceil(((row.L * row.W) / (96 * 12)) * 2) / 2 * qty;
+      }
+    });
+    const dim = cube * 10;
+    return { pieces, cube, actual, dim, linear };
+  }
+  function fmtNum(value, digits = 0) {
+    return Number(value || 0).toLocaleString("en-CA", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+  }
+  function buildBriefText(state, metrics) {
+    const f = state.fields || {};
+    const rows = state.rows || [];
+    const access = state.access && state.access.length ? state.access.join(", ") : "None selected / not sure";
+    const rowLines = rows.map((row, i) => {
+      const dims = row.L && row.W && row.H ? `${row.L}x${row.W}x${row.H} in` : "dimensions missing";
+      const wt = row.weight ? `${row.weight} lb each` : "weight missing";
+      return `${i + 1}. ${row.qty || 0} x ${row.type || "Freight"} - ${dims} - ${wt}`;
+    }).join("\n");
+    return [
+      "ONE KIND EXPRESS QUOTE BRIEF",
+      `Lane: ${f.briefOrigin || "-"} -> ${f.briefDest || "-"}`,
+      `Preferred pickup: ${f.briefPickup || "Flexible / not set"}`,
+      `Service needed: ${f.briefService || "Not sure yet"}`,
+      `Contact: ${f.briefName || "-"}${f.briefContact ? " - " + f.briefContact : ""}`,
+      "",
+      "FREIGHT",
+      rowLines || "No freight rows entered yet.",
+      "",
+      `Pieces: ${fmtNum(metrics.pieces)}`,
+      `Cube: ${fmtNum(metrics.cube, 2)} ft3`,
+      `Actual weight: ${fmtNum(metrics.actual)} lbs`,
+      `Dimensional weight estimate: ${fmtNum(metrics.dim)} lbs`,
+      `Linear feet estimate: ${fmtNum(metrics.linear, 1)} ft`,
+      "",
+      "ACCESS / HANDLING",
+      access,
+      "",
+      "NOTES",
+      f.briefNotes || "-"
+    ].join("\n");
+  }
+  function updateBrief() {
+    const state = collectBriefState();
+    const metrics = briefMetrics(state.rows);
+    localStorage.setItem(briefKey, JSON.stringify(state));
+    document.getElementById("briefPieces").textContent = fmtNum(metrics.pieces);
+    document.getElementById("briefCube").textContent = `${fmtNum(metrics.cube, 2)} ft3`;
+    document.getElementById("briefActual").textContent = `${fmtNum(metrics.actual)} lbs`;
+    document.getElementById("briefDimLinear").textContent = `${fmtNum(metrics.dim)} lbs / ${fmtNum(metrics.linear, 1)} ft`;
+    const alerts = [];
+    const missingDims = state.rows.some(row => row.qty > 0 && (!row.L || !row.W || !row.H));
+    const missingWeight = state.rows.some(row => row.qty > 0 && !row.weight);
+    if (metrics.linear > 10) alerts.push({ tone: "warn", text: "Over 10 linear feet: instant pricing may pause for custom review." });
+    if (metrics.dim > metrics.actual && metrics.cube > 0) alerts.push({ tone: "warn", text: "Dimensional weight may apply. Double-check outside packaged dimensions." });
+    if (missingDims) alerts.push({ tone: "warn", text: "At least one row is missing dimensions." });
+    if (missingWeight) alerts.push({ tone: "warn", text: "At least one row is missing weight." });
+    if (!state.access.length) alerts.push({ tone: "warn", text: "No access or handling needs selected. Confirm if liftgate, appointment, residential access, stairs, or photos apply." });
+    if (!alerts.length) alerts.push({ tone: "ok", text: "Brief looks complete enough to start a clean quote request." });
+    document.getElementById("briefAlerts").innerHTML = alerts.map(a => `<div class="brief-alert ${a.tone === "ok" ? "ok" : ""}">${a.text}</div>`).join("");
+    document.getElementById("briefText").textContent = buildBriefText(state, metrics);
+  }
+  document.getElementById("briefAddRow").addEventListener("click", () => {
+    rowTemplate({ qty: 1 });
+    updateBrief();
+  });
+  document.getElementById("copyBriefBtn").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(document.getElementById("briefText").textContent); } catch (_) {}
+    document.getElementById("copyBriefBtn").textContent = "Copied";
+    setTimeout(() => document.getElementById("copyBriefBtn").textContent = "Copy quote brief", 1300);
+  });
+  restoreBrief();
   update();
+  updateBrief();
 </script>
 </body>
 </html>

@@ -484,6 +484,48 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  .tutorial-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: -6px 0 22px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255,122,69,0.30);
+    border-radius: 16px;
+    background:
+      radial-gradient(360px 180px at 0 0, rgba(255,122,69,0.16), transparent 68%),
+      linear-gradient(135deg, rgba(255,255,255,0.88), rgba(255,248,242,0.92));
+    box-shadow: 0 14px 34px rgba(255,122,69,0.10);
+  }
+  .tutorial-strip strong {
+    display: block;
+    color: var(--ink);
+    font-size: 13.5px;
+    line-height: 1.18;
+  }
+  .tutorial-strip span {
+    display: block;
+    margin-top: 2px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .tutorial-strip a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 850;
+    white-space: nowrap;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    box-shadow: 0 12px 24px rgba(255,122,69,0.22);
+  }
   @media (min-width: 961px) {
     html.is-embedded .page {
       padding-top: 88px !important;
@@ -4012,6 +4054,14 @@
       min-height: 36px !important;
       padding: 8px 12px !important;
     }
+    .tutorial-strip {
+      align-items: stretch;
+      flex-direction: column;
+      margin: -2px 0 18px;
+    }
+    .tutorial-strip a {
+      width: 100%;
+    }
     .topbar-badge {
       width: auto !important;
       max-width: 100% !important;
@@ -4055,10 +4105,6 @@
         <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
         Manual
       </a>
-      <a class="history-btn manual-link" href="https://quote.onekindexpress.com/prep.html" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
-        Prep
-      </a>
       <div class="topbar-badge">Powered by One Kind Express</div>
     </div>
   </header>
@@ -4070,6 +4116,13 @@
     <main class="card">
       <h1 class="card-h1">National Final Mile Delivery Calculator</h1>
       <div class="card-sub">Powered by One Kind Express for national final-mile delivery quotes</div>
+      <div class="tutorial-strip" role="note" aria-label="Tutorial video">
+        <div>
+          <strong>New here? Watch the full quote tutorial first.</strong>
+          <span>See mixed orders, measurements, booking request, saved quote, and reopening the quote in the calculator.</span>
+        </div>
+        <a href="https://quote.onekindexpress.com/manual.html#tutorial" target="_blank" rel="noopener">Watch tutorial</a>
+      </div>
 
       <div class="stepper" id="stepper" aria-label="Quote progress">
         <div class="stepper-track"><div class="stepper-fill" id="stepperFill"></div></div>
@@ -5326,7 +5379,7 @@ const ACCESSORIALS = [
   { id: 'haulAway',     name: 'Haul-away / disposal (per piece)',      default: 75,  qty: true,  qtyLabel: 'pieces' },
   { id: 'dedicatedAppt',name: 'Dedicated delivery / appointment',      default: 500, qty: false },
   { id: 'heavyItem',    name: 'Heavy item (>200 lbs / piece)',         default: 195, qty: true,  qtyLabel: 'items' },
-  { id: 'returnsPrep',  name: 'Returns prep / repacking',              default: 65,  qty: true,  qtyLabel: 'pieces' },
+  { id: 'returnsPrep',  name: 'Returns repacking',                     default: 65,  qty: true,  qtyLabel: 'pieces' },
   { id: 'tvRemoval',    name: 'TV removal',                            default: 35,  qty: true,  qtyLabel: 'TVs' },
   { id: 'extraMan',     name: 'Extra crew member (per hour)',          default: 75,  qty: true,  qtyLabel: 'hours' },
 ];
@@ -7406,12 +7459,27 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
   const middleOnly = state.laneMode === 'middle';
   const pickupDate = $("pickupDate") ? $("pickupDate").value : '';
   const whiteGloveOrders = (state.orders || []).filter(o => normalizeServiceId(o.service) === 'whiteGlove');
+  const deliveryServiceOrders = (state.orders || []).filter(o => ['threshold', 'roc', 'whiteGlove'].includes(normalizeServiceId(o.service)));
   const anyHeavyPiece = (state.pieces || []).some(p => pieceHasMeasurements(p) && toLbs(Number(p.weight) || 0) >= 200);
   const anyPallets = (state.pieces || []).some(p => pieceHasMeasurements(p) && pieceMode(p) === 'pallet');
   const destProv = provinceOf(state.destination);
+  const density = q && q.cubicFt ? (Number(q.actualWt) || 0) / q.cubicFt : 0;
 
+  if (!state.origin) {
+    suggestions.push({ tone: 'warn', title: 'Start with origin city', text: 'Choose or type the served pickup city so destination choices and rates can load.', action: 'origin', label: 'Origin' });
+  } else if (!state.destination && state.laneMode !== 'local') {
+    suggestions.push({ tone: 'warn', title: 'Add destination city', text: 'Choose or type the destination city to complete the lane.', action: 'destination', label: 'Destination' });
+  }
+  if (!middleOnly && !q.hasService) {
+    suggestions.push({ tone: 'warn', title: 'Choose service per order', text: 'Every freight order in Full Quote needs Curbside, Threshold, Room of Choice, or White Glove.', action: 'service', label: 'Services' });
+  }
+  if (!q.hasMeasurements) {
+    suggestions.push({ tone: 'warn', title: 'Add freight measurements', text: 'Enter packaged dimensions and weight for each box or pallet group.', action: 'items', label: 'Items' });
+  }
   if (largeLinearQuote) {
     suggestions.push({ tone: 'warn', title: 'Custom review required', text: `${(q.linearFt || 0).toFixed(1)} linear feet is above instant-pricing limits. Send the quote so OKE can confirm equipment and capacity.` });
+  } else if ((q.linearFt || 0) >= 8) {
+    suggestions.push({ tone: 'warn', title: 'Close to custom-review limit', text: `${(q.linearFt || 0).toFixed(1)} linear feet is still instant priced, but confirm stackability and footprint before booking.`, action: 'breakdown', label: 'Review' });
   }
   if (!pickupDate) {
     suggestions.push({ tone: 'warn', title: 'Add a preferred pickup date', text: 'A pickup date helps OKE confirm route timing and capacity.', action: 'pickup', label: 'Add date' });
@@ -7420,6 +7488,15 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
   }
   if ((anyPallets || q.actualWt >= 1200 || anyHeavyPiece) && !selectedAccessorial('tailgate')) {
     suggestions.push({ tone: 'warn', title: 'Confirm liftgate need', text: 'Heavy freight or pallets often need power tailgate service if no dock or forklift is available.', acc: 'tailgate', label: 'Add liftgate' });
+  }
+  if ((anyPallets || deliveryServiceOrders.length > 0) && !selectedAccessorial('residential')) {
+    suggestions.push({ tone: 'warn', title: 'Residential or limited access?', text: 'Add this when pickup or delivery is at a residence, showroom, storage site, or location without normal dock access.', acc: 'residential', label: 'Add access' });
+  }
+  if ((deliveryServiceOrders.length > 0 || q.totalPcs >= 8) && !selectedAccessorial('inside')) {
+    suggestions.push({ tone: 'warn', title: 'Inside handling check', text: 'Add inside pickup or delivery when freight crosses the doorway before the final-mile crew takes over.', acc: 'inside', label: 'Add inside' });
+  }
+  if (!middleOnly && anyHeavyPiece && !selectedAccessorial('heavyItem')) {
+    suggestions.push({ tone: 'warn', title: 'Heavy item handling', text: 'At least one measured piece is 200 lb or heavier. Add heavy-item handling if crew support is required.', acc: 'heavyItem', label: 'Add heavy' });
   }
   if ((q.totalPcs >= 6 || whiteGloveOrders.length > 0) && !selectedAccessorial('appointment')) {
     suggestions.push({ tone: 'warn', title: 'Consider appointment timing', text: 'Multi-piece or in-home deliveries are smoother when the delivery window is confirmed.', acc: 'appointment', label: 'Add appointment' });
@@ -7433,11 +7510,17 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
   if (q.dimWins) {
     suggestions.push({ tone: 'warn', title: 'Dimensional weight applies', text: 'The freight is bulky for its weight. Double-check L x W x H before submitting.' });
   }
+  if (density > 0 && density < 6 && q.actualWt < q.billable) {
+    suggestions.push({ tone: 'warn', title: 'Low density freight', text: `${density.toFixed(1)} lb/ft3 means the shipment is volume-sensitive. Confirm packaging, stackability, and dimensions.` });
+  }
   if (!q.accSelected.length) {
     suggestions.push({ tone: 'warn', title: 'Review accessorials', text: 'Open additional services if there is residential access, liftgate, inside pickup, appointment, or special handling.', action: 'services', label: 'Review' });
   }
-  suggestions.push({ tone: 'ok', title: middleOnly ? 'Middle-mile pricing mode' : 'Quote package ready', text: middleOnly ? 'No final-mile service or extra box charge is applied in Middle Mile Only.' : 'Saved quote, copy, print, and booking request tools are ready.' });
-  suggestions.push({ tone: 'ok', title: 'Prep checklist available', text: 'Use the prep guide to collect addresses, contacts, photos, access notes, and delivery constraints.', action: 'prep', label: 'Open prep' });
+  suggestions.push({ tone: 'ok', title: middleOnly ? 'Freight-only pricing mode' : 'Quote package ready', text: middleOnly ? 'No delivery service level or extra box charge is applied in Middle Mile Only.' : 'Saved quote, copy, print, and booking request tools are ready.' });
+  suggestions.push({ tone: 'ok', title: 'Notes make reviews faster', text: 'Add access details, timing limits, PO/reference, and special handling notes before submitting the booking request.' });
+  if (q.hasLane && q.hasMeasurements && q.hasService && !largeLinearQuote) {
+    suggestions.push({ tone: 'ok', title: 'Ready to request', text: 'Open the booking request when contact details, addresses, and notes are ready.', action: 'booking', label: 'Request' });
+  }
   return suggestions;
 }
 
@@ -7453,7 +7536,7 @@ function updateQuoteCoach(q, largeLinearQuote) {
     pickupDone,
     !largeLinearQuote
   ];
-  const suggestions = quoteCoachSuggestions(q, largeLinearQuote).slice(0, 5);
+  const suggestions = quoteCoachSuggestions(q, largeLinearQuote).slice(0, 6);
   const warningCount = suggestions.filter(item => item.tone === 'warn').length;
   const baseScore = Math.round((checks.filter(Boolean).length / checks.length) * 100);
   const score = Math.max(0, baseScore - Math.min(32, warningCount * 7));
@@ -7480,10 +7563,27 @@ function updateQuoteCoach(q, largeLinearQuote) {
       if (action === 'pickup' && $("pickupDate")) {
         $("pickupDate").scrollIntoView({ behavior: 'smooth', block: 'center' });
         $("pickupDate").focus();
+      } else if (action === 'origin' && $("originInput")) {
+        $("originInput").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $("originInput").focus();
+      } else if (action === 'destination' && $("destInput")) {
+        $("destInput").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $("destInput").focus();
+      } else if (action === 'service') {
+        const serviceTarget = document.querySelector('.order-card') || $("legacyServiceBlock");
+        if (serviceTarget) serviceTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (action === 'items') {
+        const itemsTarget = $("piecesWrap") || $("legacyMeasureBlock");
+        if (itemsTarget) itemsTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (action === 'services') {
         const toggle = $("accToggle");
         const content = $("accContent");
         if (toggle && content && !content.classList.contains('open')) toggle.click();
+        if (toggle) toggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (action === 'breakdown') {
+        const toggle = $("costToggle");
+        const details = $("costDetails");
+        if (toggle && details && !details.classList.contains('open')) toggle.click();
         if (toggle) toggle.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (action === 'wg-time') {
         (state.orders || []).forEach(order => {
@@ -7495,8 +7595,8 @@ function updateQuoteCoach(q, largeLinearQuote) {
         renderPieces();
         renderAccessorials();
         updateOutput();
-      } else if (action === 'prep') {
-        window.open('https://quote.onekindexpress.com/prep.html', '_blank', 'noopener');
+      } else if (action === 'booking') {
+        try { if (window.openBookingModal) window.openBookingModal(); } catch (_) {}
       }
     });
   });

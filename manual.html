@@ -312,40 +312,40 @@
     color: #fff;
     margin-bottom: 3px;
   }
-  .visual-guide {
-    display: grid;
-    grid-template-columns: minmax(0, .9fr) minmax(260px, 1.1fr);
-    gap: 16px;
-    align-items: start;
-    margin-top: 18px;
-  }
-  .visual-copy {
-    display: grid;
-    gap: 10px;
-  }
+  .visual-guide { margin-top: 18px; }
   .visual-shot {
+    display: block;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,.12);
-    border-radius: 20px;
+    border-radius: 16px;
     background: rgba(255,255,255,.04);
-    box-shadow: 0 20px 48px rgba(0,0,0,.30);
+    box-shadow: 0 14px 34px rgba(0,0,0,.22);
+    color: inherit;
+    text-decoration: none;
   }
   .visual-shot img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 150px;
+    object-fit: cover;
+    object-position: top center;
   }
   .visual-caption {
-    padding: 10px 12px;
+    min-height: 58px;
+    padding: 9px 10px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11.5px;
+    line-height: 1.35;
     border-top: 1px solid rgba(255,255,255,.08);
   }
   .visual-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 12px;
-    margin-top: 16px;
+    grid-template-columns: repeat(5, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .visual-shot.feature img {
+    height: 180px;
   }
   .section {
     margin-top: 24px;
@@ -532,8 +532,9 @@
     font-size: 12px;
   }
   @media (max-width: 980px) {
-    .hero, .flow, .visual-guide { grid-template-columns: 1fr; }
-    .card-grid, .quick-row, .video-points, .visual-grid { grid-template-columns: 1fr; }
+    .hero, .flow { grid-template-columns: 1fr; }
+    .card-grid, .quick-row, .video-points { grid-template-columns: 1fr; }
+    .visual-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .hero-copy { min-height: auto; }
   }
   @media (max-width: 640px) {
@@ -576,6 +577,10 @@
     .hero-panel { min-height: 520px; }
     .route-stage { inset: 16px 16px 280px; }
     .metric { min-height: auto; }
+    .visual-grid { grid-template-columns: 1fr; }
+    .visual-shot img,
+    .visual-shot.feature img { height: 142px; }
+    .visual-caption { min-height: 0; }
   }
 </style>
 </head>
@@ -631,6 +636,31 @@
       <div class="video-point"><b>Booking request</b><span>Add contact details, addresses, timing, PO, and notes.</span></div>
       <div class="video-point"><b>Saved quote</b><span>Review, print, request changes, or reopen in the calculator.</span></div>
     </div>
+    <div class="visual-guide" aria-label="Small visual examples">
+      <div class="kicker">Visual guide</div>
+      <div class="visual-grid">
+        <a class="visual-shot" href="assets/manual-box-measurements.png" target="_blank" rel="noopener">
+          <img src="assets/manual-box-measurements.png" alt="Floor-loaded box measurement example">
+          <div class="visual-caption">Boxes: group same-size cartons, then enter weight and packaged L x W x H.</div>
+        </a>
+        <a class="visual-shot" href="assets/manual-pallet-measurements.png" target="_blank" rel="noopener">
+          <img src="assets/manual-pallet-measurements.png" alt="Pallet measurement example">
+          <div class="visual-caption">Pallets: count, boxes per pallet, weight basis, and footprint.</div>
+        </a>
+        <a class="visual-shot" href="assets/manual-live-quote.png" target="_blank" rel="noopener">
+          <img src="assets/manual-live-quote.png" alt="Live quote panel example">
+          <div class="visual-caption">Quote panel: totals, breakdown, Quote Coach, and booking action.</div>
+        </a>
+        <a class="visual-shot" href="assets/manual-booking-form.png" target="_blank" rel="noopener">
+          <img src="assets/manual-booking-form.png" alt="Booking request form example">
+          <div class="visual-caption">Booking: contact details, addresses, window, PO, and notes.</div>
+        </a>
+        <a class="visual-shot" href="assets/manual-saved-quote.png" target="_blank" rel="noopener">
+          <img src="assets/manual-saved-quote.png" alt="Saved quote page example">
+          <div class="visual-caption">Saved quote: customer can review, confirm, request changes, print, or reopen.</div>
+        </a>
+      </div>
+    </div>
   </section>
 
   <section class="quick-row" aria-label="Quick guidance">
@@ -678,16 +708,6 @@
   <section class="section">
     <div class="kicker">Measurements</div>
     <h2>How to enter boxes, pallets, and weights.</h2>
-    <div class="visual-grid">
-      <div class="visual-shot">
-        <img src="assets/manual-box-measurements.png" alt="Floor-loaded box measurement example">
-        <div class="visual-caption">Boxes: group identical cartons together, then enter weight per box and packaged L x W x H.</div>
-      </div>
-      <div class="visual-shot">
-        <img src="assets/manual-pallet-measurements.png" alt="Pallet measurement example">
-        <div class="visual-caption">Pallets: enter pallet count, boxes per pallet, pallet weight basis, and full pallet footprint.</div>
-      </div>
-    </div>
     <div class="table">
       <div class="table-row"><b>Different size or weight?</b><span>Click Add box group or Add pallet group. Do not average different freight together.</span></div>
       <div class="table-row"><b>Only know total weight?</b><span>Open Only have total order weight and enter the order total. Dimensions still calculate cube and linear feet.</span></div>
@@ -712,27 +732,6 @@
   <section class="section">
     <div class="kicker">Sharing and review</div>
     <h2>How to read the quote and send a copy.</h2>
-    <div class="visual-guide">
-      <div class="visual-copy">
-        <div class="table-row"><b>Live quote</b><span>The right panel shows pricing, density, lane status, Quote Coach, and the detailed breakdown button.</span></div>
-        <div class="table-row"><b>Booking request</b><span>Customers add contact details, addresses, timing, PO/reference, and notes before submitting.</span></div>
-        <div class="table-row"><b>Saved quote</b><span>Email links open the saved quote page. From there, customers can confirm, request changes, print, copy, or reopen in the calculator.</span></div>
-      </div>
-      <div class="visual-shot">
-        <img src="assets/manual-live-quote.png" alt="Live calculator quote example">
-        <div class="visual-caption">The live quote panel keeps totals, checks, and quote actions together.</div>
-      </div>
-    </div>
-    <div class="visual-grid">
-      <div class="visual-shot">
-        <img src="assets/manual-booking-form.png" alt="Booking request form example">
-        <div class="visual-caption">The booking form captures the details needed to follow up cleanly.</div>
-      </div>
-      <div class="visual-shot">
-        <img src="assets/manual-saved-quote.png" alt="Saved quote page example">
-        <div class="visual-caption">Saved quotes can be reviewed later or reopened in the calculator.</div>
-      </div>
-    </div>
     <div class="table">
       <div class="table-row"><b>Detailed cost breakdown</b><span>Open the Detailed cost breakdown inside the calculator to see what is included in the base delivery line, selected accessorials, final-mile extras, fuel, tax, and custom-review notes.</span></div>
       <div class="table-row"><b>Quote Coach</b><span>The calculator highlights missing pickup dates, likely service checks, dimensional-weight warnings, White Glove time buffers, and notes to add before sending.</span></div>

@@ -4144,7 +4144,7 @@
       <div class="lane-row" id="laneRow">
         <div class="field autocomplete">
           <label class="field-label" id="originLabel">Origin city</label>
-          <input type="text" id="originInput" class="mono" placeholder="TYPE OR SELECT ORIGIN..." autocomplete="off" />
+          <input type="text" id="originInput" class="mono" placeholder="TYPE OR SELECT ORIGIN" autocomplete="off" />
           <div class="autocomplete-list" id="originList"></div>
         </div>
         <div class="lane-arrow" id="laneArrow">
@@ -8635,7 +8635,7 @@ function applyLaneMode() {
   const isMiddle = state.laneMode === 'middle';
   $("laneRow").classList.toggle('local', isLocal);
   $("originLabel").textContent = isLocal ? "City" : "Origin city";
-  $("originInput").placeholder = isLocal ? "TYPE OR SELECT CITY..." : "TYPE OR SELECT ORIGIN...";
+  $("originInput").placeholder = isLocal ? "TYPE OR SELECT CITY" : "TYPE OR SELECT ORIGIN";
   if (isLocal) {
     // Final-mile-only hides destination from pricing, but keeps the last lane
     // intact so switching back to full/middle-mile does not wipe the quote.
@@ -8646,7 +8646,7 @@ function applyLaneMode() {
     if (state.origin) {
       if (DEST_CACHE[state.origin]) {
         $("destInput").disabled = false;
-        $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
+        $("destInput").placeholder = "TYPE OR SELECT DESTINATION";
       } else {
         $("destInput").disabled = true;
         $("destInput").placeholder = "LOADING DESTINATIONS...";
@@ -8654,7 +8654,7 @@ function applyLaneMode() {
           .then(() => {
             if (state.laneMode !== 'local' && state.origin) {
               $("destInput").disabled = false;
-              $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
+              $("destInput").placeholder = "TYPE OR SELECT DESTINATION";
               if (document.activeElement === $("destInput")) {
                 $("destInput").dispatchEvent(new Event('input', { bubbles: true }));
               }
@@ -9606,13 +9606,13 @@ async function init() {
           const destInput = $("destInput");
           destInput.value = "";
           destInput.disabled = true;
-          $("destInput").placeholder = "TYPE OR SELECT DESTINATION...";
+          $("destInput").placeholder = "TYPE OR SELECT DESTINATION";
           destInput.placeholder = "LOADING DESTINATIONS...";
           fetchDestinations(label)
             .then(() => {
               if (state.origin !== label || state.laneMode === 'local') return;
               destInput.disabled = false;
-              destInput.placeholder = "TYPE OR SELECT DESTINATION...";
+              destInput.placeholder = "TYPE OR SELECT DESTINATION";
               destInput.focus();
               destInput.dispatchEvent(new Event('input', { bubbles: true }));
             })

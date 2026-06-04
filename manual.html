@@ -315,37 +315,99 @@
   .visual-guide { margin-top: 18px; }
   .visual-shot {
     display: block;
+    width: 100%;
+    appearance: none;
+    border: 0;
+    padding: 0;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,.12);
     border-radius: 16px;
     background: rgba(255,255,255,.04);
     box-shadow: 0 14px 34px rgba(0,0,0,.22);
     color: inherit;
+    font: inherit;
+    text-align: left;
     text-decoration: none;
+    cursor: zoom-in;
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .visual-shot:hover,
+  .visual-shot:focus-visible {
+    border-color: rgba(255,106,0,.62);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 46px rgba(255,106,0,.13), 0 18px 40px rgba(0,0,0,.28);
+    outline: none;
   }
   .visual-shot img {
     display: block;
     width: 100%;
-    height: 150px;
+    height: 230px;
     object-fit: cover;
     object-position: top center;
   }
   .visual-caption {
-    min-height: 58px;
-    padding: 9px 10px;
+    min-height: 54px;
+    padding: 10px 12px;
     color: var(--muted);
-    font-size: 11.5px;
+    font-size: 12.5px;
     line-height: 1.35;
     border-top: 1px solid rgba(255,255,255,.08);
   }
   .visual-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0,1fr));
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
     margin-top: 14px;
   }
   .visual-shot.feature img {
     height: 180px;
+  }
+  .shot-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    place-items: center;
+    padding: 18px;
+    background: rgba(0,0,0,.78);
+    backdrop-filter: blur(12px);
+  }
+  .shot-lightbox.open { display: grid; }
+  .shot-lightbox-panel {
+    position: relative;
+    width: min(1120px, 100%);
+    max-height: calc(100vh - 36px);
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 24px;
+    background: #09090b;
+    box-shadow: 0 34px 80px rgba(0,0,0,.55);
+  }
+  .shot-lightbox-panel img {
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 126px);
+    object-fit: contain;
+    border-radius: 16px;
+    background: #f4f0e6;
+  }
+  .shot-lightbox-panel p {
+    margin: 12px 52px 2px 2px;
+    color: rgba(255,255,255,.72);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .shot-close {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 999px;
+    padding: 9px 13px;
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
   }
   .section {
     margin-top: 24px;
@@ -571,15 +633,18 @@
     .cta { align-items: stretch; flex-direction: column; }
     .cta-actions { justify-content: stretch; }
     .btn { width: 100%; }
+    .visual-grid { grid-template-columns: 1fr; }
+    .visual-shot img { height: clamp(190px, 58vw, 270px); }
+    .shot-lightbox { padding: 10px; }
+    .shot-lightbox-panel { border-radius: 18px; padding: 10px; }
+    .shot-lightbox-panel img { max-height: calc(100vh - 116px); border-radius: 12px; }
+    .shot-lightbox-panel p { margin-right: 0; padding-right: 74px; font-size: 12px; }
   }
   @media (max-width: 390px) {
     .metric-strip { grid-template-columns: 1fr; }
     .hero-panel { min-height: 520px; }
     .route-stage { inset: 16px 16px 280px; }
     .metric { min-height: auto; }
-    .visual-grid { grid-template-columns: 1fr; }
-    .visual-shot img,
-    .visual-shot.feature img { height: 142px; }
     .visual-caption { min-height: 0; }
   }
 </style>
@@ -636,29 +701,29 @@
       <div class="video-point"><b>Booking request</b><span>Add contact details, addresses, timing, PO, and notes.</span></div>
       <div class="video-point"><b>Saved quote</b><span>Review, print, request changes, or reopen in the calculator.</span></div>
     </div>
-    <div class="visual-guide" aria-label="Small visual examples">
+    <div class="visual-guide" aria-label="Visual examples">
       <div class="kicker">Visual guide</div>
       <div class="visual-grid">
-        <a class="visual-shot" href="assets/manual-box-measurements.png" target="_blank" rel="noopener">
+        <button class="visual-shot" type="button" data-shot-src="assets/manual-box-measurements.png" data-shot-caption="Boxes: group same-size cartons, then enter the box count, weight per box, and packaged length, width, and height.">
           <img src="assets/manual-box-measurements.png" alt="Floor-loaded box measurement example">
-          <div class="visual-caption">Boxes: group same-size cartons, then enter weight and packaged L x W x H.</div>
-        </a>
-        <a class="visual-shot" href="assets/manual-pallet-measurements.png" target="_blank" rel="noopener">
+          <div class="visual-caption">Boxes: count, weight per box, and packaged L x W x H.</div>
+        </button>
+        <button class="visual-shot" type="button" data-shot-src="assets/manual-pallet-measurements.png" data-shot-caption="Pallets: enter the number of same pallets, boxes per pallet, pallet weight basis, and full pallet footprint.">
           <img src="assets/manual-pallet-measurements.png" alt="Pallet measurement example">
-          <div class="visual-caption">Pallets: count, boxes per pallet, weight basis, and footprint.</div>
-        </a>
-        <a class="visual-shot" href="assets/manual-live-quote.png" target="_blank" rel="noopener">
+          <div class="visual-caption">Pallets: count, boxes per pallet, weight, and footprint.</div>
+        </button>
+        <button class="visual-shot" type="button" data-shot-src="assets/manual-live-quote.png" data-shot-caption="The quote panel keeps totals, cost breakdown, Quote Coach, and booking action together.">
           <img src="assets/manual-live-quote.png" alt="Live quote panel example">
-          <div class="visual-caption">Quote panel: totals, breakdown, Quote Coach, and booking action.</div>
-        </a>
-        <a class="visual-shot" href="assets/manual-booking-form.png" target="_blank" rel="noopener">
+          <div class="visual-caption">Quote panel: totals, breakdown, coach, and booking.</div>
+        </button>
+        <button class="visual-shot" type="button" data-shot-src="assets/manual-booking-form.png" data-shot-caption="The booking form captures contact details, addresses, preferred timing, PO/reference, and notes.">
           <img src="assets/manual-booking-form.png" alt="Booking request form example">
-          <div class="visual-caption">Booking: contact details, addresses, window, PO, and notes.</div>
-        </a>
-        <a class="visual-shot" href="assets/manual-saved-quote.png" target="_blank" rel="noopener">
+          <div class="visual-caption">Booking: contact, addresses, timing, PO, and notes.</div>
+        </button>
+        <button class="visual-shot" type="button" data-shot-src="assets/manual-saved-quote.png" data-shot-caption="Saved quotes can be reviewed, confirmed, changed, printed, copied, or reopened in the calculator.">
           <img src="assets/manual-saved-quote.png" alt="Saved quote page example">
-          <div class="visual-caption">Saved quote: customer can review, confirm, request changes, print, or reopen.</div>
-        </a>
+          <div class="visual-caption">Saved quote: review, confirm, change, print, or reopen.</div>
+        </button>
       </div>
     </div>
   </section>
@@ -730,20 +795,13 @@
   </section>
 
   <section class="section">
-    <div class="kicker">Sharing and review</div>
-    <h2>How to read the quote and send a copy.</h2>
-    <div class="table">
-      <div class="table-row"><b>Detailed cost breakdown</b><span>Open the Detailed cost breakdown inside the calculator to see what is included in the base delivery line, selected accessorials, final-mile extras, fuel, tax, and custom-review notes.</span></div>
-      <div class="table-row"><b>Quote Coach</b><span>The calculator highlights missing pickup dates, likely service checks, dimensional-weight warnings, White Glove time buffers, and notes to add before sending.</span></div>
-      <div class="table-row"><b>Saved quote page</b><span>Email buttons open the saved quote page first. From there the customer can review pricing, copy the full quote, print it, or open the same quote in the calculator.</span></div>
-      <div class="table-row"><b>Fast city entry</b><span>You can still pick cities from the list, but typing the full served city name also locks the city in automatically and opens the next lane field.</span></div>
-      <div class="table-row"><b>Share</b><span>Use Share to copy a quote link for the customer. This is the cleanest way to send a live copy without screenshots.</span></div>
-      <div class="table-row"><b>Copy</b><span>Use Copy when you want a plain text summary for email, SMS, or chat.</span></div>
-      <div class="table-row"><b>Confirm booking</b><span>When the booking request is submitted, OKE receives the quote, pickup and delivery addresses, contact details, notes, and requested timing. The customer also receives a confirmation email copy.</span></div>
-      <div class="table-row"><b>Request changes</b><span>On a saved quote page, use Request changes when the quote needs an edit instead of a booking. Add a clear note so OKE can adjust service, freight, timing, or address details.</span></div>
-      <div class="table-row"><b>Email or call</b><span>For custom quotes, oversized shipments, or urgent timing, use the email and call buttons so OKE can review equipment, access, and capacity directly.</span></div>
+    <div class="kicker">After request</div>
+    <h2>Use the saved quote page.</h2>
+    <div class="card-grid">
+      <div class="card"><span class="num">01</span><b>Review</b><span>The email button opens the saved quote page first, with price, freight details, notes, and next steps.</span></div>
+      <div class="card"><span class="num">02</span><b>Confirm or change</b><span>Customers can confirm the booking or request a change from the saved quote page.</span></div>
+      <div class="card"><span class="num">03</span><b>Reopen</b><span>Use Open in calculator when the same quote needs editing, duplication, or a revised request.</span></div>
     </div>
-    <div class="callout"><b>Tip:</b> If anything looks uncertain, send the quote link and notes instead of rebuilding the quote. OKE can review the same lane, freight rows, services, and totals.</div>
   </section>
 
   <section class="cta">
@@ -761,6 +819,14 @@
   <footer>One Kind Express public calculator guide. Final service details are confirmed by OKE before booking.</footer>
 </main>
 
+<div class="shot-lightbox" id="shotLightbox" aria-hidden="true">
+  <div class="shot-lightbox-panel" role="dialog" aria-modal="true" aria-label="Screenshot preview">
+    <img id="shotLightboxImg" alt="">
+    <p id="shotLightboxCaption"></p>
+    <button class="shot-close" type="button" data-shot-close>Close</button>
+  </div>
+</div>
+
 <script>
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('pointermove', event => {
@@ -768,6 +834,35 @@
       card.style.setProperty('--mx', ((event.clientX - rect.left) / rect.width * 100).toFixed(2) + '%');
       card.style.setProperty('--my', ((event.clientY - rect.top) / rect.height * 100).toFixed(2) + '%');
     });
+  });
+
+  const shotLightbox = document.getElementById('shotLightbox');
+  const shotLightboxImg = document.getElementById('shotLightboxImg');
+  const shotLightboxCaption = document.getElementById('shotLightboxCaption');
+
+  function closeShotLightbox() {
+    shotLightbox.classList.remove('open');
+    shotLightbox.setAttribute('aria-hidden', 'true');
+    shotLightboxImg.removeAttribute('src');
+  }
+
+  document.querySelectorAll('[data-shot-src]').forEach(button => {
+    button.addEventListener('click', () => {
+      shotLightboxImg.src = button.dataset.shotSrc;
+      shotLightboxImg.alt = button.querySelector('img')?.alt || 'Calculator screenshot';
+      shotLightboxCaption.textContent = button.dataset.shotCaption || '';
+      shotLightbox.classList.add('open');
+      shotLightbox.setAttribute('aria-hidden', 'false');
+      document.querySelector('[data-shot-close]')?.focus();
+    });
+  });
+
+  document.querySelector('[data-shot-close]')?.addEventListener('click', closeShotLightbox);
+  shotLightbox.addEventListener('click', event => {
+    if (event.target === shotLightbox) closeShotLightbox();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && shotLightbox.classList.contains('open')) closeShotLightbox();
   });
 </script>
 </body>

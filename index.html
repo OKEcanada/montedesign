@@ -4138,6 +4138,7 @@
         <span id="laneLabelHdr">Lane</span>
         <div class="seg seg-sm" id="lhToggle">
           <button class="seg-btn active" data-lh="line">Full quote</button>
+          <button class="seg-btn" data-lh="local">Final mile only</button>
           <button class="seg-btn" data-lh="middle">Middle mile only</button>
         </div>
       </div>
@@ -5458,7 +5459,7 @@ function loadAccPrices() {
 const state = {
   origin: null,
   destination: null,
-  laneMode: 'line',  // 'line' (origin -> destination), 'middle' (middle mile only); legacy 'local' snapshots are converted to same-city full quotes.
+  laneMode: 'line',  // 'line' (origin -> destination), 'local' (final mile only, single city), 'middle' (middle mile only, no final delivery)
   service: null,
   mode: 'dim',
   lenUnit: 'in',
@@ -7243,10 +7244,7 @@ function applyQuoteSnapshot(snapshot) {
   if (!snapshot) return false;
   state.origin = snapshot.origin || null;
   state.destination = snapshot.destination || null;
-  state.laneMode = snapshot.laneMode === 'middle' ? 'middle' : 'line';
-  if (snapshot.laneMode === 'local' && state.origin && !state.destination) {
-    state.destination = state.origin;
-  }
+  state.laneMode = ['line', 'local', 'middle'].includes(snapshot.laneMode) ? snapshot.laneMode : 'line';
   state.service = normalizeServiceId(snapshot.service) || null;
   state.mode = snapshot.mode || 'dim';
   state.lenUnit = snapshot.lenUnit || 'in';
@@ -8627,10 +8625,6 @@ function setupLaneMode() {
   applyLaneMode();
 }
 function applyLaneMode() {
-  if (state.laneMode === 'local') {
-    if (state.origin && !state.destination) state.destination = state.origin;
-    state.laneMode = 'line';
-  }
   const isLocal = state.laneMode === 'local';
   const isMiddle = state.laneMode === 'middle';
   $("laneRow").classList.toggle('local', isLocal);
@@ -8689,7 +8683,9 @@ function applyLaneMode() {
     if (ordersText) {
       ordersText.textContent = middleBoxOrders
         ? 'Add freight orders and box groups. Middle mile prices the combined shipment only.'
-        : 'Each order can use its own final-mile service. Middle mile still prices the combined shipment.';
+        : isLocal
+          ? 'Each order can use its own final-mile service. Flat final-mile fees only, no middle mile.'
+          : 'Each order can use its own final-mile service. Middle mile still prices the combined shipment.';
     }
     if (addOrder) {
       const label = addOrder.childNodes[addOrder.childNodes.length - 1];

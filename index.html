@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://wwtaadvzonnbvyhottlv.supabase.co" crossorigin>
 <script>
   // Defensive: unregister any stale service workers from earlier builds (some users
   // were stuck on a cached version in Chrome only). Safe no-op if none exist.
@@ -3139,173 +3139,6 @@
   .modal-act.copied b { color: #10b981; }
   .modal-act.copied.primary b { color: #fff; }
 
-  .history-shell {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    pointer-events: none;
-  }
-  .history-shell.open { pointer-events: auto; }
-  .history-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(5,7,23,0.52);
-    opacity: 0;
-    transition: opacity 240ms ease;
-  }
-  .history-shell.open .history-backdrop { opacity: 1; }
-  .history-drawer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: min(430px, 100vw);
-    height: 100%;
-    padding: 20px;
-    background:
-      radial-gradient(circle at 24% 0%, rgba(79,209,197,0.10), transparent 34%),
-      linear-gradient(180deg, rgba(250,248,241,0.98), rgba(244,241,233,0.98));
-    color: var(--ink);
-    border-left: 1px solid rgba(12,16,36,0.10);
-    box-shadow: -30px 0 70px rgba(5,7,23,0.32);
-    transform: translateX(102%);
-    transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .history-shell.open .history-drawer { transform: translateX(0); }
-  .history-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--line);
-  }
-  .history-kicker {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    color: var(--accent-deep);
-    text-transform: uppercase;
-  }
-  .history-title { font-size: 24px; font-weight: 850; letter-spacing: -0.02em; line-height: 1.05; margin-top: 3px; }
-  .history-sub { color: var(--ink-muted); font-size: 13px; margin-top: 6px; }
-  .history-close {
-    width: 36px; height: 36px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.72);
-    color: var(--ink);
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-  }
-  .history-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-  .history-primary {
-    border: 0;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--ink), var(--ink-soft));
-    color: #fff;
-    padding: 12px 14px;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 16px 30px rgba(12,16,36,0.18);
-  }
-  .history-primary.alt {
-    background: linear-gradient(135deg, var(--accent), #ff5a7a);
-    box-shadow: 0 16px 30px rgba(255,122,69,0.24);
-  }
-  .history-ghost {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.70);
-    color: var(--ink);
-    padding: 11px 13px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 750;
-    cursor: pointer;
-  }
-  .history-auth, .history-user {
-    display: grid;
-    gap: 10px;
-    padding: 14px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.70);
-  }
-  .history-auth label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .history-auth input {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 12px;
-    font: inherit;
-    color: var(--ink);
-    background: #fff;
-  }
-  .history-status { min-height: 18px; color: var(--ink-muted); font-size: 12.5px; line-height: 1.35; }
-  .history-status.ok { color: #0f9f78; font-weight: 750; }
-  .history-status.err { color: var(--danger); font-weight: 750; }
-  .history-list {
-    display: grid;
-    gap: 9px;
-    overflow: auto;
-    padding-right: 2px;
-  }
-  .history-item {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.78);
-    padding: 12px;
-    text-align: left;
-    cursor: pointer;
-    display: grid;
-    gap: 5px;
-    transition: all var(--transition);
-  }
-  .history-item:hover {
-    border-color: rgba(255,122,69,0.42);
-    transform: translateY(-1px);
-    box-shadow: 0 12px 26px rgba(12,16,36,0.08);
-  }
-  .history-item-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    align-items: baseline;
-  }
-  .history-ref {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--ink-soft);
-  }
-  .history-total { font-weight: 850; color: var(--accent-deep); }
-  .history-lane { font-weight: 750; color: var(--ink); line-height: 1.25; }
-  .history-meta { color: var(--ink-muted); font-size: 12px; }
-  .history-empty {
-    border: 1px dashed rgba(12,16,36,0.18);
-    border-radius: 12px;
-    padding: 18px;
-    color: var(--ink-muted);
-    text-align: center;
-    background: rgba(255,255,255,0.44);
-  }
   .large-shipment-banner {
     margin: 10px 0 12px;
     padding: 12px 13px;
@@ -3333,7 +3166,6 @@
     .modal-act { padding: 14px 16px; }
     .modal-act b { font-size: 14.5px; }
     .modal-title { font-size: 18px; }
-    .history-drawer { width: 100vw; }
   }
 
   @media (max-width: 600px) {
@@ -3385,8 +3217,7 @@
   }
   .scene,
   .confetti-canvas,
-  .mobile-cta,
-  .history-shell {
+  .mobile-cta {
     display: none !important;
   }
   .page {
@@ -3413,7 +3244,6 @@
   .card,
   .result-card,
   .modal-card,
-  .history-drawer,
   .platform-tile,
   .mobile-cta,
   .r-tabs,
@@ -4798,117 +4628,6 @@ const MONTE_CONFIG = window.MONTE_CONFIG || {
   slackNotifyOnView: false
 };
 
-// ============================================================
-// monteAuth - minimal session bootstrap (magic-link UX is disabled in the calculator-only build)
-// ============================================================
-const monteAuth = {
-  bootFromStorage() {
-    try {
-      const raw = localStorage.getItem('monteSession');
-      if (!raw) return null;
-      const sess = JSON.parse(raw);
-      if (!sess || !sess.access_token) return null;
-      // expires_at is seconds since epoch from Supabase
-      if (sess.expires_at && Date.now() / 1000 > sess.expires_at - 30) {
-        localStorage.removeItem('monteSession');
-        return null;
-      }
-      window._monteSession = sess;
-      return sess;
-    } catch (e) { return null; }
-  },
-  signOut() {
-    localStorage.removeItem('monteSession');
-    window._monteSession = null;
-  },
-  user() {
-    return window._monteSession && window._monteSession.user || null;
-  }
-};
-
-let SUPABASE_CLIENT = null;
-function sbClient() {
-  const cfg = sbCfg();
-  if (!cfg || !window.supabase || !window.supabase.createClient) return null;
-  if (!SUPABASE_CLIENT) {
-    SUPABASE_CLIENT = window.supabase.createClient(cfg.url, cfg.anonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: 'okeQuoteHistoryAuth'
-      }
-    });
-  }
-  return SUPABASE_CLIENT;
-}
-
-function setMonteSession(session) {
-  if (!session || !session.access_token) {
-    monteAuth.signOut();
-    return null;
-  }
-  window._monteSession = session;
-  try { localStorage.setItem('monteSession', JSON.stringify(session)); } catch (e) {}
-  return session;
-}
-
-async function sessionFromUrlHash() {
-  const cfg = sbCfg();
-  if (!cfg || !window.location.hash || !window.location.hash.includes('access_token=')) return null;
-  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-  const access_token = hash.get('access_token');
-  if (!access_token) return null;
-  const expiresIn = Number(hash.get('expires_in') || 3600);
-  const session = {
-    access_token,
-    refresh_token: hash.get('refresh_token') || null,
-    token_type: hash.get('token_type') || 'bearer',
-    expires_at: Math.floor(Date.now() / 1000) + expiresIn
-  };
-  try {
-    const res = await fetch(`${cfg.url}/auth/v1/user`, {
-      headers: { apikey: cfg.anonKey, Authorization: `Bearer ${access_token}` }
-    });
-    if (res.ok) session.user = await res.json();
-  } catch (e) {}
-  window.history.replaceState({}, '', window.location.pathname + window.location.search);
-  return setMonteSession(session);
-}
-
-async function initAuthSession() {
-  const hashSession = await sessionFromUrlHash();
-  if (hashSession) return hashSession;
-  const client = sbClient();
-  if (!client) {
-    monteAuth.bootFromStorage();
-    return null;
-  }
-  const { data } = await client.auth.getSession();
-  if (data && data.session) setMonteSession(data.session);
-  client.auth.onAuthStateChange((_event, session) => {
-    if (session) {
-      setMonteSession(session);
-      claimPendingQuotes().then(refreshHistory).catch(() => {});
-    } else {
-      monteAuth.signOut();
-      renderHistoryAuthState();
-    }
-  });
-  if (window._monteSession) await claimPendingQuotes().catch(() => {});
-  return window._monteSession || null;
-}
-
-// Per-browser device id used to "claim" anonymous quotes after login.
-function getDeviceId() {
-  let id = localStorage.getItem('monteDeviceId');
-  if (!id) {
-    id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
-    localStorage.setItem('monteDeviceId', id);
-  }
-  return id;
-}
-
 // Fire-and-forget Slack notification (calls the notify-slack Edge Function).
 async function notifySlack(event, payload) {
   if (!MONTE_CONFIG.slackNotifyOnSave && event === 'quote.saved') return;
@@ -4996,9 +4715,6 @@ async function sbRpc(name, params = {}) {
     Authorization: `Bearer ${cfg.anonKey}`,
     'Content-Type': 'application/json'
   };
-  if (window._monteSession && window._monteSession.access_token) {
-    headers.Authorization = `Bearer ${window._monteSession.access_token}`;
-  }
   const res = await fetch(`${cfg.url}/rest/v1/rpc/${name}`, {
     method: 'POST', headers, body: JSON.stringify(params)
   });
@@ -5394,7 +5110,7 @@ function updateQuoteAdvisor(q, density, distKm) {
     return;
   }
   title.textContent = 'Best next step: save';
-  sub.textContent = 'Save the quote to history, then share the read-only link for tracked follow-up.';
+  sub.textContent = 'Share the read-only quote link for tracked follow-up, or request the booking.';
 }
 
 function updateJourneyDetail(key, q) {
@@ -5844,6 +5560,12 @@ function carrierAccessorialAmount(def, billable, lineHaul) {
   return { amount, qty, detail };
 }
 
+// Day & Ross line-haul accessorials only apply when a middle-mile leg is priced,
+// so never in Final mile only.
+function lineHaulExtrasApply() {
+  return state.laneMode !== 'local';
+}
+
 function carrierAccessorialLines(billable, lineHaul) {
   return CARRIER_ACCESSORIALS
     .filter(def => state.accessorials[def.id] && state.accessorials[def.id].selected)
@@ -5920,8 +5642,7 @@ function getRatesForLane(origin, dest) {
 let _laneRpcSeq = 0;
 let _laneRpcTimer = null;
 function scheduleLaneQuoteRefresh() {
-  const sameCity = state.origin && state.destination && state.origin === state.destination;
-  if (!state.origin || !state.destination || state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity)) {
+  if (!state.origin || !state.destination || state.laneMode === 'local') {
     CURRENT_LANE_QUOTE = null;
     return;
   }
@@ -6201,9 +5922,9 @@ function computeQuote() {
   let rates = null;
   let hasLocation = false;
   let laneNotPriced = false;
-  // Auto-detect same-city as local for full quotes; middle-mile remains dock to dock.
-  const sameCity = state.origin && state.destination && state.origin === state.destination;
-  const effectiveLocal = state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity);
+  // Only Final mile only skips the middle mile. A full quote within one city is
+  // priced with the Day & Ross same-city lane like any other lane.
+  const effectiveLocal = state.laneMode === 'local';
   if (effectiveLocal) {
     // Local delivery: only need a city, skip middle-mile entirely
     hasLocation = !!state.origin;
@@ -6224,11 +5945,11 @@ function computeQuote() {
     }
   }
 
-  // Carrier accessorials are available in Full Quote and Middle Mile Only.
-  // Final-mile extras remain Full Quote only.
+  // Carrier accessorials apply only when a middle-mile leg is priced (Full Quote and
+  // Middle Mile Only). Final-mile extras are skipped in Middle Mile Only.
   let accAmount = 0;
   const accSelected = [];
-  const carrierLines = carrierAccessorialLines(billable, middleMileSell);
+  const carrierLines = lineHaulExtrasApply() ? carrierAccessorialLines(billable, middleMileSell) : [];
   for (const line of carrierLines) {
     accAmount += line.amount;
     accSelected.push(line);
@@ -7010,7 +6731,8 @@ function renderAccessorials() {
       <span class="acc-price">${priceLabel}</span>
     </div>`;
   };
-  const carrierRows = CARRIER_ACCESSORIALS.map(renderCarrierRow).join('');
+  const lineHaul = lineHaulExtrasApply();
+  const carrierRows = lineHaul ? CARRIER_ACCESSORIALS.map(renderCarrierRow).join('') : '';
   const finalRows = state.laneMode === 'middle' ? '' : ACCESSORIALS.map(renderFinalMileRow).join('');
   const extraRows = state.laneMode === 'middle' ? '' : `
     <div class="local-extra-panel">
@@ -7026,18 +6748,20 @@ function renderAccessorials() {
       <p class="local-extra-note">White Glove extra time is set inside each White Glove order.</p>
     </div>`;
   list.innerHTML = `
-    <section class="acc-group">
-      <div class="acc-group-head">
-        <div><b>Line-haul accessorials</b><span>Available in Full Quote and Middle Mile Only for special pickup, delivery, or freight-handling requirements.</span></div>
-        <em>Middle mile</em>
-      </div>
-      <div class="acc-group-grid">${carrierRows}</div>
-    </section>
+    ${lineHaul ? `
+      <section class="acc-group">
+        <div class="acc-group-head">
+          <div><b>Line-haul accessorials</b><span>Available in Full Quote and Middle Mile Only for special pickup, delivery, or freight-handling requirements.</span></div>
+          <em>Middle mile</em>
+        </div>
+        <div class="acc-group-grid">${carrierRows}</div>
+      </section>
+    ` : ''}
     ${state.laneMode === 'middle' ? '' : `
       <section class="acc-group">
         <div class="acc-group-head">
           <div><b>Final-mile delivery services</b><span>Use these for crew, in-home handling, appointment, removal, and delivery extras.</span></div>
-          <em>Full quote</em>
+          <em>Final mile</em>
         </div>
         <div class="acc-group-grid">${finalRows}</div>
       </section>
@@ -7097,9 +6821,10 @@ function renderTaxOptions() {
 function updateAccCount() {
   const carrierIds = new Set(CARRIER_ACCESSORIALS.map(a => a.id));
   const finalIds = new Set(ACCESSORIALS.map(a => a.id));
+  const lineHaul = lineHaulExtrasApply();
   const selectedCount = Object.entries(state.accessorials).filter(([id, a]) => {
     if (!a || !a.selected) return false;
-    if (carrierIds.has(id)) return true;
+    if (carrierIds.has(id)) return lineHaul;
     return state.laneMode !== 'middle' && finalIds.has(id);
   }).length;
   const extraCount = state.laneMode === 'middle' ? 0 : localExtraLines().length + whiteGloveExtraLines().length;
@@ -7337,17 +7062,14 @@ function saveQuoteLocal(record) {
 async function saveQuoteRecord(record) {
   const cfg = getSupabaseConfig();
   if (!cfg) return saveQuoteLocal(record);
-  const session = window._monteSession;
-  const bearer = record.user_id && session && session.access_token ? session.access_token : cfg.anonKey;
-  const canReturnRow = !!record.user_id;
   try {
-    const res = await fetch(`${cfg.url}/rest/v1/quotes${canReturnRow ? '?select=id,quote_ref,public_token,total_after_tax,status,created_at,valid_until' : ''}`, {
+    const res = await fetch(`${cfg.url}/rest/v1/quotes`, {
       method: 'POST',
       headers: {
         apikey: cfg.anonKey,
-        Authorization: `Bearer ${bearer}`,
+        Authorization: `Bearer ${cfg.anonKey}`,
         'Content-Type': 'application/json',
-        Prefer: canReturnRow ? 'return=representation' : 'return=minimal'
+        Prefer: 'return=minimal'
       },
       body: JSON.stringify(record)
     });
@@ -7360,13 +7082,9 @@ async function saveQuoteRecord(record) {
       }
       throw new Error(errText);
     }
-    if (!canReturnRow) {
-      const rows = await sbRpc('get_quote_by_token', { share_token: record.public_token });
-      const existing = Array.isArray(rows) ? rows[0] : rows;
-      return { ...record, ...(existing || {}), storage: 'supabase' };
-    }
-    const rows = await res.json();
-    return { ...record, ...(rows && rows[0] ? rows[0] : {}), storage: 'supabase' };
+    const rows = await sbRpc('get_quote_by_token', { share_token: record.public_token });
+    const existing = Array.isArray(rows) ? rows[0] : rows;
+    return { ...record, ...(existing || {}), storage: 'supabase' };
   } catch (e) {
     if (!cfg) return saveQuoteLocal(record);
     throw e;
@@ -7378,12 +7096,6 @@ async function saveCurrentQuote(copyLink, statusOverride) {
   if (!q.hasLane || !q.hasMeasurements || !q.hasService) return null;
   const record = buildQuoteRecord(q);
   record.status = statusOverride || (copyLink ? 'shared' : 'draft');
-  // Attach the per-browser device id so the user can later claim it on login.
-  record.device_id = getDeviceId();
-  // Attach the logged-in user_id when present.
-  if (window._monteSession && window._monteSession.access_token && monteAuth.user() && monteAuth.user().id) {
-    record.user_id = monteAuth.user().id;
-  }
   const saved = await saveQuoteRecord(record);
   window._lastSavedQuote = saved;
   window._lastQuoteShareUrl = quoteShareUrl(saved.public_token);
@@ -7671,6 +7383,7 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
   const anyPallets = (state.pieces || []).some(p => pieceHasMeasurements(p) && pieceMode(p) === 'pallet');
   const destProv = provinceOf(state.destination);
   const density = q && q.cubicFt ? (Number(q.actualWt) || 0) / q.cubicFt : 0;
+  const lineHaul = lineHaulExtrasApply();
 
   if (!middleOnly && anyHeavyPiece) {
     suggestions.push(selectedAccessorial('heavyItem')
@@ -7698,19 +7411,19 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
   } else {
     suggestions.push({ tone: 'ok', title: 'Pickup date included', text: `Preferred pickup is ${pickupDate}.` });
   }
-  if ((anyPallets || q.actualWt >= 1200 || anyHeavyPiece) && !selectedAccessorial('tailgate')) {
+  if (lineHaul && (anyPallets || q.actualWt >= 1200 || anyHeavyPiece) && !selectedAccessorial('tailgate')) {
     suggestions.push({ tone: 'warn', title: 'Confirm liftgate need', text: 'Heavy freight or pallets often need power tailgate service if no dock or forklift is available.', acc: 'tailgate', label: 'Add liftgate' });
   }
-  if ((anyPallets || deliveryServiceOrders.length > 0) && !selectedAccessorial('residential')) {
+  if (lineHaul && (anyPallets || deliveryServiceOrders.length > 0) && !selectedAccessorial('residential')) {
     suggestions.push({ tone: 'warn', title: 'Residential or limited access?', text: 'Add this when pickup or delivery is at a residence, showroom, storage site, or location without normal dock access.', acc: 'residential', label: 'Add access' });
   }
-  if ((deliveryServiceOrders.length > 0 || q.totalPcs >= 8) && !selectedAccessorial('inside')) {
+  if (lineHaul && (deliveryServiceOrders.length > 0 || q.totalPcs >= 8) && !selectedAccessorial('inside')) {
     suggestions.push({ tone: 'warn', title: 'Inside handling check', text: 'Add inside pickup or delivery when freight crosses the doorway before the final-mile crew takes over.', acc: 'inside', label: 'Add inside' });
   }
-  if ((q.totalPcs >= 6 || whiteGloveOrders.length > 0) && !selectedAccessorial('appointment')) {
+  if (lineHaul && (q.totalPcs >= 6 || whiteGloveOrders.length > 0) && !selectedAccessorial('appointment')) {
     suggestions.push({ tone: 'warn', title: 'Consider appointment timing', text: 'Multi-piece or in-home deliveries are smoother when the delivery window is confirmed.', acc: 'appointment', label: 'Add appointment' });
   }
-  if (destProv === 'NL' && !selectedAccessorial('nlFerry')) {
+  if (lineHaul && destProv === 'NL' && !selectedAccessorial('nlFerry')) {
     suggestions.push({ tone: 'warn', title: 'Newfoundland ferry check', text: 'NL lanes may require ferry handling. Add this when it applies to the shipment.', acc: 'nlFerry', label: 'Add ferry' });
   }
   if (!middleOnly && whiteGloveOrders.some(o => (Number(o.whiteGloveMinutes) || WHITE_GLOVE_INCLUDED_MINUTES) <= WHITE_GLOVE_INCLUDED_MINUTES)) {
@@ -7723,7 +7436,9 @@ function quoteCoachSuggestions(q, largeLinearQuote) {
     suggestions.push({ tone: 'warn', title: 'Low density freight', text: `${density.toFixed(1)} lb/ft3 means the shipment is volume-sensitive. Confirm packaging, stackability, and dimensions.` });
   }
   if (!q.accSelected.length) {
-    suggestions.push({ tone: 'warn', title: 'Review accessorials', text: 'Open additional services if there is residential access, liftgate, inside pickup, appointment, or special handling.', action: 'services', label: 'Review' });
+    suggestions.push({ tone: 'warn', title: 'Review accessorials', text: lineHaul
+      ? 'Open additional services if there is residential access, liftgate, inside pickup, appointment, or special handling.'
+      : 'Open additional services for stairs, door removal, haul-away, extra crew, or other delivery extras.', action: 'services', label: 'Review' });
   }
   suggestions.push({ tone: 'ok', title: middleOnly ? 'Freight-only pricing mode' : 'Quote package ready', text: middleOnly ? 'No delivery service level or extra box charge is applied in Middle Mile Only.' : 'Saved quote, copy, print, and booking request tools are ready.' });
   suggestions.push({ tone: 'ok', title: 'Notes make reviews faster', text: 'Add access details, timing limits, PO/reference, and special handling notes before submitting the booking request.' });
@@ -7830,163 +7545,6 @@ function updateQuoteCoach(q, largeLinearQuote) {
   });
 }
 
-function dateShort(v) {
-  return v ? new Date(v).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-}
-
-function historyRedirectUrl(extra = {}) {
-  const url = new URL(window.location.href);
-  url.hash = '';
-  url.searchParams.delete('access_token');
-  url.searchParams.set('history', '1');
-  Object.entries(extra).forEach(([k, v]) => {
-    if (v == null || v === '') url.searchParams.delete(k);
-    else url.searchParams.set(k, v);
-  });
-  return url.toString();
-}
-
-function renderHistoryAuthState() {
-  const user = monteAuth.user();
-  const authBox = $("historyAuthBox");
-  const userBox = $("historyUserBox");
-  if (!authBox || !userBox) return;
-  authBox.classList.toggle('hidden', !!user);
-  userBox.classList.toggle('hidden', !user);
-  if (user && $("historyUserEmail")) $("historyUserEmail").textContent = user.email || user.id || 'Signed in';
-  if ($("historySub")) {
-    $("historySub").textContent = user
-      ? 'Select a saved quote to reload it, or start a new calculation.'
-      : 'Enter your email to save this quote and unlock quote history on any device.';
-  }
-}
-
-function setHistoryStatus(text, tone) {
-  const el = $("historyStatus");
-  if (!el) return;
-  el.textContent = text || '';
-  el.classList.toggle('ok', tone === 'ok');
-  el.classList.toggle('err', tone === 'err');
-}
-
-function openHistoryDrawer() {
-  const shell = $("historyShell");
-  if (!shell) return;
-  shell.classList.add('open');
-  shell.setAttribute('aria-hidden', 'false');
-  renderHistoryAuthState();
-  if (monteAuth.user()) refreshHistory();
-  else renderHistoryList([]);
-}
-
-function closeHistoryDrawer() {
-  const shell = $("historyShell");
-  if (!shell) return;
-  shell.classList.remove('open');
-  shell.setAttribute('aria-hidden', 'true');
-}
-
-async function claimPendingQuotes() {
-  if (!window._monteSession || !window._monteSession.access_token) return;
-  const url = new URL(window.location.href);
-  const claimToken = url.searchParams.get('claim');
-  if (claimToken) await sbRpc('claim_quote_by_token', { p_token: claimToken }).catch(() => {});
-  await sbRpc('claim_quotes_for_device', { p_device_id: getDeviceId() }).catch(() => {});
-  if (claimToken || url.searchParams.get('history')) {
-    url.searchParams.delete('claim');
-    url.searchParams.delete('history');
-    window.history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
-  }
-}
-
-async function sendHistoryMagicLink(email, claimToken) {
-  const client = sbClient();
-  const redirectTo = historyRedirectUrl({ claim: claimToken || (window._lastSavedQuote && window._lastSavedQuote.public_token) || window._publicToken || null });
-  if (client) {
-    const { error } = await client.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo }
-    });
-    if (error) throw error;
-    return;
-  }
-  const cfg = sbCfg();
-  if (!cfg) throw new Error('Quote history sign-in is not configured.');
-  const res = await fetch(`${cfg.url}/auth/v1/otp`, {
-    method: 'POST',
-    headers: { apikey: cfg.anonKey, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email,
-      create_user: true,
-      redirect_to: redirectTo,
-      email_redirect_to: redirectTo
-    })
-  });
-  if (!res.ok) throw new Error(await res.text());
-}
-
-async function refreshHistory() {
-  renderHistoryAuthState();
-  const client = sbClient();
-  const user = monteAuth.user();
-  const list = $("historyList");
-  if (!list) return;
-  if (!client || !user) {
-    renderHistoryList([]);
-    return;
-  }
-  list.innerHTML = '<div class="history-empty">Loading saved quotes...</div>';
-  const { data, error } = await client
-    .from('quotes')
-    .select('id,quote_ref,public_token,status,origin,destination,service_name,total_after_tax,created_at,valid_until,view_count,payload')
-    .order('created_at', { ascending: false })
-    .limit(60);
-  if (error) {
-    list.innerHTML = `<div class="history-empty">${htmlEsc(error.message)}</div>`;
-    return;
-  }
-  renderHistoryList(data || []);
-}
-
-function renderHistoryList(rows) {
-  const list = $("historyList");
-  if (!list) return;
-  if (!monteAuth.user()) {
-    list.innerHTML = '<div class="history-empty">Save a quote, then use the magic link to unlock your history.</div>';
-    return;
-  }
-  if (!rows.length) {
-    list.innerHTML = '<div class="history-empty">No saved quotes yet. Create a quote and press Save.</div>';
-    return;
-  }
-  list.innerHTML = rows.map((q, i) => {
-    const lane = q.destination ? `${q.origin || '-'} -> ${q.destination}` : `${q.origin || '-'} local`;
-    const meta = [q.service_name || q.status || 'Quote', dateShort(q.created_at), `${Number(q.view_count || 0)} view${Number(q.view_count || 0) === 1 ? '' : 's'}`].filter(Boolean).join(' - ');
-    return `<button class="history-item" type="button" data-history-idx="${i}">
-      <span class="history-item-top"><span class="history-ref">${htmlEsc(q.quote_ref || '')}</span><span class="history-total">${htmlEsc(moneyShort(q.total_after_tax))}</span></span>
-      <span class="history-lane">${htmlEsc(lane)}</span>
-      <span class="history-meta">${htmlEsc(meta)}</span>
-    </button>`;
-  }).join('');
-  window._historyRows = rows;
-  list.querySelectorAll('[data-history-idx]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const row = window._historyRows && window._historyRows[Number(btn.dataset.historyIdx)];
-      if (row) loadHistoryQuote(row);
-    });
-  });
-}
-
-function loadHistoryQuote(row) {
-  if (!row || !row.payload || !row.payload.state) return;
-  window._quoteRef = row.quote_ref || null;
-  window._publicToken = row.public_token || null;
-  window._lastSavedQuote = row;
-  window._lastQuoteShareUrl = row.public_token ? quoteShareUrl(row.public_token) : null;
-  applyQuoteSnapshot(row.payload.state);
-  closeHistoryDrawer();
-}
-
 function startNewQuote() {
   window._quoteRef = null;
   window._publicToken = null;
@@ -8025,40 +7583,6 @@ function startNewQuote() {
   $("wtUnitToggle").querySelectorAll('.seg-mini-btn').forEach(b => b.classList.toggle('active', b.dataset.unit === 'lb'));
   applyLaneMode();
   render();
-  closeHistoryDrawer();
-}
-
-function setupHistory() {
-  if ($("historyBtn")) $("historyBtn").addEventListener('click', openHistoryDrawer);
-  document.querySelectorAll('[data-history-close]').forEach(el => el.addEventListener('click', closeHistoryDrawer));
-  if ($("historyNewBtn")) $("historyNewBtn").addEventListener('click', startNewQuote);
-  if ($("historySignOutBtn")) $("historySignOutBtn").addEventListener('click', async () => {
-    const client = sbClient();
-    if (client) await client.auth.signOut();
-    monteAuth.signOut();
-    renderHistoryAuthState();
-    renderHistoryList([]);
-  });
-  if ($("historyMagicBtn")) $("historyMagicBtn").addEventListener('click', async () => {
-    const email = ($("historyEmail") && $("historyEmail").value || '').trim();
-    if (!email) {
-      setHistoryStatus('Enter an email first.', 'err');
-      return;
-    }
-    $("historyMagicBtn").disabled = true;
-    setHistoryStatus('Saving this quote and sending your magic link...', '');
-    try {
-      let saved = window._lastSavedQuote;
-      const q = computeQuote();
-      if (q.hasLane && q.hasMeasurements && q.hasService) saved = await saveCurrentQuote(true, 'shared');
-      await sendHistoryMagicLink(email, saved && saved.public_token);
-      setHistoryStatus('Magic link sent. Open it from this browser to unlock your quote history.', 'ok');
-    } catch (e) {
-      setHistoryStatus('Could not send magic link: ' + (e.message || e), 'err');
-    } finally {
-      $("historyMagicBtn").disabled = false;
-    }
-  });
 }
 
 function updateIntelligencePanel(q, distKm, etaText, density) {
@@ -9222,25 +8746,6 @@ function setupActions() {
     setTimeout(() => { shareBtn.classList.remove('copied'); if (label) label.textContent = original; }, 1400);
   });
 
-  const saveBtn = $("saveQuoteBtn");
-  if (saveBtn) saveBtn.addEventListener('click', async () => {
-    const label = saveBtn.querySelector('span');
-    const original = label ? label.textContent : 'Save';
-    saveBtn.classList.add('copied');
-    if (label) label.textContent = 'Saving';
-    try {
-      const saved = await saveCurrentQuote(true, monteAuth.user() ? 'draft' : 'shared');
-      if (!saved) return;
-      if (label) label.textContent = saved.storage === 'supabase' ? 'Saved' : 'Saved locally';
-    } catch (e) {
-      if (label) label.textContent = 'Save failed';
-    }
-    setTimeout(() => {
-      saveBtn.classList.remove('copied');
-      if (label) label.textContent = original;
-    }, 1700);
-  });
-
   // Booking modal open/close
   const bookBtnEl = $("bookBtn");
   const bookModal = $("bookModal");
@@ -9814,17 +9319,8 @@ function setupTax() {
 async function init() {
   try {
     if (!sbCfg()) throw new Error('Cloud quote service is not configured.');
-    const shouldOpenHistory = !!new URL(window.location.href).searchParams.get('history');
-    if (shouldOpenHistory) {
-      window.location.replace('index.html');
-      return;
-    }
-    await initAuthSession();
     ORIGINS = await loadOrigins();
     if (!ORIGINS.length) throw new Error('No rate lanes loaded yet.');
-
-    // Restore prior auth session (magic-link)
-    if (!window._monteSession) monteAuth.bootFromStorage();
 
     $("loadingView").style.display = "none";
     $("mainView").style.display = "grid";
@@ -9855,6 +9351,7 @@ async function init() {
             });
         }
         scheduleLaneQuoteRefresh();
+        renderAccessorials();
         updateOutput();
       }
     );
@@ -9863,6 +9360,7 @@ async function init() {
       (label) => {
         state.destination = label;
         scheduleLaneQuoteRefresh();
+        renderAccessorials();
         updateOutput();
       }
     );
@@ -9874,7 +9372,6 @@ async function init() {
     setupOrders();
     setupAccordion();
     setupActions();
-    setupHistory();
     setupFsc();
     setupTax();
     setupSceneMesh();
@@ -9886,7 +9383,6 @@ async function init() {
   setupStepper();
     const sharedLoaded = await loadSharedQuoteIfPresent();
     if (!sharedLoaded) render();
-    if (monteAuth.user()) renderHistoryAuthState();
   } catch (err) {
     $("loadingView").innerHTML = `<div style="color: var(--danger);">Error: ${err.message}</div>`;
   }

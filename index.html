@@ -5560,12 +5560,10 @@ function carrierAccessorialAmount(def, billable, lineHaul) {
   return { amount, qty, detail };
 }
 
-// Day & Ross line-haul accessorials only apply when a middle-mile leg is priced:
-// not in Final mile only, and not in a full quote within one city (priced as local).
+// Day & Ross line-haul accessorials only apply when a middle-mile leg is priced,
+// so never in Final mile only.
 function lineHaulExtrasApply() {
-  if (state.laneMode === 'middle') return true;
-  if (state.laneMode === 'local') return false;
-  return !(state.origin && state.destination && state.origin === state.destination);
+  return state.laneMode !== 'local';
 }
 
 function carrierAccessorialLines(billable, lineHaul) {
@@ -5644,8 +5642,7 @@ function getRatesForLane(origin, dest) {
 let _laneRpcSeq = 0;
 let _laneRpcTimer = null;
 function scheduleLaneQuoteRefresh() {
-  const sameCity = state.origin && state.destination && state.origin === state.destination;
-  if (!state.origin || !state.destination || state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity)) {
+  if (!state.origin || !state.destination || state.laneMode === 'local') {
     CURRENT_LANE_QUOTE = null;
     return;
   }
@@ -5925,9 +5922,9 @@ function computeQuote() {
   let rates = null;
   let hasLocation = false;
   let laneNotPriced = false;
-  // Auto-detect same-city as local for full quotes; middle-mile remains dock to dock.
-  const sameCity = state.origin && state.destination && state.origin === state.destination;
-  const effectiveLocal = state.laneMode === 'local' || (state.laneMode !== 'middle' && sameCity);
+  // Only Final mile only skips the middle mile. A full quote within one city is
+  // priced with the Day & Ross same-city lane like any other lane.
+  const effectiveLocal = state.laneMode === 'local';
   if (effectiveLocal) {
     // Local delivery: only need a city, skip middle-mile entirely
     hasLocation = !!state.origin;

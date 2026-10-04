@@ -797,7 +797,7 @@ function quoteEmailBody(r) {
   const body = (r && r.payload && r.payload.quote && (r.payload.quote.bookingEmailBody || r.payload.quote.bookingSummary))
     || [
       `Reference: ${r.quote_ref || "-"}`,
-      `Lane: ${r.origin || "-"} -> ${r.destination || "-"}`,
+      `Lane: ${r.destination ? `${r.origin || "-"} -> ${r.destination}` : `${r.origin || "-"} (local)`}`,
       `Service: ${r.service_name || "-"}`,
       `Pieces: ${r.total_pcs ?? "-"}`,
       `Billable weight: ${fmtW(r.billable_weight_lbs)}`,
@@ -915,7 +915,7 @@ function renderQuote(r) {
   $("billable").textContent = fmtW(r.billable_weight_lbs);
   $("cube").textContent = fmtCube(r.cubic_ft);
   $("weights").textContent = `${fmtW(r.actual_weight_lbs)} / ${fmtW(r.dim_weight_lbs)} dim`;
-  $("modeText").textContent = r.lane_mode === "middle" ? "Middle mile only" : "Full quote";
+  $("modeText").textContent = r.lane_mode === "middle" ? "Middle mile only" : r.lane_mode === "local" ? "Final mile only" : "Full quote";
   $("detailsText").textContent = quoteEmailBody(r);
   $("emailOkeBtn").href = `mailto:info@onekindexpress.com?subject=${encodeURIComponent("Quote " + (r.quote_ref || ""))}&body=${encodeURIComponent(quoteEmailBody(r) + "\n\nQuote link: " + quoteShareUrl(r.public_token))}`;
   renderPrice(r);
